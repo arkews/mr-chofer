@@ -8,7 +8,7 @@ import Navigation from './navigation'
 
 const queryClient = new QueryClient()
 
-export default function App() {
+export default function App () {
   const isLoadingComplete = useCachedResources()
   const colorScheme = useColorScheme()
 
