@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import cn from 'classnames'
 import { signInWithPassword } from '../../auth'
 import { useMutation } from '@tanstack/react-query'
+import { RootStackScreenProps } from '../../navigation/types'
 
 const SignInSchema = z.object({
   email: z.string().email('Email invalido'),
@@ -15,12 +16,14 @@ const SignInSchema = z.object({
 
 type SignInData = z.infer<typeof SignInSchema>
 
-const SignInScreen: FC = () => {
+type Props = RootStackScreenProps<'SignIn'>
+
+const SignInScreen: FC<Props> = ({ navigation }) => {
   const { session } = useAuth()
 
   useEffect(() => {
     if (session != null) {
-      console.log(session.user.email)
+      navigation.replace('Home')
     }
   }, [session])
 
@@ -36,6 +39,10 @@ const SignInScreen: FC = () => {
 
   const onSubmit: SubmitHandler<SignInData> = async data => {
     mutate(data)
+  }
+
+  const goToSignUp = (): void => {
+    navigation.navigate('SignUp')
   }
 
   return (
@@ -123,7 +130,7 @@ const SignInScreen: FC = () => {
         </Text>
       </Pressable>
 
-      <Text className="text-blue-400">
+      <Text className="text-blue-400" onPress={goToSignUp}>
         ¿No estás registrado? Registrate
       </Text>
 

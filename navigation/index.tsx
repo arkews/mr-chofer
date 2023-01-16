@@ -8,8 +8,10 @@ import { ColorSchemeName } from 'react-native'
 import { FC } from 'react'
 import SignInScreen from '../screens/auth/sign-in.screen'
 import SignUpScreen from '../screens/auth/sign-up.screen'
+import { RootStackParamList } from './types'
+import HomeScreen from '../screens/home.screen'
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const RootNavigator: FC = () => {
   return (
@@ -17,6 +19,8 @@ const RootNavigator: FC = () => {
       <Stack.Screen name="SignUp" component={SignUpScreen}
                     options={{ headerShown: false }}/>
       <Stack.Screen name="SignIn" component={SignInScreen}
+                    options={{ headerShown: false }}/>
+      <Stack.Screen name="Home" component={HomeScreen}
                     options={{ headerShown: false }}/>
     </Stack.Navigator>
   )

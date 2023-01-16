@@ -8,6 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import Checkbox from 'expo-checkbox'
 import cn from 'classnames'
+import { RootStackScreenProps } from '../../navigation/types'
 
 const SignUpSchema = z.object({
   email: z.string().email('Email invalido'),
@@ -23,12 +24,14 @@ const SignUpSchema = z.object({
 
 type SignUpData = z.infer<typeof SignUpSchema>
 
-const SignUpScreen: FC = () => {
+type Props = RootStackScreenProps<'SignUp'>
+
+const SignUpScreen: FC<Props> = ({ navigation }) => {
   const { session } = useAuth()
 
   useEffect(() => {
-    if (session != null) {
-      console.log(session.user.email)
+    if (session !== null) {
+      navigation.replace('Home')
     }
   }, [session])
 
@@ -44,6 +47,10 @@ const SignUpScreen: FC = () => {
 
   const onSubmit: SubmitHandler<SignUpData> = data => {
     mutate(data)
+  }
+
+  const goToSignIn = (): void => {
+    navigation.navigate('SignIn')
   }
 
   return (
@@ -186,7 +193,7 @@ const SignUpScreen: FC = () => {
         </Text>
       </Pressable>
 
-      <Text className="text-blue-400">
+      <Text className="text-blue-400" onPress={goToSignIn}>
         ¿Ya tienes una cuenta? Inicia sesión
       </Text>
 
