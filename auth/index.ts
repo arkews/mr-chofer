@@ -1,22 +1,17 @@
-import { makeRedirectUri, startAsync } from 'expo-auth-session'
-import { supabase, supabaseUrl } from '../supabase'
+import { supabase } from '../supabase'
+import { SignInWithPassword } from './types'
+import { AuthResponse } from '@supabase/supabase-js'
 
-export const googleSignIn = async () => {
-  const redirectUrl = makeRedirectUri({
-    path: 'auth/callback',
-  })
+export const signOut = async (): Promise<void> => {
+  await supabase.auth.signOut()
+}
 
-  const authResponse = await startAsync({
-    authUrl: `${supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${redirectUrl}`,
-    returnUrl: redirectUrl,
-  })
+export const signInWithPassword = async (credentials: SignInWithPassword): Promise<AuthResponse> => {
+  const response = await supabase.auth.signInWithPassword(credentials)
 
-  if (authResponse.type === 'success') {
-    await supabase.auth.setSession({
-      access_token: authResponse.params.access_token,
-      refresh_token: authResponse.params.refresh_token,
-    })
-
-    console.log(authResponse)
+  if (response.error !== null) {
+    throw response.error
   }
+
+  return response
 }
