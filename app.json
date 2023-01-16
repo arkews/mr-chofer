@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mr-chofer",
+    "name": "mrchofer",
     "slug": "mr-chofer",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -25,10 +25,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mrchofer.mrchofer"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3a993f1e-cdb7-47d1-80d9-fc623bc77d08"
+      }
+    },
+    "owner": "cantte"
   }
 }
