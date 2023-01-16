@@ -1,3 +1,6 @@
+import 'react-native-url-polyfill/auto'
+
+import { Buffer } from 'buffer'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -5,10 +8,14 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import useCachedResources from './hooks/useCachedResources'
 import useColorScheme from './hooks/useColorScheme'
 import Navigation from './navigation'
+import { AuthProvider } from './auth/context'
+import { FC } from 'react'
+
+global.Buffer = Buffer
 
 const queryClient = new QueryClient()
 
-export default function App() {
+const App: FC = () => {
   const isLoadingComplete = useCachedResources()
   const colorScheme = useColorScheme()
 
@@ -18,12 +25,14 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <Navigation colorScheme={colorScheme}/>
-          <StatusBar/>
+          <AuthProvider>
+            <Navigation colorScheme={colorScheme}/>
+            <StatusBar/>
+          </AuthProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     )
   }
 }
 
-global.Buffer = require('buffer').Buffer
+export default App
