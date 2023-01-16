@@ -1,19 +1,19 @@
 import React, { FC, useEffect } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { useAuth } from '../auth/context'
+import { useAuth } from '../../auth/context'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import cn from 'classnames'
-import { signInWithPassword } from '../auth'
+import { signInWithPassword } from '../../auth'
 import { useMutation } from '@tanstack/react-query'
 
-const LoginSchema = z.object({
+const SignInSchema = z.object({
   email: z.string().email('Email invalido'),
   password: z.string().min(8, 'Debe tener al menos 8 caracteres')
 })
 
-type LoginData = z.infer<typeof LoginSchema>
+type SignInData = z.infer<typeof SignInSchema>
 
 const SignInScreen: FC = () => {
   const { session } = useAuth()
@@ -28,13 +28,13 @@ const SignInScreen: FC = () => {
     control,
     handleSubmit,
     formState: { errors, isSubmitting }
-  } = useForm<LoginData>({
-    resolver: zodResolver(LoginSchema)
+  } = useForm<SignInData>({
+    resolver: zodResolver(SignInSchema)
   })
 
   const { mutate, isLoading, error } = useMutation(signInWithPassword)
 
-  const onSubmit: SubmitHandler<LoginData> = async data => {
+  const onSubmit: SubmitHandler<SignInData> = async data => {
     mutate(data)
   }
 

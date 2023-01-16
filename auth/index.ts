@@ -15,3 +15,13 @@ export const signInWithPassword = async (credentials: SignInWithPassword): Promi
 
   return response
 }
+
+export const signUpWithPassword = async (credentials: SignInWithPassword): Promise<AuthResponse> => {
+  const response = await supabase.auth.signUp(credentials)
+
+  if (response.error !== null) {
+    throw response.error
+  }
+
+  return response
+}
