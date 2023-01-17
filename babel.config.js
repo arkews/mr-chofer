@@ -4,7 +4,20 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     plugins: [
       ['nativewind/babel'],
-      ['module:react-native-dotenv']
+      ['module:react-native-dotenv'],
+      [
+        'module-resolver',
+        {
+          alias: {
+            '@base': '.',
+            '@components': './components',
+            '@constants': './constants',
+            '@hooks': './hooks',
+            '@navigation': './navigation',
+            '@screens': './screens'
+          }
+        }
+      ]
     ]
   }
 }

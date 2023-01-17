@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 import { Text, View } from 'react-native'
-import { useAuth } from '../auth/context'
-import { RootStackScreenProps } from '../navigation/types'
+import { useAuth } from '@base/auth/context'
+import { RootStackScreenProps } from '@navigation/types'
 
 type Props = RootStackScreenProps<'Home'>
 

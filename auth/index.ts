@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase } from '@base/supabase'
 import { SignInWithPassword } from './types'
 import { AuthResponse } from '@supabase/supabase-js'
 

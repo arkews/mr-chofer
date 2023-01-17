@@ -1,13 +1,13 @@
-import React, { FC, useEffect } from 'react'
+import { FC, useEffect } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { useAuth } from '../../auth/context'
+import { useAuth } from '@base/auth/context'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import cn from 'classnames'
-import { signInWithPassword } from '../../auth'
+import { signInWithPassword } from '@base/auth'
 import { useMutation } from '@tanstack/react-query'
-import { RootStackScreenProps } from '../../navigation/types'
+import { RootStackScreenProps } from '@navigation/types'
 
 const SignInSchema = z.object({
   email: z.string().email('Email invalido'),

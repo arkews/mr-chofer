@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react'
-import { useAuth } from '../../auth/context'
+import { FC, useEffect } from 'react'
+import { useAuth } from '@base/auth/context'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +8,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import Checkbox from 'expo-checkbox'
 import cn from 'classnames'
-import { RootStackScreenProps } from '../../navigation/types'
+import { RootStackScreenProps } from '@navigation/types'
 
 const SignUpSchema = z.object({
   email: z.string().email('Email invalido'),

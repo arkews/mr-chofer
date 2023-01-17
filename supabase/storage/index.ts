@@ -1,5 +1,5 @@
 import { supabase } from '../index'
-import { Photo } from '../../types'
+import { Photo } from '@base/types'
 
 export const uploadAvatar = async (userId: string, photo: Photo): Promise<string> => {
   const formData = new FormData()

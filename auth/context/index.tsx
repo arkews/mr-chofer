@@ -8,7 +8,7 @@ import {
 } from 'react'
 import { AuthContextProps } from '../types'
 import { Session } from '@supabase/supabase-js'
-import { supabase } from '../../supabase'
+import { supabase } from '@base/supabase'
 
 export const AuthContext = createContext<AuthContextProps>({
   session: null,
