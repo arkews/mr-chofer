@@ -1,15 +1,17 @@
-import React, { FC, useEffect } from 'react'
-import { RootStackScreenProps } from '../../navigation/types'
-import { useAuth } from '../../auth/context'
+import { FC, useEffect, useState } from 'react'
+import { RootStackScreenProps } from '@navigation/types'
+import { useAuth } from '@base/auth/context'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { supabase } from '../../supabase'
+import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
-import RadioGroup, { RadioValue } from '../../components/form/radio-group'
-import PhotoPicker from '../../components/form/photo-picker'
+import RadioGroup, { RadioValue } from '@components/form/radio-group'
+import PhotoPicker from '@components/form/photo-picker'
+import { uploadAvatar } from '@base/supabase/storage'
+import { Photo } from '@base/types'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
@@ -20,6 +22,7 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Debe seleccionar un sexo'),
   phone: z.string({ required_error: 'Número de teléfono requerido' })
     .min(1, 'Número de teléfono requerido'),
+  photo_url: z.string().optional(),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
 })
@@ -61,6 +64,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   } = useForm<DriverData>({
     resolver: zodResolver(RegisterDriverSchema)
   })
+  const [photo, setPhoto] = useState<Photo | null>(null)
 
   const registerDriver = async (data: DriverData): Promise<void> => {
     const { error } = await supabase.from('drivers').insert(data)
@@ -72,7 +76,13 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
   const { mutate, isLoading, error } = useMutation(registerDriver)
 
-  const onSubmit: SubmitHandler<DriverData> = data => {
+  const onSubmit: SubmitHandler<DriverData> = async data => {
+    if (photo === null) {
+      return
+    }
+
+    data.photo_url = await uploadAvatar(data.user_id, photo)
+
     mutate(data)
   }
 
@@ -176,7 +186,9 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         name="phone"
       />
 
-      <PhotoPicker/>
+      <View>
+        <PhotoPicker onSelect={setPhoto}/>
+      </View>
 
       {
         error !== null &&
