@@ -6,24 +6,30 @@ import { RootStackScreenProps } from '../navigation/types'
 type Props = RootStackScreenProps<'Home'>
 
 const HomeScreen: FC<Props> = ({ navigation }) => {
-  const { session } = useAuth()
+  const { session, isLoading } = useAuth()
 
   useEffect(() => {
-    if (session === null) {
-      navigation.navigate('SignIn')
+    if (isLoading) {
+      return
     }
-  }, [session])
+
+    if (session === null) {
+      navigation.replace('SignIn')
+      return
+    }
+
+    navigation.replace('RoleSelection')
+  }, [session, isLoading])
 
   return (
-    <View className="flex flex-grow w-full px-7 justify-center mx-auto space-y-7">
-      {
-        session !== null && (
-          <>
-            <Text className="dark:text-white">{session.user.email}</Text>
-            <Text className="dark:text-white">{session.user.role}</Text>
-          </>
-        )
-      }
+    <View
+      className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
+      <Text
+        className="text-4xl text-center dark:text-white">Bienvenido</Text>
+      <Text
+        className="text-gray-500 text-base text-center mb-10 dark:text-gray-400">
+        Estamos verificando tu sesión...
+      </Text>
     </View>
   )
 }
