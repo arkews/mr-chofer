@@ -9,6 +9,7 @@ export type RootStackParamList = {
   RoleSelection: undefined
 
   RegisterDriver: undefined
+  DriverDetails: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

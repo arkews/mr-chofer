@@ -2,14 +2,16 @@ import { FC, useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { useAuth } from '@base/auth/context'
 import { RootStackScreenProps } from '@navigation/types'
+import useDriver from '@hooks/drivers/use-driver'
 
 type Props = RootStackScreenProps<'Home'>
 
 const HomeScreen: FC<Props> = ({ navigation }) => {
-  const { session, isLoading } = useAuth()
+  const { session, isLoading: isLoadingSession } = useAuth()
+  const { driver, isLoading: isLoadingDriver } = useDriver()
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoadingSession || isLoadingDriver) {
       return
     }
 
@@ -18,8 +20,13 @@ const HomeScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
+    if (driver !== null) {
+      navigation.replace('DriverDetails')
+      return
+    }
+
     navigation.replace('RoleSelection')
-  }, [session, isLoading])
+  }, [session, isLoadingSession, driver, isLoadingDriver])
 
   return (
     <View

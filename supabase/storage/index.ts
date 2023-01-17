@@ -20,3 +20,23 @@ export const uploadAvatar = async (userId: string, photo: Photo): Promise<string
 
   return data?.path
 }
+
+export const getAvatarUrl = async (path: string): Promise<string> => {
+  const { data, error } = await supabase.storage.from('avatars').download(path)
+
+  if (error !== null) {
+    throw error
+  }
+
+  const fr = new FileReader()
+  fr.readAsDataURL(data)
+
+  return await new Promise((resolve, reject) => {
+    fr.onload = () => {
+      resolve(fr.result as string)
+    }
+    fr.onerror = () => {
+      reject(fr.error)
+    }
+  })
+}

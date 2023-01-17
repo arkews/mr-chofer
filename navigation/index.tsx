@@ -12,6 +12,7 @@ import { RootStackParamList } from './types'
 import HomeScreen from '@screens/home.screen'
 import RoleSelectionScreen from '@screens/role-selection.screen'
 import RegisterDriverScreen from '@screens/drivers/register.screen'
+import DriverDetailsScreen from '@screens/drivers/details.screen'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -24,6 +25,7 @@ const RootNavigator: FC = () => {
       <Stack.Screen name="SignIn" component={SignInScreen}/>
       <Stack.Screen name="RoleSelection" component={RoleSelectionScreen}/>
       <Stack.Screen name="RegisterDriver" component={RegisterDriverScreen}/>
+      <Stack.Screen name="DriverDetails" component={DriverDetailsScreen}/>
     </Stack.Navigator>
   )
 }
