@@ -42,7 +42,7 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
   }
 
   const goToSignUp = (): void => {
-    navigation.navigate('SignUp')
+    navigation.replace('SignUp')
   }
 
   return (
