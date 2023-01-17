@@ -14,6 +14,10 @@ const RoleSelectionScreen: FC<Props> = ({ navigation }) => {
     }
   }, [session])
 
+  const goToRegisterDriver = (): void => {
+    navigation.navigate('RegisterDriver')
+  }
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -30,6 +34,7 @@ const RoleSelectionScreen: FC<Props> = ({ navigation }) => {
             <View className="flex flex-col space-y-5 justify-around">
               <View className="basis">
                 <Pressable
+                  onPress={goToRegisterDriver}
                   className="text-base px-6 py-3.5 bg-blue-700 rounded-lg active:bg-blue-800">
                   <Text className="text-base text-white text-center">
                     Quiero ser conductor

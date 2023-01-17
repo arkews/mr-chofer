@@ -7,6 +7,8 @@ export type RootStackParamList = {
   SignUp: undefined
 
   RoleSelection: undefined
+
+  RegisterDriver: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
