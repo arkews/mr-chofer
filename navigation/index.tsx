@@ -10,17 +10,20 @@ import SignInScreen from '../screens/auth/sign-in.screen'
 import SignUpScreen from '../screens/auth/sign-up.screen'
 import { RootStackParamList } from './types'
 import HomeScreen from '../screens/home.screen'
+import RoleSelectionScreen from '../screens/role-selection.screen'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
 const RootNavigator: FC = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={HomeScreen}
+                    options={{ headerShown: false }}/>
       <Stack.Screen name="SignUp" component={SignUpScreen}
                     options={{ headerShown: false }}/>
       <Stack.Screen name="SignIn" component={SignInScreen}
                     options={{ headerShown: false }}/>
-      <Stack.Screen name="Home" component={HomeScreen}
+      <Stack.Screen name="RoleSelection" component={RoleSelectionScreen}
                     options={{ headerShown: false }}/>
     </Stack.Navigator>
   )
