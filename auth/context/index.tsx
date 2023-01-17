@@ -11,15 +11,18 @@ import { Session } from '@supabase/supabase-js'
 import { supabase } from '../../supabase'
 
 export const AuthContext = createContext<AuthContextProps>({
-  session: null
+  session: null,
+  isLoading: false
 })
 
 export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
+      setIsLoading(false)
     })
 
     supabase.auth.onAuthStateChange((_event, session) => {
@@ -28,7 +31,7 @@ export const AuthProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ session }}>
+    <AuthContext.Provider value={{ session, isLoading }}>
       {children}
     </AuthContext.Provider>
   )
