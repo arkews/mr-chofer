@@ -12,7 +12,7 @@ export const uploadAvatar = async (userId: string, photo: Photo): Promise<string
   const {
     error,
     data
-  } = await supabase.storage.from('avatars').upload(fileName, formData)
+  } = await supabase.storage.from('avatars').update(fileName, formData)
 
   if (error !== null) {
     throw error
