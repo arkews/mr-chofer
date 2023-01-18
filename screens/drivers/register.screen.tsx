@@ -8,10 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
-import RadioGroup, { RadioValue } from '@components/form/radio-group'
+import RadioGroup from '@components/form/radio-group'
 import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar } from '@base/supabase/storage'
 import { Photo } from '@base/types'
+import { genders } from '@constants/genders'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
@@ -30,17 +31,6 @@ const RegisterDriverSchema = z.object({
 type DriverData = z.infer<typeof RegisterDriverSchema>
 
 type Props = RootStackScreenProps<'RegisterDriver'>
-
-const genders: RadioValue[] = [
-  {
-    value: 'Male',
-    title: 'Masculino'
-  },
-  {
-    value: 'Female',
-    title: 'Femenino'
-  }
-]
 
 const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   const { session } = useAuth()
@@ -74,7 +64,11 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const { mutate, isLoading, error } = useMutation(registerDriver)
+  const { mutate, isLoading, error } = useMutation(registerDriver, {
+    onSuccess: () => {
+      navigation.replace('DriverDetails')
+    }
+  })
 
   const onSubmit: SubmitHandler<DriverData> = async data => {
     if (photo === null) {
