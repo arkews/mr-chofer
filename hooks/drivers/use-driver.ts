@@ -29,7 +29,7 @@ const useDriver = (): UseDriver => {
       .single()
 
     if (error !== null) {
-      throw error
+      throw Error(error.message)
     }
 
     return data
