@@ -10,6 +10,8 @@ export type RootStackParamList = {
 
   RegisterDriver: undefined
   DriverDetails: undefined
+
+  RegisterPassenger: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<

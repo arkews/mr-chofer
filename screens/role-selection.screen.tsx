@@ -18,6 +18,10 @@ const RoleSelectionScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('RegisterDriver')
   }
 
+  const goToRegisterPassenger = (): void => {
+    navigation.navigate('RegisterPassenger')
+  }
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -44,6 +48,7 @@ const RoleSelectionScreen: FC<Props> = ({ navigation }) => {
 
               <View className="basis">
                 <Pressable
+                  onPress={goToRegisterPassenger}
                   className="px-6 py-3.5 bg-green-700 rounded-lg active:bg-green-800">
                   <Text className="text-base text-white text-center">
                     Quiero ser pasajero
