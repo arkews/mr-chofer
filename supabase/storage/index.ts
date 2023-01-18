@@ -1,5 +1,6 @@
 import { supabase } from '../index'
 import { Photo } from '@base/types'
+import { Alert } from 'react-native'
 
 export const uploadAvatar = async (userId: string, photo: Photo): Promise<string> => {
   const formData = new FormData()
@@ -15,6 +16,7 @@ export const uploadAvatar = async (userId: string, photo: Photo): Promise<string
   } = await supabase.storage.from('avatars').update(fileName, formData)
 
   if (error !== null) {
+    Alert.alert('Error uploading photo', error.message)
     throw error
   }
 
