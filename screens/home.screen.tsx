@@ -11,12 +11,16 @@ const HomeScreen: FC<Props> = ({ navigation }) => {
   const { driver, isLoading: isLoadingDriver } = useDriver()
 
   useEffect(() => {
-    if (isLoadingSession || isLoadingDriver) {
+    if (isLoadingSession) {
       return
     }
 
     if (session === null) {
       navigation.replace('SignIn')
+      return
+    }
+
+    if (isLoadingDriver) {
       return
     }
 
