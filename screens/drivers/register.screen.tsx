@@ -26,7 +26,7 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Número de teléfono requerido'),
   phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
     .min(1, 'Debe confirmar el número de teléfono'),
-  photo_url: z.string().optional().nullable(),
+  photo_url: z.string({ required_error: 'Debe seleccionar una foto' }).min(1, 'Debe seleccionar una foto'),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
 }).refine(data => data.phone === data.phoneConfirmation, {
@@ -53,6 +53,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting }
   } = useForm<DriverData>({
     resolver: zodResolver(RegisterDriverSchema),
@@ -63,6 +64,10 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   })
   const [photo, setPhoto] = useState<Photo | null>(null)
+  const onSelectPhoto = (photo: Photo): void => {
+    setPhoto(photo)
+    setValue('photo_url', photo.uri)
+  }
 
   const registerDriver = async (data: DriverMutationData): Promise<void> => {
     const { error } = await supabase.from('drivers').insert(data)
@@ -79,17 +84,15 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   })
 
   const onSubmit: SubmitHandler<DriverData> = async data => {
-    if (photo === null) {
-      return
-    }
+    if (photo !== null) {
+      const photoUrl = await uploadAvatar(data.user_id, photo)
+      if (photoUrl === undefined) {
+        Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
+        return
+      }
 
-    const photoUrl = await uploadAvatar(data.user_id, photo)
-    if (photoUrl === undefined) {
-      Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
-      return
+      data.photo_url = photoUrl
     }
-
-    data.photo_url = photoUrl
 
     const { phoneConfirmation, ...rest } = data
 
@@ -226,13 +229,16 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
       />
 
       <View>
-        <PhotoPicker onSelect={setPhoto}/>
+        <PhotoPicker onSelect={onSelectPhoto}/>
         {
-          photo !== null &&
+          watch('photo_url') !== null &&
           <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-            Foto seleccionada {photo.name}
+            Foto seleccionada {watch('photo_url')}
           </Text>
         }
+        {(errors.photo_url != null) &&
+          <Text
+            className="text-red-500">{errors.photo_url.message}</Text>}
       </View>
 
       {
