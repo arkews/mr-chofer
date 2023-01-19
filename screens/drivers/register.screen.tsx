@@ -13,6 +13,7 @@ import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar } from '@base/supabase/storage'
 import { Photo } from '@base/types'
 import { genders } from '@constants/genders'
+import usePassenger from '@hooks/passengers/use-passenger'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
@@ -23,12 +24,18 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Debe seleccionar un sexo'),
   phone: z.string({ required_error: 'Número de teléfono requerido' })
     .min(1, 'Número de teléfono requerido'),
-  photo_url: z.string().optional(),
+  phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
+    .min(1, 'Debe confirmar el número de teléfono'),
+  photo_url: z.string().optional().nullable(),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
+}).refine(data => data.phone === data.phoneConfirmation, {
+  message: 'Los números de teléfono no coinciden',
+  path: ['phoneConfirmation']
 })
 
 type DriverData = z.infer<typeof RegisterDriverSchema>
+type DriverMutationData = Omit<DriverData, 'phoneConfirmation'>
 
 type Props = RootStackScreenProps<'RegisterDriver'>
 
@@ -40,17 +47,24 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }, [session])
 
+  const { passenger } = usePassenger()
+
   const {
     control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting }
   } = useForm<DriverData>({
-    resolver: zodResolver(RegisterDriverSchema)
+    resolver: zodResolver(RegisterDriverSchema),
+    defaultValues: {
+      ...passenger,
+      id: undefined,
+      phoneConfirmation: undefined
+    }
   })
   const [photo, setPhoto] = useState<Photo | null>(null)
 
-  const registerDriver = async (data: DriverData): Promise<void> => {
+  const registerDriver = async (data: DriverMutationData): Promise<void> => {
     const { error } = await supabase.from('drivers').insert(data)
 
     if (error != null) {
@@ -77,7 +91,9 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
     data.photo_url = photoUrl
 
-    mutate(data)
+    const { phoneConfirmation, ...rest } = data
+
+    mutate(rest)
   }
 
   return (
@@ -160,6 +176,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
           <View className="mt-4">
             <Text className="dark:text-white">Teléfono</Text>
             <TextInput
+              keyboardType="numeric"
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -178,6 +195,34 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
           </View>
         )}
         name="phone"
+      />
+
+      <Controller
+        control={control}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <View className="mt-4">
+            <Text className="dark:text-white">Confirmar teléfono</Text>
+            <TextInput
+              keyboardType="numeric"
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              editable={!isSubmitting && !isLoading}
+              className={
+                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
+                  'focus:border-blue-600 focus:ring-0',
+                  'dark:text-white',
+                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            />
+
+            {(errors.phoneConfirmation != null) &&
+              <Text
+                className="text-red-500">{errors.phoneConfirmation.message}</Text>}
+          </View>
+        )}
+        name="phoneConfirmation"
       />
 
       <View>
