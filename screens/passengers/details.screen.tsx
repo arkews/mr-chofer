@@ -2,11 +2,26 @@ import { FC, useEffect, useState } from 'react'
 import { RootStackScreenProps } from '@navigation/types'
 import { getAvatarUrl } from '@base/supabase/storage'
 import usePassenger from '@hooks/passengers/use-passenger'
-import { Image, Text, View } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
+import cn from 'classnames'
+import { signOut } from '@base/auth'
+import { useAuth } from '@base/auth/context'
+import { useMutation } from '@tanstack/react-query'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
 const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
+  const { session, isLoading: isLoadingAuth } = useAuth()
+  useEffect(() => {
+    if (isLoadingAuth) {
+      return
+    }
+
+    if (session === null) {
+      navigation.replace('SignIn')
+    }
+  })
+
   const { passenger, isLoading, error } = usePassenger()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
@@ -25,6 +40,12 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
         setAvatarUrl(url)
       })
   }, [isLoading, passenger])
+
+  const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
+
+  const goToDriverProfile = (): void => {
+    navigation.navigate('DriverDetails')
+  }
 
   return (
     <View
@@ -46,12 +67,44 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
                   <View className="w-32 h-32 rounded-full mx-auto bg-gray-200"/>
                   )
             }
-            <Text className="text-xl text-center mb-7 dark:text-white">
-              {passenger.name}
-            </Text>
-            <Text className="text-xl text-center mb-7 dark:text-white">
-              {passenger.phone}
-            </Text>
+            <View className="mb-5">
+              <Text className="text-xl text-center mb-3 dark:text-white">
+                {passenger.name}
+              </Text>
+              <Text className="text-base text-center dark:text-white">
+                {passenger.phone}
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={goToDriverProfile}
+              className={
+                cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
+                  'active:bg-green-800',
+                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            >
+              <Text
+                className="text-base text-white font-medium text-center text-white">
+                Modo conductor
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => { mutate() }}
+              className={
+                cn('text-base px-6 py-3.5 bg-red-700 rounded-lg border border-transparent',
+                  'active:bg-red-800',
+                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            >
+              <Text
+                className="text-base text-white font-medium text-center text-white">
+                Cerrar sesión
+              </Text>
+            </Pressable>
           </View>
         )
       }
