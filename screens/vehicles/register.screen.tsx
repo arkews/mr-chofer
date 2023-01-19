@@ -106,7 +106,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
+          <View className="mt-4">
             <Text className="dark:text-white">Cilindraje (CC)</Text>
             <TextInput
               keyboardType="numeric"
@@ -126,7 +126,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
             {(errors.engine_displacement != null) &&
               <Text
                 className="text-red-500">{errors.engine_displacement.message}</Text>}
-          </>
+          </View>
         )}
         name="engine_displacement"
       />
@@ -134,7 +134,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
+          <View className="mt-4">
             <Text className="dark:text-white">Marca</Text>
             <TextInput
               onBlur={onBlur}
@@ -152,7 +152,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
             {(errors.brand != null) &&
               <Text className="text-red-500">{errors.brand.message}</Text>}
-          </>
+          </View>
         )}
         name="brand"
       />
@@ -160,7 +160,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
+          <View className="mt-4">
             <Text className="dark:text-white">Modelo</Text>
             <TextInput
               onBlur={onBlur}
@@ -178,7 +178,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
             {(errors.model != null) &&
               <Text className="text-red-500">{errors.model.message}</Text>}
-          </>
+          </View>
         )}
         name="model"
       />
@@ -186,7 +186,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
+          <View className="mt-4">
             <Text className="dark:text-white">Color</Text>
             <TextInput
               onBlur={onBlur}
@@ -204,7 +204,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
             {(errors.color != null) &&
               <Text className="text-red-500">{errors.color.message}</Text>}
-          </>
+          </View>
         )}
         name="color"
       />
