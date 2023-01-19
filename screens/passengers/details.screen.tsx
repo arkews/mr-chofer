@@ -23,10 +23,12 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
-    getAvatarUrl(passenger.photo_url)
-      .then(url => {
-        setAvatarUrl(url)
-      })
+    if (passenger.photo_url !== null) {
+      getAvatarUrl(passenger.photo_url)
+        .then(url => {
+          setAvatarUrl(url)
+        })
+    }
   }, [isLoading, passenger])
 
   const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)

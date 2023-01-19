@@ -25,10 +25,12 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
-    getAvatarUrl(driver.photo_url)
-      .then(url => {
-        setAvatarUrl(url)
-      })
+    if (driver.photo_url !== null) {
+      getAvatarUrl(driver.photo_url)
+        .then(url => {
+          setAvatarUrl(url)
+        })
+    }
   }, [isLoading, driver])
 
   const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
@@ -51,13 +53,13 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
           {
             avatarUrl !== null
               ? (
-              <Image
-                source={{ uri: avatarUrl }}
-                className="w-32 h-32 rounded-full mx-auto"
-              />
+                <Image
+                  source={{ uri: avatarUrl }}
+                  className="w-32 h-32 rounded-full mx-auto"
+                />
                 )
               : (
-              <View className="w-32 h-32 rounded-full mx-auto bg-gray-200" />
+                <View className="w-32 h-32 rounded-full mx-auto bg-gray-200"/>
                 )
           }
           <View className="mb-5">
@@ -71,7 +73,8 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
             <View className="mt-3">
               {
                 isLoadingVehicle && (
-                  <Text className="text-base text-center text-gray-500 dark:text-gray-400">
+                  <Text
+                    className="text-base text-center text-gray-500 dark:text-gray-400">
                     Cargando vehículo...
                   </Text>
                 )
@@ -97,10 +100,13 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
               {
                 !isLoadingVehicle && vehicle !== null && vehicle !== undefined && (
                   <>
-                    <Text className="text-base text-center text-gray-500 dark:text-gray-400">
-                      Vehículo: {vehicle.brand}, {vehicle.model} - CC {vehicle.engine_displacement}
+                    <Text
+                      className="text-base text-center text-gray-500 dark:text-gray-400">
+                      Vehículo: {vehicle.brand}, {vehicle.model} -
+                      CC {vehicle.engine_displacement}
                     </Text>
-                    <Text className="text-base text-center text-gray-500 dark:text-gray-400">
+                    <Text
+                      className="text-base text-center text-gray-500 dark:text-gray-400">
                       Placa {vehicle.license_plate}
                     </Text>
                   </>
