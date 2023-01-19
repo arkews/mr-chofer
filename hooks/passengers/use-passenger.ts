@@ -37,7 +37,8 @@ const usePassenger = (): UsePassenger => {
     ['passenger', session?.user.id],
     fetchPassenger,
     {
-      enabled: session?.user.id !== undefined
+      enabled: session?.user.id !== undefined,
+      retry: false
     })
 
   return {

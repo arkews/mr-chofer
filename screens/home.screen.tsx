@@ -41,7 +41,7 @@ const HomeScreen: FC<Props> = ({ navigation }) => {
     }
 
     navigation.replace('RoleSelection')
-  }, [session, isLoadingSession])
+  }, [session, isLoadingSession, passenger, isLoadingPassenger, driver, isLoadingDriver])
 
   return (
     <View

@@ -39,7 +39,8 @@ const useDriver = (): UseDriver => {
     ['driver', session?.user?.id],
     loadDriver,
     {
-      enabled: session?.user?.id !== undefined
+      enabled: session?.user?.id !== undefined,
+      retry: false
     }
   )
 
