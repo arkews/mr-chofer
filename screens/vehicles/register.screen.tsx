@@ -2,7 +2,6 @@ import { FC, useEffect } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { z } from 'zod'
 import { RootStackScreenProps } from '@navigation/types'
-import { useAuth } from '@base/auth/context'
 import useDriver from '@hooks/drivers/use-driver'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
@@ -36,13 +35,6 @@ type VehicleData = z.infer<typeof RegisterVehicleSchema>
 type Props = RootStackScreenProps<'RegisterVehicle'>
 
 const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
-  const { session } = useAuth()
-  useEffect(() => {
-    if (session === null) {
-      navigation.navigate('SignIn')
-    }
-  }, [session])
-
   const { driver } = useDriver()
   useEffect(() => {
     if (driver !== undefined && driver !== null) {

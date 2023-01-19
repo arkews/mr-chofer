@@ -34,14 +34,8 @@ type Props = RootStackScreenProps<'RegisterDriver'>
 
 const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   const { session } = useAuth()
-
   useEffect(() => {
-    if (session === null) {
-      navigation.navigate('SignIn')
-      return
-    }
-
-    if (session.user.id !== '') {
+    if (session != null && session.user.id !== '') {
       setValue('user_id', session.user.id)
     }
   }, [session])

@@ -5,23 +5,11 @@ import usePassenger from '@hooks/passengers/use-passenger'
 import { Image, Pressable, Text, View } from 'react-native'
 import cn from 'classnames'
 import { signOut } from '@base/auth'
-import { useAuth } from '@base/auth/context'
 import { useMutation } from '@tanstack/react-query'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
 const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
-  const { session, isLoading: isLoadingAuth } = useAuth()
-  useEffect(() => {
-    if (isLoadingAuth) {
-      return
-    }
-
-    if (session === null) {
-      navigation.replace('SignIn')
-    }
-  })
-
   const { passenger, isLoading, error } = usePassenger()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
@@ -50,8 +38,8 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoading && <Text>Loading...</Text>}
-      {error !== null && <Text>{error.message}</Text>}
+      {isLoading && <Text className="dark:text-white">Loading...</Text>}
+      {error !== null && <Text className="dark:text-white">{error.message}</Text>}
       {
         (passenger !== undefined) && (
           <View className="flex flex-col space-y-5">
@@ -92,7 +80,9 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
             </Pressable>
 
             <Pressable
-              onPress={() => { mutate() }}
+              onPress={() => {
+                mutate()
+              }}
               className={
                 cn('text-base px-6 py-3.5 bg-red-700 rounded-lg border border-transparent',
                   'active:bg-red-800',
