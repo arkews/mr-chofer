@@ -13,6 +13,7 @@ import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar } from '@base/supabase/storage'
 import { Photo } from '@base/types'
 import { genders } from '@constants/genders'
+import usePassenger from '@hooks/passengers/use-passenger'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
@@ -40,13 +41,19 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }, [session])
 
+  const { passenger } = usePassenger()
+
   const {
     control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting }
   } = useForm<DriverData>({
-    resolver: zodResolver(RegisterDriverSchema)
+    resolver: zodResolver(RegisterDriverSchema),
+    defaultValues: {
+      ...passenger,
+      id: undefined
+    }
   })
   const [photo, setPhoto] = useState<Photo | null>(null)
 
