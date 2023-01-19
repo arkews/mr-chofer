@@ -63,17 +63,15 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
   })
 
   const onSubmit: SubmitHandler<PassengerData> = async data => {
-    if (photo === null) {
-      return
-    }
+    if (photo !== null) {
+      const photoUrl = await uploadAvatar(data.user_id, photo)
+      if (photoUrl === undefined) {
+        Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
+        return
+      }
 
-    const photoUrl = await uploadAvatar(data.user_id, photo)
-    if (photoUrl === undefined) {
-      Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
-      return
+      data.photo_url = photoUrl
     }
-
-    data.photo_url = photoUrl
 
     mutate(data)
   }
@@ -153,6 +151,12 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
 
       <View>
         <PhotoPicker onSelect={setPhoto}/>
+        {
+          photo !== null &&
+          <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+            Foto seleccionada {photo.name}
+          </Text>
+        }
       </View>
 
       {
