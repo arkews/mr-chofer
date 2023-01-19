@@ -43,7 +43,11 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
     resolver: zodResolver(SignUpSchema)
   })
 
-  const { mutate, isLoading, error } = useMutation(signUpWithPassword)
+  const { mutate, isLoading, error } = useMutation(signUpWithPassword, {
+    onSuccess: () => {
+      navigation.navigate('SignIn')
+    }
+  })
 
   const onSubmit: SubmitHandler<SignUpData> = data => {
     mutate(data)
