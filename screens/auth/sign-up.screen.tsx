@@ -11,6 +11,7 @@ import { RootStackScreenProps } from '@navigation/types'
 
 const SignUpSchema = z.object({
   email: z.string().email('Email invalido'),
+  emailConfirmation: z.string().email('Email invalido'),
   password: z.string().min(8, 'Debe tener al menos 8 caracteres'),
   passwordConfirmation: z.string().min(8, 'Debe tener al menos 8 caracteres'),
   acceptTerms: z.boolean().refine(v => v, {
@@ -19,6 +20,9 @@ const SignUpSchema = z.object({
 }).refine(data => data.password === data.passwordConfirmation, {
   message: 'Las contraseñas no coinciden',
   path: ['passwordConfirmation']
+}).refine(data => data.email === data.emailConfirmation, {
+  message: 'Los emails no coinciden',
+  path: ['emailConfirmation']
 })
 
 type SignUpData = z.infer<typeof SignUpSchema>
@@ -78,6 +82,36 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
           </>
         )}
         name="email"
+      />
+
+      <Controller
+        control={control}
+        rules={{
+          required: true
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <>
+            <Text className="mb-2 dark:text-white">Confirmar email</Text>
+            <TextInput
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              editable={!isSubmitting && !isLoading}
+              className={
+                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
+                  'focus:border-blue-600 focus:ring-0',
+                  'dark:text-white',
+                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            />
+
+            {(errors.emailConfirmation != null) &&
+              <Text
+                className="text-red-500">{errors.emailConfirmation.message}</Text>}
+          </>
+        )}
+        name="emailConfirmation"
       />
 
       <Controller

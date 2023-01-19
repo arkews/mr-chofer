@@ -20,12 +20,14 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Identificación requerida'),
   name: z.string({ required_error: 'Nombre requerido' })
     .min(1, 'Nombre requerido'),
-  gender: z.string({ required_error: 'Debe seleccionar un sexo' })
-    .min(1, 'Debe seleccionar un sexo'),
+  city: z.string({ required_error: 'Ciudad requerida' })
+    .min(1, 'Ciudad requerida'),
   phone: z.string({ required_error: 'Número de teléfono requerido' })
     .min(1, 'Número de teléfono requerido'),
   phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
     .min(1, 'Debe confirmar el número de teléfono'),
+  gender: z.string({ required_error: 'Debe seleccionar un sexo' })
+    .min(1, 'Debe seleccionar un sexo'),
   photo_url: z.string({ required_error: 'Debe seleccionar una foto' }).min(1, 'Debe seleccionar una foto'),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
@@ -161,16 +163,28 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
       <Controller
         control={control}
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange, onBlur, value } }) => (
           <View className="mt-4">
-            <Text className="mb-2 dark:text-white">Sexo</Text>
-            <RadioGroup values={genders} selected={value} onSelect={onChange}/>
+            <Text className="dark:text-white">Ciudad</Text>
+            <TextInput
+              onBlur={onBlur}
+              onChangeText={onChange}
+              value={value}
+              editable={!isSubmitting && !isLoading}
+              className={
+                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
+                  'focus:border-blue-600 focus:ring-0',
+                  'dark:text-white',
+                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
+                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            />
 
-            {(errors.gender != null) &&
-              <Text className="text-red-500">{errors.gender.message}</Text>}
+            {(errors.city != null) &&
+              <Text className="text-red-500">{errors.city.message}</Text>}
           </View>
         )}
-        name="gender"
+        name="city"
       />
 
       <Controller
@@ -226,6 +240,20 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
           </View>
         )}
         name="phoneConfirmation"
+      />
+
+      <Controller
+        control={control}
+        render={({ field: { onChange, value } }) => (
+          <View className="mt-4">
+            <Text className="mb-2 dark:text-white">Sexo</Text>
+            <RadioGroup values={genders} selected={value} onSelect={onChange}/>
+
+            {(errors.gender != null) &&
+              <Text className="text-red-500">{errors.gender.message}</Text>}
+          </View>
+        )}
+        name="gender"
       />
 
       <View>
