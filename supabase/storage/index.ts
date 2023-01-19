@@ -1,8 +1,7 @@
 import { supabase } from '../index'
 import { Photo } from '@base/types'
-import { Alert } from 'react-native'
 
-export const uploadAvatar = async (userId: string, photo: Photo): Promise<string> => {
+export const uploadAvatar = async (userId: string, photo: Photo): Promise<string | undefined> => {
   const formData = new FormData()
   // @ts-expect-error
   formData.append('file', photo)
@@ -13,11 +12,23 @@ export const uploadAvatar = async (userId: string, photo: Photo): Promise<string
   const {
     error,
     data
-  } = await supabase.storage.from('avatars').update(fileName, formData)
+  } = await supabase.storage.from('avatars').upload(fileName, formData, {
+    upsert: true
+  })
 
-  if (error !== null) {
-    Alert.alert('Error uploading photo', error.message)
-    throw error
+  if ((error?.message.includes('already exists')) === true) {
+    const {
+      error: updateError,
+      data: updated
+    } = await supabase.storage.from('avatars').update(fileName, formData, {
+      upsert: true
+    })
+
+    if (updateError !== null) {
+      return undefined
+    }
+
+    return updated?.path
   }
 
   return data?.path
