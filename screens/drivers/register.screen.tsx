@@ -64,13 +64,11 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const { mutate, isLoading, error, isSuccess } = useMutation(registerDriver)
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigation.replace('DriverDetails')
+  const { mutate, isLoading, error } = useMutation(registerDriver, {
+    onSuccess: () => {
+      navigation.navigate('DriverDetails')
     }
-  }, [isSuccess])
+  })
 
   const onSubmit: SubmitHandler<DriverData> = async data => {
     if (photo === null) {

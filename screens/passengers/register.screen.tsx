@@ -62,13 +62,11 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const { mutate, isLoading, error, isSuccess } = useMutation(registerPassenger)
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigation.replace('PassengerDetails')
+  const { mutate, isLoading, error } = useMutation(registerPassenger, {
+    onSuccess: () => {
+      navigation.navigate('PassengerDetails')
     }
-  }, [isSuccess])
+  })
 
   const onSubmit: SubmitHandler<PassengerData> = async data => {
     if (photo === null) {
