@@ -21,7 +21,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (driver === null || driver === undefined) {
-      navigation.replace('RoleSelection')
+      navigation.replace('RegisterDriver')
       return
     }
 
