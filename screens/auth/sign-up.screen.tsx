@@ -1,5 +1,4 @@
-import { FC, useEffect } from 'react'
-import { useAuth } from '@base/auth/context'
+import { FC } from 'react'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -27,14 +26,6 @@ type SignUpData = z.infer<typeof SignUpSchema>
 type Props = RootStackScreenProps<'SignUp'>
 
 const SignUpScreen: FC<Props> = ({ navigation }) => {
-  const { session } = useAuth()
-
-  useEffect(() => {
-    if (session !== null) {
-      navigation.replace('Home')
-    }
-  }, [session])
-
   const {
     control,
     handleSubmit,

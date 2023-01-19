@@ -1,6 +1,5 @@
-import { FC, useEffect } from 'react'
+import { FC } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
-import { useAuth } from '@base/auth/context'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,14 +18,6 @@ type SignInData = z.infer<typeof SignInSchema>
 type Props = RootStackScreenProps<'SignIn'>
 
 const SignInScreen: FC<Props> = ({ navigation }) => {
-  const { session } = useAuth()
-
-  useEffect(() => {
-    if (session != null) {
-      navigation.replace('Home')
-    }
-  }, [session])
-
   const {
     control,
     handleSubmit,
