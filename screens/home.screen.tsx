@@ -2,11 +2,15 @@ import { FC, useEffect } from 'react'
 import { Text, View } from 'react-native'
 import { useAuth } from '@base/auth/context'
 import { RootStackScreenProps } from '@navigation/types'
+import useDriver from '@hooks/drivers/use-driver'
+import usePassenger from '@hooks/passengers/use-passenger'
 
 type Props = RootStackScreenProps<'Home'>
 
 const HomeScreen: FC<Props> = ({ navigation }) => {
   const { session, isLoading: isLoadingSession } = useAuth()
+  const { driver, isLoading: isLoadingDriver } = useDriver()
+  const { passenger, isLoading: isLoadingPassenger } = usePassenger()
 
   useEffect(() => {
     if (isLoadingSession) {
@@ -15,6 +19,24 @@ const HomeScreen: FC<Props> = ({ navigation }) => {
 
     if (session === null) {
       navigation.replace('SignIn')
+      return
+    }
+
+    if (isLoadingPassenger) {
+      return
+    }
+
+    if (passenger !== null) {
+      navigation.replace('PassengerDetails')
+      return
+    }
+
+    if (isLoadingDriver) {
+      return
+    }
+
+    if (driver !== null) {
+      navigation.replace('DriverDetails')
       return
     }
 
