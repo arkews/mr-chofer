@@ -16,7 +16,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (passenger === undefined) {
-      navigation.replace('RoleSelection')
+      navigation.replace('RegisterPassenger')
       return
     }
 
