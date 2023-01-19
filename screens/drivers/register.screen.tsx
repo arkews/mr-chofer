@@ -227,6 +227,12 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
       <View>
         <PhotoPicker onSelect={setPhoto}/>
+        {
+          photo !== null &&
+          <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+            Foto seleccionada {photo.name}
+          </Text>
+        }
       </View>
 
       {
