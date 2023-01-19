@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Pressable, Text, TextInput, View } from 'react-native'
+import { Alert, Pressable, Text, TextInput, View } from 'react-native'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -62,18 +62,26 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const { mutate, isLoading, error } = useMutation(registerPassenger, {
-    onSuccess: () => {
+  const { mutate, isLoading, error, isSuccess } = useMutation(registerPassenger)
+
+  useEffect(() => {
+    if (isSuccess) {
       navigation.replace('PassengerDetails')
     }
-  })
+  }, [isSuccess])
 
   const onSubmit: SubmitHandler<PassengerData> = async data => {
     if (photo === null) {
       return
     }
 
-    data.photo_url = await uploadAvatar(data.user_id, photo)
+    const photoUrl = await uploadAvatar(data.user_id, photo)
+    if (photoUrl === undefined) {
+      Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
+      return
+    }
+
+    data.photo_url = photoUrl
 
     mutate(data)
   }

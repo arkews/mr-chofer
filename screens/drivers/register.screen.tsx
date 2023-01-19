@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { RootStackScreenProps } from '@navigation/types'
 import { useAuth } from '@base/auth/context'
-import { Pressable, Text, TextInput, View } from 'react-native'
+import { Alert, Pressable, Text, TextInput, View } from 'react-native'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -64,18 +64,26 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const { mutate, isLoading, error } = useMutation(registerDriver, {
-    onSuccess: () => {
+  const { mutate, isLoading, error, isSuccess } = useMutation(registerDriver)
+
+  useEffect(() => {
+    if (isSuccess) {
       navigation.replace('DriverDetails')
     }
-  })
+  }, [isSuccess])
 
   const onSubmit: SubmitHandler<DriverData> = async data => {
     if (photo === null) {
       return
     }
 
-    data.photo_url = await uploadAvatar(data.user_id, photo)
+    const photoUrl = await uploadAvatar(data.user_id, photo)
+    if (photoUrl === undefined) {
+      Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
+      return
+    }
+
+    data.photo_url = photoUrl
 
     mutate(data)
   }
