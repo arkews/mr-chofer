@@ -126,7 +126,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
           >
             <Text
               className="text-base text-white font-medium text-center text-white">
-              Modo pasajero
+              Cambiar a modo pasajero
             </Text>
           </Pressable>
 

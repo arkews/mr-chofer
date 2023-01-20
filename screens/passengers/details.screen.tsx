@@ -6,6 +6,7 @@ import { Image, Pressable, Text, View } from 'react-native'
 import cn from 'classnames'
 import { signOut } from '@base/auth'
 import { useMutation } from '@tanstack/react-query'
+import useDriver from '@hooks/drivers/use-driver'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -37,6 +38,8 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('DriverDetails')
   }
 
+  const { driver, isLoading: isLoadingDriver } = useDriver()
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -66,20 +69,28 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-            <Pressable
-              onPress={goToDriverProfile}
-              className={
-                cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                  'active:bg-green-800',
-                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            >
-              <Text
-                className="text-base text-white font-medium text-center text-white">
-                Modo conductor
-              </Text>
-            </Pressable>
+            {
+              isLoadingDriver
+                ? (
+                <Text className="dark:text-white">Loading...</Text>
+                  )
+                : (
+                <Pressable
+                  onPress={goToDriverProfile}
+                  className={
+                    cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
+                      'active:bg-green-800',
+                      (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                      (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+                  }
+                >
+                  <Text
+                    className="text-base text-white font-medium text-center text-white">
+                    {driver !== undefined ? 'Cambiar a modo conductor' : '¿Quieres trabajar con nosotros?'}
+                  </Text>
+                </Pressable>
+                  )
+            }
 
             <Pressable
               onPress={() => {
