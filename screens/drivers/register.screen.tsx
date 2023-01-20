@@ -22,8 +22,6 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Ciudad requerida'),
   phone: z.string({ required_error: 'Número de teléfono requerido' })
     .min(1, 'Número de teléfono requerido'),
-  phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
-    .min(1, 'Debe confirmar el número de teléfono'),
   gender: z.string({ required_error: 'Debe seleccionar un sexo' })
     .min(1, 'Debe seleccionar un sexo'),
   photo_url: z.string({ required_error: 'Debe seleccionar una foto' })
@@ -38,9 +36,6 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Debe subir este documento'),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
-}).refine(data => data.phone === data.phoneConfirmation, {
-  message: 'Los números de teléfono no coinciden',
-  path: ['phoneConfirmation']
 })
 
 type DriverData = z.infer<typeof RegisterDriverSchema>
@@ -72,8 +67,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     resolver: zodResolver(RegisterDriverSchema),
     defaultValues: {
       ...passenger,
-      id: undefined,
-      phoneConfirmation: undefined
+      id: undefined
     }
   })
 
@@ -125,9 +119,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
       data[field] = documentUrl
     }
 
-    const { phoneConfirmation, ...rest } = data
-
-    mutate(rest)
+    mutate(data)
   }
 
   return (
