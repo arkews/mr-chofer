@@ -8,11 +8,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
-import RadioGroup from '@components/form/radio-group'
 import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar } from '@base/supabase/storage'
 import { Photo } from '@base/types'
-import { genders } from '@constants/genders'
 import usePassenger from '@hooks/passengers/use-passenger'
 
 const RegisterDriverSchema = z.object({
@@ -28,7 +26,16 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Debe confirmar el número de teléfono'),
   gender: z.string({ required_error: 'Debe seleccionar un sexo' })
     .min(1, 'Debe seleccionar un sexo'),
-  photo_url: z.string({ required_error: 'Debe seleccionar una foto' }).min(1, 'Debe seleccionar una foto'),
+  photo_url: z.string({ required_error: 'Debe seleccionar una foto' })
+    .min(1, 'Debe seleccionar una foto'),
+  id_photo_url_front: z.string({ required_error: 'Debe seleccionar una foto de la identificación' })
+    .min(1, 'Debe seleccionar una foto de la identificación'),
+  license_photo_url_front: z.string({ required_error: 'Debe seleccionar una foto de la licencia' })
+    .min(1, 'Debe seleccionar una foto de la licencia'),
+  id_photo_url_back: z.string({ required_error: 'Debe seleccionar una foto de la identificación' })
+    .min(1, 'Debe seleccionar una foto de la identificación'),
+  license_photo_url_back: z.string({ required_error: 'Debe seleccionar una foto de la licencia' })
+    .min(1, 'Debe seleccionar una foto de la licencia'),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
 }).refine(data => data.phone === data.phoneConfirmation, {
@@ -69,6 +76,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   const onSelectPhoto = (photo: Photo): void => {
     setPhoto(photo)
     setValue('photo_url', photo.uri)
+    setValue('id_photo_url_front', photo.uri)
   }
 
   const registerDriver = async (data: DriverMutationData): Promise<void> => {
@@ -104,14 +112,22 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      <Text className="text-xl text-center mb-7 dark:text-white">
-        Registro de conductor
-      </Text>
+      <View className="mb-7">
+        <Text className="text-xl text-center dark:text-white">
+          ¿Quieres ser conductor?
+        </Text>
+        <Text
+          className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
+          Ya tenemos tu información básica, ahora necesitamos que nos
+          proporciones
+          algunos datos para poder crear tu perfil de conductor.
+        </Text>
+      </View>
 
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
+          <View>
             <Text className="dark:text-white">Identificación</Text>
             <TextInput
               keyboardType="numeric"
@@ -130,143 +146,80 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
             {(errors.id != null) &&
               <Text className="text-red-500">{errors.id.message}</Text>}
-          </>
+          </View>
         )}
         name="id"
       />
 
-      <Controller
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View className="mt-4">
-            <Text className="dark:text-white">Nombre</Text>
-            <TextInput
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable={!isSubmitting && !isLoading}
-              className={
-                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                  'focus:border-blue-600 focus:ring-0',
-                  'dark:text-white',
-                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            />
+      {
+        (passenger?.photo_url === undefined || passenger.photo_url === null) &&
+        <View>
+          <PhotoPicker label="Foto de perfil" onSelect={onSelectPhoto}/>
+        </View>
+      }
 
-            {(errors.name != null) &&
-              <Text className="text-red-500">{errors.name.message}</Text>}
-          </View>
-        )}
-        name="name"
-      />
-
-      <Controller
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View className="mt-4">
-            <Text className="dark:text-white">Ciudad</Text>
-            <TextInput
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable={!isSubmitting && !isLoading}
-              className={
-                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                  'focus:border-blue-600 focus:ring-0',
-                  'dark:text-white',
-                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            />
-
-            {(errors.city != null) &&
-              <Text className="text-red-500">{errors.city.message}</Text>}
-          </View>
-        )}
-        name="city"
-      />
-
-      <Controller
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View className="mt-4">
-            <Text className="dark:text-white">Teléfono</Text>
-            <TextInput
-              keyboardType="numeric"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable={!isSubmitting && !isLoading}
-              className={
-                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                  'focus:border-blue-600 focus:ring-0',
-                  'dark:text-white',
-                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            />
-
-            {(errors.phone != null) &&
-              <Text className="text-red-500">{errors.phone.message}</Text>}
-          </View>
-        )}
-        name="phone"
-      />
-
-      <Controller
-        control={control}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <View className="mt-4">
-            <Text className="dark:text-white">Confirmar teléfono</Text>
-            <TextInput
-              keyboardType="numeric"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable={!isSubmitting && !isLoading}
-              className={
-                cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                  'focus:border-blue-600 focus:ring-0',
-                  'dark:text-white',
-                  isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                  isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            />
-
-            {(errors.phoneConfirmation != null) &&
-              <Text
-                className="text-red-500">{errors.phoneConfirmation.message}</Text>}
-          </View>
-        )}
-        name="phoneConfirmation"
-      />
-
-      <Controller
-        control={control}
-        render={({ field: { onChange, value } }) => (
-          <View className="mt-4">
-            <Text className="mb-2 dark:text-white">Sexo</Text>
-            <RadioGroup values={genders} selected={value} onSelect={onChange}/>
-
-            {(errors.gender != null) &&
-              <Text className="text-red-500">{errors.gender.message}</Text>}
-          </View>
-        )}
-        name="gender"
-      />
+      <Text className="dark:text-white text-center text-base">Documentos</Text>
 
       <View>
-        <PhotoPicker onSelect={onSelectPhoto}/>
+        <Text className="dark:text-white mb-2">Documento de identidad</Text>
+        <View className="flex flex-row space-x-2">
+          <View className="basis-1/2">
+            <PhotoPicker label="Parte frontal" mode="take"
+                         onSelect={onSelectPhoto}/>
+          </View>
+          <View className="basis-1/2">
+            <PhotoPicker label="Parte trasera" mode="take"
+                         onSelect={onSelectPhoto}/>
+          </View>
+        </View>
         {
-          watch('photo_url') !== null &&
+          watch('id_photo_url_front') !== null &&
           <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-            Foto seleccionada {watch('photo_url')}
+            Foto seleccionada {watch('id_photo_url_front')}
           </Text>
         }
-        {(errors.photo_url != null) &&
+        {(errors.id_photo_url_front != null) &&
           <Text
-            className="text-red-500">{errors.photo_url.message}</Text>}
+            className="text-red-500">{errors.id_photo_url_front.message}</Text>}
+
+        {
+          (errors.id_photo_url_front == null && watch('id_photo_url_front') === null) && (
+            <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+              Sube una foto de tu documento de identidad a dos caras.
+            </Text>
+          )
+        }
+      </View>
+
+      <View>
+        <Text className="dark:text-white mb-2">Licencia de conducir</Text>
+        <View className="flex flex-row space-x-2">
+          <View className="basis-1/2">
+            <PhotoPicker label="Parte frontal" mode="take"
+                         onSelect={onSelectPhoto}/>
+          </View>
+          <View className="basis-1/2">
+            <PhotoPicker label="Parte trasera" mode="take"
+                         onSelect={onSelectPhoto}/>
+          </View>
+        </View>
+        {
+          watch('license_photo_url_front') !== null &&
+          <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+            Foto seleccionada {watch('license_photo_url_front')}
+          </Text>
+        }
+        {(errors.license_photo_url_front != null) &&
+          <Text
+            className="text-red-500">{errors.license_photo_url_front.message}</Text>}
+
+        {
+          (errors.license_photo_url_front == null && watch('license_photo_url_front') === null) && (
+            <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+              Sube una foto de tu licencia de conducir a dos caras.
+            </Text>
+          )
+        }
       </View>
 
       {
@@ -276,21 +229,23 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         </Text>
       }
 
-      <Pressable
-        onPress={handleSubmit(onSubmit)}
-        disabled={isSubmitting || isLoading}
-        className={
-          cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-            'active:bg-blue-800',
-            (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-            (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
-        }
-      >
-        <Text
-          className="text-base text-white font-medium text-center text-white">
-          Enviar
-        </Text>
-      </Pressable>
+      <View>
+        <Pressable
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting || isLoading}
+          className={
+            cn('text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
+              'active:bg-blue-800',
+              (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+              (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
+          }
+        >
+          <Text
+            className="text-base text-white font-medium text-center text-white">
+            Enviar
+          </Text>
+        </Pressable>
+      </View>
     </View>
   )
 }

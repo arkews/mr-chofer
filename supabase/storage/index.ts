@@ -1,41 +1,25 @@
 import { supabase } from '../index'
 import { Photo } from '@base/types'
 
-export const uploadAvatar = async (userId: string, photo: Photo): Promise<string | undefined> => {
-  const formData = new FormData()
-  // @ts-expect-error
-  formData.append('file', photo)
-
-  const fileExt = photo.name.split('.').pop() as string
-  const fileName = `${userId}.${fileExt}`
-
-  const {
-    error,
-    data
-  } = await supabase.storage.from('avatars').upload(fileName, formData, {
+const uploadFile = async (bucketName: string, fileName: string, data: FormData) => {
+  return await supabase.storage.from(bucketName).upload(fileName, data, {
+    cacheControl: '3600',
     upsert: true
   })
-
-  if ((error?.message.includes('already exists')) === true) {
-    const {
-      error: updateError,
-      data: updated
-    } = await supabase.storage.from('avatars').update(fileName, formData, {
-      upsert: true
-    })
-
-    if (updateError !== null) {
-      return undefined
-    }
-
-    return updated?.path
-  }
-
-  return data?.path
 }
 
-export const getAvatarUrl = async (path: string): Promise<string> => {
-  const { data, error } = await supabase.storage.from('avatars').download(path)
+const updateFile = async (bucketName: string, fileName: string, data: FormData) => {
+  return await supabase.storage.from(bucketName).update(fileName, data, {
+    cacheControl: '3600',
+    upsert: true
+  })
+}
+
+const fetchFile = async (bucketName: string, fileName: string): Promise<string> => {
+  const {
+    data,
+    error
+  } = await supabase.storage.from(bucketName).download(fileName)
 
   if (error !== null) {
     throw error
@@ -52,4 +36,54 @@ export const getAvatarUrl = async (path: string): Promise<string> => {
       reject(fr.error)
     }
   })
+}
+
+export const uploadAvatar = async (userId: string, photo: Photo): Promise<string | undefined> => {
+  const formData = new FormData()
+  // @ts-expect-error
+  formData.append('file', photo)
+
+  const fileExt = photo.name.split('.').pop() as string
+  const fileName = `${userId}.${fileExt}`
+
+  const { error, data } = await uploadFile('avatars', fileName, formData)
+
+  if ((error?.message.includes('already exists')) === true) {
+    const { error, data } = await updateFile('avatars', fileName, formData)
+
+    if (error !== null) {
+      return undefined
+    }
+
+    return data?.path
+  }
+
+  return data?.path
+}
+
+export const getAvatarUrl = async (path: string): Promise<string> => {
+  return await fetchFile('avatars', path)
+}
+
+export const uploadDocumentPhoto = async (documentName: string, photo: Photo) => {
+  const formData = new FormData()
+  // @ts-expect-error
+  formData.append('file', photo)
+
+  const fileExt = photo.name.split('.').pop() as string
+  const fileName = `${documentName}.${fileExt}`
+
+  const { error, data } = await uploadFile('documents', fileName, formData)
+
+  if ((error?.message.includes('already exists')) === true) {
+    const { error, data } = await updateFile('documents', fileName, formData)
+
+    if (error !== null) {
+      return undefined
+    }
+
+    return data?.path
+  }
+
+  return data?.path
 }
