@@ -25,7 +25,7 @@ const useVehicle = (): UseVehicle => {
   const fetchVehicle = async (): Promise<Vehicle> => {
     const { data, error } = await supabase.from('vehicles')
       .select()
-      .eq('owner_id', driver?.id)
+      .eq('driver_id', driver?.id)
       .single()
 
     if (error !== null) {
