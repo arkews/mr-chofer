@@ -9,7 +9,7 @@ import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
 import PhotoPicker from '@components/form/photo-picker'
-import { uploadAvatar } from '@base/supabase/storage'
+import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
 import { Photo } from '@base/types'
 import usePassenger from '@hooks/passengers/use-passenger'
 
@@ -28,14 +28,14 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Debe seleccionar un sexo'),
   photo_url: z.string({ required_error: 'Debe seleccionar una foto' })
     .min(1, 'Debe seleccionar una foto'),
-  id_photo_url_front: z.string({ required_error: 'Debe seleccionar una foto de la identificación' })
-    .min(1, 'Debe seleccionar una foto de la identificación'),
-  license_photo_url_front: z.string({ required_error: 'Debe seleccionar una foto de la licencia' })
-    .min(1, 'Debe seleccionar una foto de la licencia'),
-  id_photo_url_back: z.string({ required_error: 'Debe seleccionar una foto de la identificación' })
-    .min(1, 'Debe seleccionar una foto de la identificación'),
-  license_photo_url_back: z.string({ required_error: 'Debe seleccionar una foto de la licencia' })
-    .min(1, 'Debe seleccionar una foto de la licencia'),
+  id_photo_url_front: z.string({ required_error: 'Debe subir este documento' })
+    .min(1, 'Debe subir este documento'),
+  license_photo_url_front: z.string({ required_error: 'Debe subir este documento' })
+    .min(1, 'Debe subir este documento'),
+  id_photo_url_back: z.string({ required_error: 'Debe subir este documento' })
+    .min(1, 'Debe subir este documento'),
+  license_photo_url_back: z.string({ required_error: 'Debe subir este documento' })
+    .min(1, 'Debe subir este documento'),
   user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
 }).refine(data => data.phone === data.phoneConfirmation, {
@@ -47,6 +47,10 @@ type DriverData = z.infer<typeof RegisterDriverSchema>
 type DriverMutationData = Omit<DriverData, 'phoneConfirmation'>
 
 type Props = RootStackScreenProps<'RegisterDriver'>
+
+type DocumentPhotoField = 'id_photo_url_front' | 'id_photo_url_back' | 'license_photo_url_front' | 'license_photo_url_back'
+
+type DocumentPhotos = Map<DocumentPhotoField, Photo>
 
 const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   const { session } = useAuth()
@@ -72,11 +76,18 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
       phoneConfirmation: undefined
     }
   })
-  const [photo, setPhoto] = useState<Photo | null>(null)
-  const onSelectPhoto = (photo: Photo): void => {
-    setPhoto(photo)
+
+  const [documentPhotos, setDocumentPhotos] = useState<DocumentPhotos>(new Map())
+  const handleDocumentPhotoChange = (field: DocumentPhotoField, photo: Photo) => {
+    setDocumentPhotos(new Map(documentPhotos.set(field, photo)))
+    setValue(field, photo.uri)
+  }
+
+  const [profilePhoto, setProfilePhoto] = useState<Photo | null>(null)
+
+  const onSelectProfilePhoto = (photo: Photo): void => {
+    setProfilePhoto(photo)
     setValue('photo_url', photo.uri)
-    setValue('id_photo_url_front', photo.uri)
   }
 
   const registerDriver = async (data: DriverMutationData): Promise<void> => {
@@ -94,14 +105,24 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   })
 
   const onSubmit: SubmitHandler<DriverData> = async data => {
-    if (photo !== null) {
-      const photoUrl = await uploadAvatar(data.user_id, photo)
+    if (profilePhoto !== null) {
+      const photoUrl = await uploadAvatar(data.user_id, profilePhoto)
       if (photoUrl === undefined) {
         Alert.alert('Tuvimos un problema al subir tu foto, intenta de nuevo')
         return
       }
 
       data.photo_url = photoUrl
+    }
+
+    for (const [field, photo] of documentPhotos) {
+      const documentUrl = await uploadDocumentPhoto(`${data.user_id}-${field}`, photo)
+      if (documentUrl === undefined) {
+        Alert.alert('Tuvimos un problema al subir tus documentos, intenta de nuevo')
+        return
+      }
+
+      data[field] = documentUrl
     }
 
     const { phoneConfirmation, ...rest } = data
@@ -145,7 +166,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
             />
 
             {(errors.id != null) &&
-              <Text className="text-red-500">{errors.id.message}</Text>}
+              <Text className="text-red-500 text-xs mt-0.5">{errors.id.message}</Text>}
           </View>
         )}
         name="id"
@@ -154,7 +175,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
       {
         (passenger?.photo_url === undefined || passenger.photo_url === null) &&
         <View>
-          <PhotoPicker label="Foto de perfil" onSelect={onSelectPhoto}/>
+          <PhotoPicker label="Foto de perfil" onSelect={onSelectProfilePhoto}/>
         </View>
       }
 
@@ -165,30 +186,33 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         <View className="flex flex-row space-x-2">
           <View className="basis-1/2">
             <PhotoPicker label="Parte frontal" mode="take"
-                         onSelect={onSelectPhoto}/>
+                         disabled={isSubmitting || isLoading}
+                         onSelect={(photo) => { handleDocumentPhotoChange('id_photo_url_front', photo) }}/>
+
+            {
+              watch('id_photo_url_front') !== undefined &&
+              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+            }
+
+            {(errors.id_photo_url_front !== undefined) &&
+              <Text
+                className="text-red-500 text-xs  mt-0.5">{errors.id_photo_url_front.message}</Text>}
           </View>
           <View className="basis-1/2">
             <PhotoPicker label="Parte trasera" mode="take"
-                         onSelect={onSelectPhoto}/>
+                         disabled={isSubmitting || isLoading}
+                         onSelect={(photo) => { handleDocumentPhotoChange('id_photo_url_back', photo) }}/>
+
+            {
+              watch('id_photo_url_back') !== undefined &&
+              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+            }
+
+            {(errors.id_photo_url_back !== undefined) &&
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.id_photo_url_back.message}</Text>}
           </View>
         </View>
-        {
-          watch('id_photo_url_front') !== null &&
-          <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-            Foto seleccionada {watch('id_photo_url_front')}
-          </Text>
-        }
-        {(errors.id_photo_url_front != null) &&
-          <Text
-            className="text-red-500">{errors.id_photo_url_front.message}</Text>}
-
-        {
-          (errors.id_photo_url_front == null && watch('id_photo_url_front') === null) && (
-            <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-              Sube una foto de tu documento de identidad a dos caras.
-            </Text>
-          )
-        }
       </View>
 
       <View>
@@ -196,30 +220,33 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         <View className="flex flex-row space-x-2">
           <View className="basis-1/2">
             <PhotoPicker label="Parte frontal" mode="take"
-                         onSelect={onSelectPhoto}/>
+                         disabled={isSubmitting || isLoading}
+                         onSelect={(photo) => { handleDocumentPhotoChange('license_photo_url_front', photo) }}/>
+
+            {
+              watch('license_photo_url_front') !== undefined &&
+              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+            }
+
+            {(errors.license_photo_url_front !== undefined) &&
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.license_photo_url_front.message}</Text>}
           </View>
           <View className="basis-1/2">
             <PhotoPicker label="Parte trasera" mode="take"
-                         onSelect={onSelectPhoto}/>
+                         disabled={isSubmitting || isLoading}
+                         onSelect={(photo) => { handleDocumentPhotoChange('license_photo_url_back', photo) }}/>
+
+            {
+              watch('license_photo_url_back') !== undefined &&
+              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+            }
+
+            {(errors.license_photo_url_back !== undefined) &&
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.license_photo_url_back.message}</Text>}
           </View>
         </View>
-        {
-          watch('license_photo_url_front') !== null &&
-          <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-            Foto seleccionada {watch('license_photo_url_front')}
-          </Text>
-        }
-        {(errors.license_photo_url_front != null) &&
-          <Text
-            className="text-red-500">{errors.license_photo_url_front.message}</Text>}
-
-        {
-          (errors.license_photo_url_front == null && watch('license_photo_url_front') === null) && (
-            <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-              Sube una foto de tu licencia de conducir a dos caras.
-            </Text>
-          )
-        }
       </View>
 
       {
