@@ -2,14 +2,21 @@ import React, { FC, useCallback } from 'react'
 import { Pressable, Text } from 'react-native'
 import DocumentPicker, { types } from 'react-native-document-picker'
 import { Photo } from '@base/types'
+import { launchCamera } from 'react-native-image-picker'
+
+type Mode = 'take' | 'pick'
 
 type Props = {
   disabled?: boolean
+  label?: string
+  mode?: Mode
 
   onSelect?: (photo: Photo) => void
 }
 
-const PhotoPicker: FC<Props> = ({ disabled, onSelect }) => {
+const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
+  const finalMode = mode ?? 'pick'
+
   const handlePickPhoto = useCallback(async () => {
     try {
       const res = await DocumentPicker.pickSingle({
@@ -35,13 +42,48 @@ const PhotoPicker: FC<Props> = ({ disabled, onSelect }) => {
     }
   }, [])
 
+  const handleTakePhoto = useCallback(async () => {
+    const result = await launchCamera({
+      mediaType: 'photo',
+      cameraType: 'back',
+      maxHeight: 200,
+      maxWidth: 200,
+      saveToPhotos: true
+    })
+
+    if (result.didCancel === true) {
+      return
+    }
+
+    if (result.errorCode !== undefined) {
+      throw new Error(result.errorMessage)
+    }
+
+    if (result.assets === undefined) {
+      return
+    }
+
+    const asset = result.assets.pop()
+    if (asset === undefined) {
+      return
+    }
+
+    const photo: Photo = {
+      uri: asset.uri as string,
+      type: asset.type ?? 'image/jpeg',
+      name: asset.fileName ?? 'photo'
+    }
+
+    onSelect?.(photo)
+  }, [])
+
   return (
     <Pressable
       disabled={disabled}
-      onPress={handlePickPhoto}
+      onPress={finalMode === 'take' ? handleTakePhoto : handlePickPhoto}
       className="text-base px-6 py-3.5 border-blue-500 rounded-lg border dark:border-blue-300">
       <Text className="text-blue-500 text-center dark:text-blue-300">
-        Seleccionar foto
+        {label ?? 'Seleccionar foto'}
       </Text>
     </Pressable>
   )

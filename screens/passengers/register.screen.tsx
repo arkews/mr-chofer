@@ -89,9 +89,15 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      <Text className="text-xl text-center mb-7 dark:text-white">
-        Registro de pasajero
-      </Text>
+      <View className="mb-5">
+        <Text className="text-xl text-center dark:text-white">
+          Cuentanos un poco sobre ti
+        </Text>
+        <Text
+          className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
+          Solo necesitamos algunos datos para poder crear tu perfil
+        </Text>
+      </View>
 
       <Controller
         control={control}
