@@ -84,15 +84,15 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
                   <Pressable
                     onPress={goToRegisterVehicle}
                     className={
-                      cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                        'active:bg-green-800',
-                        (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                        (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+                      cn('text-base px-6 py-3.5 bg-pink-100 rounded-lg border border-transparent',
+                        'active:bg-pink-200',
+                        (isLoadingSignOut) && 'bg-pink-200 cursor-not-allowed',
+                        (isLoadingSignOut) && 'dark:bg-pink-200 dark:text-gray-400')
                     }
                   >
                     <Text
-                      className="text-base text-white font-medium text-center text-white">
-                      Registrar vehículo
+                      className="text-base text-white font-medium text-center text-pink-900">
+                      Debes registrar un vehículo
                     </Text>
                   </Pressable>
                 )
@@ -126,7 +126,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
           >
             <Text
               className="text-base text-white font-medium text-center text-white">
-              Modo pasajero
+              Cambiar a modo pasajero
             </Text>
           </Pressable>
 
