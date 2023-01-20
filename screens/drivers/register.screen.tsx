@@ -94,7 +94,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
   const { mutate, isLoading, error } = useMutation(registerDriver, {
     onSuccess: () => {
-      navigation.navigate('DriverDetails')
+      navigation.navigate('RegisterVehicle')
     }
   })
 

@@ -6,10 +6,6 @@ export const vehicleTypes: RadioValue[] = [
     title: 'Transporte'
   },
   {
-    value: 'courier',
-    title: 'Mensajería'
-  },
-  {
     value: 'freight',
     title: 'Carga'
   }
