@@ -43,7 +43,11 @@ type DriverMutationData = Omit<DriverData, 'phoneConfirmation'>
 
 type Props = RootStackScreenProps<'RegisterDriver'>
 
-type DocumentPhotoField = 'id_photo_url_front' | 'id_photo_url_back' | 'license_photo_url_front' | 'license_photo_url_back'
+type DocumentPhotoField =
+  'id_photo_url_front'
+  | 'id_photo_url_back'
+  | 'license_photo_url_front'
+  | 'license_photo_url_back'
 
 type DocumentPhotos = Map<DocumentPhotoField, Photo>
 
@@ -134,8 +138,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         <Text
           className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
           Ya tenemos tu información básica, ahora necesitamos que nos
-          proporciones
-          algunos datos para poder crear tu perfil de conductor.
+          proporciones algunos datos para poder crear tu perfil de conductor.
         </Text>
       </View>
 
@@ -159,8 +162,10 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
               }
             />
 
-            {(errors.id != null) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.id.message}</Text>}
+            {(errors.id !== undefined) &&
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.id.message}
+              </Text>}
           </View>
         )}
         name="id"
@@ -170,6 +175,18 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
         (passenger?.photo_url === undefined || passenger.photo_url === null) &&
         <View>
           <PhotoPicker label="Foto de perfil" onSelect={onSelectProfilePhoto}/>
+
+          {
+            watch('photo_url') !== undefined &&
+            <Text className="text-green-500 text-xs mt-0.5">
+              Foto cargada
+            </Text>
+          }
+
+          {(errors.photo_url !== undefined) &&
+            <Text className="text-red-500 text-xs mt-0.5">
+              {errors.photo_url.message}
+            </Text>}
         </View>
       }
 
@@ -181,30 +198,40 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
           <View className="basis-1/2">
             <PhotoPicker label="Parte frontal" mode="take"
                          disabled={isSubmitting || isLoading}
-                         onSelect={(photo) => { handleDocumentPhotoChange('id_photo_url_front', photo) }}/>
+                         onSelect={(photo) => {
+                           handleDocumentPhotoChange('id_photo_url_front', photo)
+                         }}/>
 
             {
               watch('id_photo_url_front') !== undefined &&
-              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+              <Text className="text-green-500 text-xs mt-0.5">
+                Foto cargada
+              </Text>
             }
 
             {(errors.id_photo_url_front !== undefined) &&
-              <Text
-                className="text-red-500 text-xs  mt-0.5">{errors.id_photo_url_front.message}</Text>}
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.id_photo_url_front.message}
+              </Text>}
           </View>
           <View className="basis-1/2">
             <PhotoPicker label="Parte trasera" mode="take"
                          disabled={isSubmitting || isLoading}
-                         onSelect={(photo) => { handleDocumentPhotoChange('id_photo_url_back', photo) }}/>
+                         onSelect={(photo) => {
+                           handleDocumentPhotoChange('id_photo_url_back', photo)
+                         }}/>
 
             {
               watch('id_photo_url_back') !== undefined &&
-              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+              <Text className="text-green-500 text-xs mt-0.5">
+                Foto cargada
+              </Text>
             }
 
             {(errors.id_photo_url_back !== undefined) &&
-              <Text
-                className="text-red-500 text-xs mt-0.5">{errors.id_photo_url_back.message}</Text>}
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.id_photo_url_back.message}
+              </Text>}
           </View>
         </View>
       </View>
@@ -215,30 +242,40 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
           <View className="basis-1/2">
             <PhotoPicker label="Parte frontal" mode="take"
                          disabled={isSubmitting || isLoading}
-                         onSelect={(photo) => { handleDocumentPhotoChange('license_photo_url_front', photo) }}/>
+                         onSelect={(photo) => {
+                           handleDocumentPhotoChange('license_photo_url_front', photo)
+                         }}/>
 
             {
               watch('license_photo_url_front') !== undefined &&
-              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+              <Text className="text-green-500 text-xs mt-0.5">
+                Foto cargada
+              </Text>
             }
 
             {(errors.license_photo_url_front !== undefined) &&
-              <Text
-                className="text-red-500 text-xs mt-0.5">{errors.license_photo_url_front.message}</Text>}
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.license_photo_url_front.message}
+              </Text>}
           </View>
           <View className="basis-1/2">
             <PhotoPicker label="Parte trasera" mode="take"
                          disabled={isSubmitting || isLoading}
-                         onSelect={(photo) => { handleDocumentPhotoChange('license_photo_url_back', photo) }}/>
+                         onSelect={(photo) => {
+                           handleDocumentPhotoChange('license_photo_url_back', photo)
+                         }}/>
 
             {
               watch('license_photo_url_back') !== undefined &&
-              <Text className="text-green-500 text-xs mt-0.5">Foto cargada</Text>
+              <Text className="text-green-500 text-xs mt-0.5">
+                Foto cargada
+              </Text>
             }
 
             {(errors.license_photo_url_back !== undefined) &&
-              <Text
-                className="text-red-500 text-xs mt-0.5">{errors.license_photo_url_back.message}</Text>}
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.license_photo_url_back.message}
+              </Text>}
           </View>
         </View>
       </View>
