@@ -7,6 +7,7 @@ type Vehicle = {
   engine_displacement: string
   brand: string
   model: string
+  line: string
   color: string
   type: string
 

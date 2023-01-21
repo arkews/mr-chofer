@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Pressable, Text, TextInput, View } from 'react-native'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
@@ -7,10 +7,13 @@ import cn from 'classnames'
 import { signInWithPassword } from '@base/auth'
 import { useMutation } from '@tanstack/react-query'
 import { RootStackScreenProps } from '@navigation/types'
+import Checkbox from 'expo-checkbox'
 
 const SignInSchema = z.object({
-  email: z.string().email('Email invalido'),
-  password: z.string().min(8, 'Debe tener al menos 8 caracteres')
+  email: z.string({ required_error: 'Email requerido' })
+    .email('Email invalido'),
+  password: z.string({ required_error: 'Contraseña requerida' })
+    .min(8, 'Debe tener al menos 8 caracteres')
 })
 
 type SignInData = z.infer<typeof SignInSchema>
@@ -36,6 +39,8 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
     navigation.replace('SignUp')
   }
 
+  const [showPassword, setShowPassword] = useState(false)
+
   return (
     <View
       className="flex flex-grow w-full px-7 justify-center mx-auto space-y-7">
@@ -48,6 +53,9 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
           <>
             <Text className="mb-2 dark:text-white">Email</Text>
             <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              enablesReturnKeyAutomatically
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -77,11 +85,14 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
           <View className="mt-6">
             <Text className="mb-2 dark:text-white">Contraseña</Text>
             <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              enablesReturnKeyAutomatically
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               editable={!isSubmitting && !isLoading}
-              secureTextEntry={true}
+              secureTextEntry={!showPassword}
               className={
                 cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
                   'focus:border-blue-600 focus:ring-0',
@@ -90,6 +101,21 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
                   isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
               }
             />
+
+            <View className="flex flex-row mt-2">
+              <Checkbox
+                value={showPassword}
+                onValueChange={setShowPassword}
+                disabled={isSubmitting || isLoading}
+                color={showPassword ? '#2563eb' : undefined}
+                className={
+                  cn('rounded-md w-5 h-5')
+                }/>
+
+              <Text className="block mb-2 ml-2 text-sm dark:text-white">
+                Mostrar contraseña
+              </Text>
+            </View>
 
             {(errors.password != null) &&
               <Text

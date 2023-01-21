@@ -8,6 +8,8 @@ type Driver = {
   gender: string
   phone: string
   photo_url: string
+  balance: number
+
   created_at: string
   updated_at: string
 }

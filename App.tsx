@@ -1,4 +1,7 @@
 import 'react-native-url-polyfill/auto'
+import 'intl'
+import 'intl/locale-data/jsonp/en'
+import 'intl/locale-data/jsonp/es'
 
 import { Buffer } from 'buffer'
 import { StatusBar } from 'expo-status-bar'
