@@ -108,7 +108,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
                   <>
                     <Text
                       className="text-base text-center text-gray-500 dark:text-gray-400">
-                      Vehículo: {vehicle.brand}, {vehicle.model} -
+                      Vehículo: {vehicle.brand}, {vehicle.line} {vehicle.model} -
                       CC {vehicle.engine_displacement}
                     </Text>
                     <Text
