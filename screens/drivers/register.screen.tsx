@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@base/supabase'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import cn from 'classnames'
 import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
@@ -92,8 +92,10 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
+  const queryClient = useQueryClient()
   const { mutate, isLoading, error } = useMutation(registerDriver, {
     onSuccess: () => {
+      void queryClient.invalidateQueries(['passenger', session?.user.id])
       navigation.navigate('RegisterVehicle')
     }
   })
