@@ -69,6 +69,12 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
             <Text className="text-base text-center dark:text-white">
               {driver.phone}
             </Text>
+            <Text className="text-base text-center font-medium text-gray-500 dark:text-gray-400">
+              Saldo actual: {Intl.NumberFormat('es', {
+              style: 'currency',
+              currency: 'COP'
+            }).format(driver.balance)}
+            </Text>
 
             <View className="mt-3">
               {
