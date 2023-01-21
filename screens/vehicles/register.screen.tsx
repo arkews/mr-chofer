@@ -235,6 +235,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
               <View>
                 <Text className="dark:text-white">Modelo</Text>
                 <TextInput
+                  keyboardType="numeric"
                   onBlur={onBlur}
                   onChangeText={onChange}
                   value={value}
