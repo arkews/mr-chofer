@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { z } from 'zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,13 +10,17 @@ import cn from 'classnames'
 import { RootStackScreenProps } from '@navigation/types'
 
 const SignUpSchema = z.object({
-  email: z.string().email('Email invalido'),
-  emailConfirmation: z.string().email('Email invalido'),
-  password: z.string().min(8, 'Debe tener al menos 8 caracteres'),
-  passwordConfirmation: z.string().min(8, 'Debe tener al menos 8 caracteres'),
-  acceptTerms: z.boolean().refine(v => v, {
-    message: 'Debes aceptar los términos y condiciones'
-  })
+  email: z.string({ required_error: 'Email requerido' })
+    .email('Email invalido'),
+  emailConfirmation: z.string({ required_error: 'Email requerido' })
+    .email('Email invalido'),
+  password: z.string({ required_error: 'Contraseña requerida' }).min(8, 'Debe tener al menos 8 caracteres'),
+  passwordConfirmation: z.string({ required_error: 'Contraseña requerida' })
+    .min(8, 'Debe tener al menos 8 caracteres'),
+  acceptTerms: z.boolean({ required_error: 'Debes aceptar los términos y condiciones' })
+    .refine(v => v, {
+      message: 'Debes aceptar los términos y condiciones'
+    })
 }).refine(data => data.password === data.passwordConfirmation, {
   message: 'Las contraseñas no coinciden',
   path: ['passwordConfirmation']
@@ -52,18 +56,20 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
     navigation.replace('SignIn')
   }
 
+  const [showPassword, setShowPassword] = useState(false)
+
   return (
     <View
       className="flex flex-grow w-full px-7 justify-center mx-auto space-y-7">
       <Controller
         control={control}
-        rules={{
-          required: true
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
-            <Text className="mb-2 dark:text-white">Email</Text>
+          <View>
+            <Text className="dark:text-white">Email</Text>
             <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              enablesReturnKeyAutomatically
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -77,22 +83,24 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               }
             />
 
-            {(errors.email != null) &&
-              <Text className="text-red-500">{errors.email.message}</Text>}
-          </>
+            {(errors.email !== undefined) &&
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.email.message}
+              </Text>}
+          </View>
         )}
         name="email"
       />
 
       <Controller
         control={control}
-        rules={{
-          required: true
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
-          <>
-            <Text className="mb-2 dark:text-white">Confirmar email</Text>
+          <View className="mt-6">
+            <Text className="dark:text-white">Confirmar email</Text>
             <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              enablesReturnKeyAutomatically
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -106,28 +114,26 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               }
             />
 
-            {(errors.emailConfirmation != null) &&
-              <Text
-                className="text-red-500">{errors.emailConfirmation.message}</Text>}
-          </>
+            {(errors.emailConfirmation !== undefined) &&
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.emailConfirmation.message}
+              </Text>}
+          </View>
         )}
         name="emailConfirmation"
       />
 
       <Controller
         control={control}
-        rules={{
-          required: true
-        }}
         render={({ field: { onChange, onBlur, value } }) => (
           <View className="mt-6">
-            <Text className="mb-2 dark:text-white">Contraseña</Text>
+            <Text className="dark:text-white">Contraseña</Text>
             <TextInput
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               editable={!isSubmitting && !isLoading}
-              secureTextEntry={true}
+              secureTextEntry={!showPassword}
               className={
                 cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
                   'focus:border-blue-600 focus:ring-0',
@@ -137,9 +143,25 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               }
             />
 
-            {(errors.password != null) &&
-              <Text
-                className="text-red-500 mt-2">{errors.password.message}</Text>}
+            {(errors.password !== undefined) &&
+              <Text className="text-red-500 text-xs mt-0.5">
+                {errors.password.message}
+              </Text>}
+
+            <View className="flex flex-row mt-2">
+              <Checkbox
+                value={showPassword}
+                onValueChange={setShowPassword}
+                disabled={isSubmitting || isLoading}
+                color={showPassword ? '#2563eb' : undefined}
+                className={
+                  cn('rounded-md w-5 h-5')
+                }/>
+
+              <Text className="block mb-2 ml-2 text-sm dark:text-white">
+                Mostrar contraseña
+              </Text>
+            </View>
           </View>
         )}
         name="password"
@@ -149,13 +171,13 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
           <View className="mt-6">
-            <Text className="mb-2 dark:text-white">Confirmar contraseña</Text>
+            <Text className="dark:text-white">Confirmar contraseña</Text>
             <TextInput
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               editable={!isSubmitting && !isLoading}
-              secureTextEntry={true}
+              secureTextEntry={!showPassword}
               className={
                 cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
                   'focus:border-blue-600 focus:ring-0',
@@ -165,9 +187,11 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               }
             />
 
-            {(errors.passwordConfirmation != null) &&
+            {(errors.passwordConfirmation !== undefined) &&
               <Text
-                className="text-red-500 mt-2">{errors.passwordConfirmation.message}</Text>}
+                className="text-red-500 text-xs mt-0.5">
+                {errors.passwordConfirmation.message}
+              </Text>}
           </View>
         )}
         name="passwordConfirmation"
@@ -192,9 +216,11 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-            {(errors.acceptTerms != null) &&
+            {(errors.acceptTerms !== undefined) &&
               <Text
-                className="text-red-500 mt-2">{errors.acceptTerms.message}</Text>}
+                className="text-red-500 text-xs mt-0.5">
+                {errors.acceptTerms.message}
+              </Text>}
           </View>
         )}
         name="acceptTerms"
