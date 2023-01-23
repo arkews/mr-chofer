@@ -15,6 +15,8 @@ export type RootStackParamList = {
   PassengerDetails: undefined
 
   RegisterVehicle: undefined
+
+  RegisterRideRequest: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
