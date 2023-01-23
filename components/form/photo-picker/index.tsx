@@ -1,7 +1,7 @@
 import React, { FC, useCallback } from 'react'
 import { Pressable, Text } from 'react-native'
 import DocumentPicker, { types } from 'react-native-document-picker'
-import { Photo } from '@base/types'
+import { Photo } from '@shared/types'
 import { launchCamera } from 'react-native-image-picker'
 
 type Mode = 'take' | 'pick'

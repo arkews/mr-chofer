@@ -10,7 +10,7 @@ import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
 import RadioGroup from '@components/form/radio-group'
 import { vehicleTypes } from '@constants/vehicle-types'
-import { Photo } from '@base/types'
+import { Photo } from '@shared/types'
 import { uploadDocumentPhoto } from '@base/supabase/storage'
 import PhotoPicker from '@components/form/photo-picker'
 

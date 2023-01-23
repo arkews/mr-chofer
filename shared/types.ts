@@ -3,3 +3,5 @@ export type Photo = {
   type: string
   name: string
 }
+
+export type PaymentMethod = 'cash'
