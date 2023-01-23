@@ -10,6 +10,7 @@ export type RideStatus =
 type RidePassenger = {
   name: string
   phone: string
+  gender: string
 }
 
 type RideDriver = {
@@ -25,6 +26,6 @@ export type Ride = RegisterRideRequest & {
   start_time: string
   end_time: string
 
-  passenger?: RidePassenger
-  driver?: RideDriver
+  passengers?: RidePassenger
+  drivers?: RideDriver
 }

@@ -12,7 +12,7 @@ const useRequestedRides = (): UseRequestedRides => {
   const fetchRides = async (): Promise<Ride[]> => {
     const { data, error } = await supabase
       .from('rides')
-      .select()
+      .select('*, passengers:passenger_id(*)')
       .eq('status', 'requested')
       .limit(20)
 

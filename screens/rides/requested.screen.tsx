@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Text, View } from 'react-native'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
+import RequestedRideCard from '@base/rides/components/requested'
 
 const RequestedRidesScreen: FC = () => {
   const { rides, isLoading } = useRequestedRides()
@@ -11,12 +12,7 @@ const RequestedRidesScreen: FC = () => {
       {rides !== undefined && (
         <View className="flex flex-col space-y-3">
           {rides.map((ride) => (
-            <View key={ride.id} className="flex flex-col space-y-3">
-              <Text className="dark:text-white">Ride ID: {ride.id}</Text>
-              <Text className="dark:text-white">Ride Status: {ride.status}</Text>
-              <Text className="dark:text-white">Ride Driver ID: {ride.driver_id}</Text>
-              <Text className="dark:text-white">Ride Passenger ID: {ride.passenger_id}</Text>
-            </View>
+            <RequestedRideCard key={ride.id} ride={ride} />
           ))}
         </View>
       )}
