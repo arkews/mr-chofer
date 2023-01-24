@@ -18,8 +18,10 @@ import PassengerDetailsScreen from '@screens/passengers/details.screen'
 import RegisterVehicleScreen from '@screens/vehicles/register.screen'
 import { useAuth } from '@base/auth/context'
 import RegisterRideRequestScreen from '@screens/rides/register.screen'
-import RideDetailsScreen from '@screens/rides/details.screen'
+import PassengerRideDetailsScreen
+  from '@screens/rides/passengers/details.screen'
 import RequestedRidesScreen from '@screens/rides/requested.screen'
+import DriverRideDetailsScreen from '@screens/rides/drivers/details.screen'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 
@@ -58,8 +60,10 @@ const RootNavigator: FC = () => {
                           component={RegisterRideRequestScreen}/>
             <Stack.Screen name="RoleSelection"
                           component={RoleSelectionScreen}/>
-            <Stack.Screen name="RideDetails"
-                          component={RideDetailsScreen}/>
+            <Stack.Screen name="PassengerRideDetails"
+                          component={PassengerRideDetailsScreen}/>
+            <Stack.Screen name="DriverRideDetails"
+                          component={DriverRideDetailsScreen}/>
             <Stack.Screen name="RequestedRides"
                           component={RequestedRidesScreen}/>
           </>

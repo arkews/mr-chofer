@@ -9,8 +9,11 @@ import RequestedRideCard from '@base/rides/components/requested'
 import {
   REALTIME_LISTEN_TYPES
 } from '@supabase/realtime-js/src/RealtimeChannel'
+import { RootStackScreenProps } from '@navigation/types'
 
-const RequestedRidesScreen: FC = () => {
+type Props = RootStackScreenProps<'RequestedRides'>
+
+const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
 
   const { driver } = useDriver()
@@ -33,7 +36,11 @@ const RequestedRidesScreen: FC = () => {
   const {
     mutate,
     isLoading: isAcceptingRequest
-  } = useMutation(performAcceptRideRequest)
+  } = useMutation(performAcceptRideRequest, {
+    onSuccess: () => {
+      navigation.replace('DriverRideDetails')
+    }
+  })
 
   const handleAcceptRideRequest = (rideId: number) => {
     mutate(rideId)
