@@ -11,6 +11,7 @@ type RidePassenger = {
   name: string
   phone: string
   gender: string
+  photo_url: string
 }
 
 type RideDriver = {
