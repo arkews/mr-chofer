@@ -10,13 +10,25 @@ import {
   REALTIME_LISTEN_TYPES
 } from '@supabase/realtime-js/src/RealtimeChannel'
 import { RootStackScreenProps } from '@navigation/types'
+import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 
 type Props = RootStackScreenProps<'RequestedRides'>
 
 const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
-
   const { driver } = useDriver()
+
+  const { ride, isLoading: isLoadingCurrentRide } = useCurrentDriverRide()
+  useEffect(() => {
+    if (isLoadingCurrentRide) {
+      return
+    }
+
+    if (ride !== undefined) {
+      navigation.replace('DriverRideDetails')
+    }
+  }, [ride, isLoadingCurrentRide])
+
   const performAcceptRideRequest = async (rideId: number) => {
     if (driver !== undefined) {
       const { error } = await supabase.from('rides')
