@@ -39,7 +39,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
   }
 
   const goToRegisterRideRequest = (): void => {
-    navigation.navigate('RideDetails')
+    navigation.navigate('PassengerRideDetails')
   }
 
   const { driver, isLoading: isLoadingDriver } = useDriver()
