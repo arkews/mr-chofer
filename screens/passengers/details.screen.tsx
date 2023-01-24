@@ -38,13 +38,18 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('DriverDetails')
   }
 
+  const goToRegisterRideRequest = (): void => {
+    navigation.navigate('RideDetails')
+  }
+
   const { driver, isLoading: isLoadingDriver } = useDriver()
 
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
       {isLoading && <Text className="dark:text-white">Loading...</Text>}
-      {error !== null && <Text className="dark:text-white">{error.message}</Text>}
+      {error !== null &&
+        <Text className="dark:text-white">{error.message}</Text>}
       {
         (passenger !== undefined) && (
           <View className="flex flex-col space-y-5">
@@ -72,25 +77,40 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
             {
               isLoadingDriver
                 ? (
-                <Text className="dark:text-white">Loading...</Text>
+                  <Text className="dark:text-white">Loading...</Text>
                   )
                 : (
-                <Pressable
-                  onPress={goToDriverProfile}
-                  className={
-                    cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                      'active:bg-green-800',
-                      (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                      (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-                  }
-                >
-                  <Text
-                    className="text-base text-white font-medium text-center text-white">
-                    {driver !== undefined ? 'Cambiar a modo conductor' : '¿Quieres trabajar con nosotros?'}
-                  </Text>
-                </Pressable>
+                  <Pressable
+                    onPress={goToDriverProfile}
+                    className={
+                      cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
+                        'active:bg-green-800',
+                        (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                        (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+                    }
+                  >
+                    <Text
+                      className="text-base text-white font-medium text-center text-white">
+                      {driver !== undefined ? 'Cambiar a modo conductor' : '¿Quieres trabajar con nosotros?'}
+                    </Text>
+                  </Pressable>
                   )
             }
+
+            <Pressable
+              onPress={goToRegisterRideRequest}
+              className={
+                cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                  'active:bg-blue-800',
+                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
+              }
+            >
+              <Text
+                className="text-base text-white font-medium text-center text-white">
+                Registrar solicitud de viaje
+              </Text>
+            </Pressable>
 
             <Pressable
               onPress={() => {

@@ -22,6 +22,9 @@
       "@screens/*": [
         "screens/*"
       ],
+      "@shared/*": [
+        "shared/*"
+      ]
     }
   }
 }

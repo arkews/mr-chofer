@@ -1,5 +1,5 @@
 import { supabase } from '../index'
-import { Photo } from '@base/types'
+import { Photo } from '@shared/types'
 
 const uploadFile = async (bucketName: string, fileName: string, data: FormData) => {
   return await supabase.storage.from(bucketName).upload(fileName, data, {

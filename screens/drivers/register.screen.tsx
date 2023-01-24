@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import cn from 'classnames'
 import PhotoPicker from '@components/form/photo-picker'
 import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
-import { Photo } from '@base/types'
+import { Photo } from '@shared/types'
 import usePassenger from '@hooks/passengers/use-passenger'
 
 const RegisterDriverSchema = z.object({

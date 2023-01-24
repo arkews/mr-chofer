@@ -3,6 +3,7 @@ import { supabase } from '@base/supabase'
 import { useQuery } from '@tanstack/react-query'
 
 type Passenger = {
+  id: string
   name: string
   gender: string
   phone: string

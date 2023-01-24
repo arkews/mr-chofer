@@ -14,7 +14,8 @@ module.exports = function (api) {
             '@constants': './constants',
             '@hooks': './hooks',
             '@navigation': './navigation',
-            '@screens': './screens'
+            '@screens': './screens',
+            '@shared': './shared'
           }
         }
       ]
