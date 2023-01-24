@@ -45,7 +45,7 @@ const RegisterRideRequestScreen: FC<Props> = ({ navigation }) => {
 
   const { mutate, isLoading, error } = useMutation(sendRideRequest, {
     onSuccess: () => {
-      navigation.navigate('PassengerRideDetails')
+      navigation.replace('PassengerRideDetails')
     }
   })
 
