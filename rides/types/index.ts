@@ -1,11 +1,12 @@
 import { RegisterRideRequest } from '@base/rides/schema'
 
-export type RideStatus =
-  'requested'
-  | 'accepted'
-  | 'in_progress'
-  | 'completed'
-  | 'canceled'
+export enum RideStatus {
+  requested = 'requested',
+  accepted = 'accepted',
+  in_progress = 'in_progress',
+  completed = 'completed',
+  canceled = 'canceled'
+}
 
 type RidePassenger = {
   name: string

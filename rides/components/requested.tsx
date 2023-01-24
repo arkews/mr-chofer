@@ -6,9 +6,11 @@ import { getAvatarUrl } from '@base/supabase/storage'
 
 type Props = {
   ride: Ride
+
+  onAccept: (rideId: number) => void
 }
 
-const RequestedRideCard: FC<Props> = ({ ride }) => {
+const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
@@ -22,7 +24,7 @@ const RequestedRideCard: FC<Props> = ({ ride }) => {
 
   return (
     <View
-      className="px-1 py-2 pb-1 mt-3 w-full text-gray-500 bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800 dark:text-gray-400">
+      className="px-1 py-2 pb-1 mt-2 w-full bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800">
       <View>
         <View className="flex flex-row">
           <View className="items-center justify-center w-1/5 mr-1">
@@ -54,7 +56,8 @@ const RequestedRideCard: FC<Props> = ({ ride }) => {
               }
 
               <View className="flex flex-col justify-between my-1">
-                <Text className="text-base dark:text-white text-pink-800 font-medium dark:text-pink-300">
+                <Text
+                  className="text-base dark:text-white text-pink-800 font-medium dark:text-pink-300">
                   Origen: {ride.pickup_location}
                 </Text>
                 <Text className="dark:text-white">
@@ -77,6 +80,7 @@ const RequestedRideCard: FC<Props> = ({ ride }) => {
 
         <View className="flex justify-end mt-3">
           <Pressable
+            onPress={() => { onAccept(ride.id) }}
             className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
             <Text className="text-xs text-white text-center font-medium">
               Aceptar solicitud
