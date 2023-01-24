@@ -14,7 +14,7 @@ import {
 
 type Props = RootStackScreenProps<'RegisterRideRequest'>
 
-const RegisterRideRequestScreen: FC<Props> = () => {
+const RegisterRideRequestScreen: FC<Props> = ({ navigation }) => {
   const { passenger } = usePassenger()
 
   const {
@@ -43,14 +43,19 @@ const RegisterRideRequestScreen: FC<Props> = () => {
     }
   }
 
-  const { mutate, isLoading, error } = useMutation(sendRideRequest)
+  const { mutate, isLoading, error } = useMutation(sendRideRequest, {
+    onSuccess: () => {
+      navigation.navigate('PassengerRideDetails')
+    }
+  })
 
   const onSubmit: SubmitHandler<RegisterRideRequest> = async (data) => {
     mutate(data)
   }
 
   return (
-    <View className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
+    <View
+      className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
       <View className="mb-5">
         <Text className="text-xl text-center dark:text-white">
           ¿Dónde quieres ir?
@@ -77,7 +82,8 @@ const RegisterRideRequestScreen: FC<Props> = () => {
             />
 
             {(errors.pickup_location !== undefined) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.pickup_location.message}</Text>}
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.pickup_location.message}</Text>}
           </View>
         )}
         name="pickup_location"
@@ -103,7 +109,8 @@ const RegisterRideRequestScreen: FC<Props> = () => {
             />
 
             {(errors.destination !== undefined) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.destination.message}</Text>}
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.destination.message}</Text>}
           </View>
         )}
         name="destination"
@@ -130,7 +137,8 @@ const RegisterRideRequestScreen: FC<Props> = () => {
             />
 
             {(errors.offered_price !== undefined) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.offered_price.message}</Text>}
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.offered_price.message}</Text>}
           </View>
         )}
         name="offered_price"
@@ -158,7 +166,8 @@ const RegisterRideRequestScreen: FC<Props> = () => {
             />
 
             {(errors.comments !== undefined) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.comments.message}</Text>}
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.comments.message}</Text>}
           </View>
         )}
         name="comments"

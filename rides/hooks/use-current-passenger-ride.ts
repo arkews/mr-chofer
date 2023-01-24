@@ -15,7 +15,7 @@ const useCurrentPassengerRide = (): UseRide => {
   const fetchRide = async (): Promise<Ride> => {
     const { data, error } = await supabase
       .from('rides')
-      .select()
+      .select('*, drivers:driver_id(name,phone)')
       .eq('passenger_id', passenger?.id)
       .in('status', ['requested', 'accepted', 'in_progress'])
       .limit(1)
