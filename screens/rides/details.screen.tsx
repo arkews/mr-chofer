@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Text, View } from 'react-native'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
@@ -6,8 +6,19 @@ import { RootStackScreenProps } from '@navigation/types'
 
 type Props = RootStackScreenProps<'RideDetails'>
 
-const RideDetailsScreen: FC<Props> = () => {
+const RideDetailsScreen: FC<Props> = ({ navigation }) => {
   const { ride, isLoading } = useCurrentPassengerRide()
+
+  useEffect(() => {
+    if (isLoading) {
+      return
+    }
+
+    if (ride === undefined) {
+      navigation.navigate('RegisterRideRequest')
+    }
+  }, [ride, isLoading])
+
   return (
     <View className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
       {isLoading && <Text className="dark:text-white">Loading...</Text>}
