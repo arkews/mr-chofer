@@ -1,7 +1,12 @@
 import { supabase } from '@base/supabase'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Ride } from '@base/rides/types'
 import usePassenger from '@hooks/passengers/use-passenger'
+import { useEffect } from 'react'
+import {
+  REALTIME_LISTEN_TYPES,
+  REALTIME_POSTGRES_CHANGES_LISTEN_EVENT
+} from '@supabase/supabase-js'
 
 type UseRide = {
   ride?: Ride
@@ -35,6 +40,32 @@ const useCurrentPassengerRide = (): UseRide => {
       enabled: passenger?.id !== undefined,
       retry: false
     })
+
+  const queryClient = useQueryClient()
+  useEffect(() => {
+    if (passenger === undefined) {
+      return
+    }
+
+    const rideChanges = supabase
+      .channel('passenger-ride')
+      .on(
+        REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+        {
+          event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
+          schema: 'public',
+          table: 'rides'
+        },
+        () => {
+          void queryClient.invalidateQueries(['current-drive', passenger?.id])
+        }
+      )
+      .subscribe()
+
+    return () => {
+      void rideChanges.unsubscribe()
+    }
+  }, [passenger])
 
   return {
     ride: data,
