@@ -1,8 +1,12 @@
 import { FC, useEffect } from 'react'
-import { Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import { RootStackScreenProps } from '@navigation/types'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import { genders } from '@constants/genders'
+import { RideStatus } from '@base/rides/types'
+import cn from 'classnames'
+import { supabase } from '@base/supabase'
+import { useMutation } from '@tanstack/react-query'
 
 type Props = RootStackScreenProps<'DriverRideDetails'>
 
@@ -15,14 +19,56 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (ride === undefined) {
-      navigation.navigate('RequestedRides')
+      navigation.replace('RequestedRides')
     }
   }, [ride, isLoading])
+
+  const updateRideStatus = async (newStatus: RideStatus) => {
+    const { error } = await supabase.from('rides')
+      .update({
+        status: newStatus
+      })
+      .eq('id', ride?.id)
+
+    if (error !== null) {
+      throw Error(error.message)
+    }
+  }
+
+  const performStartRide = async () => {
+    await updateRideStatus(RideStatus.in_progress)
+  }
+
+  const {
+    mutate: startRide,
+    isLoading: startingRide
+  } = useMutation(performStartRide)
+
+  const performFinishRide = async () => {
+    await updateRideStatus(RideStatus.completed)
+  }
+
+  const {
+    mutate: finishRide,
+    isLoading: isEndingRide
+  } = useMutation(performFinishRide)
+
+  const performCancelRide = async () => {
+    await updateRideStatus(RideStatus.canceled)
+  }
+
+  const {
+    mutate: cancelRide,
+    isLoading: isCancellingRide
+  } = useMutation(performCancelRide)
+
+  const disableButtons = isLoading || startingRide || isEndingRide || isCancellingRide
 
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoading && <Text className="dark:text-white">Cargando recorrido...</Text>}
+      {isLoading &&
+        <Text className="dark:text-white">Cargando recorrido...</Text>}
       {ride !== undefined && (
         <View className="flex flex-col space-y-5">
           <View className="mb-5">
@@ -116,6 +162,78 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                 </View>
               )
             }
+          </View>
+
+          <View className="flex flex-row space-x-5 justify-around">
+            {
+              ride.status === RideStatus.accepted && (
+                <View className="flex-1">
+                  <Pressable
+                    onPress={() => {
+                      startRide()
+                    }}
+                    disabled={disableButtons}
+                    className={
+                      cn('text-base px-4 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                        'active:bg-blue-800',
+                        (disableButtons) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                        (disableButtons) && 'dark:bg-gray-800 dark:text-gray-400')
+                    }
+                  >
+                    <Text
+                      className="text-white text-center text-white">
+                      Iniciar recorrido
+                    </Text>
+                  </Pressable>
+                </View>
+              )
+            }
+
+            {
+              ride.status === RideStatus.in_progress && (
+                <View className="flex-1">
+                  <Pressable
+                    onPress={() => {
+                      finishRide()
+                    }}
+                    disabled={disableButtons}
+                    className={
+                      cn('text-base px-4 py-3.5 bg-green-700 rounded-lg border border-transparent',
+                        'active:bg-blue-800',
+                        (disableButtons) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                        (disableButtons) && 'dark:bg-gray-800 dark:text-gray-400')
+                    }
+                  >
+                    <Text
+                      className="text-white text-center text-white">
+                      Finalizar
+                    </Text>
+                  </Pressable>
+                </View>
+              )
+            }
+
+            <View className="flex-1">
+              <Pressable
+                onPress={() => {
+                  cancelRide()
+                }}
+                disabled={disableButtons}
+                className={
+                  cn('text-base px-4 py-3.5 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
+                    (disableButtons) && 'border-gray-300 cursor-not-allowed dark:border-gray-800'
+                  )
+                }
+              >
+                <Text
+                  className={
+                    cn('text-center text-red-700 dark:text-red-500',
+                      (disableButtons) && 'text-gray-700 dark:text-gray-400')
+                  }>
+                  Cancelar
+                </Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       )}
