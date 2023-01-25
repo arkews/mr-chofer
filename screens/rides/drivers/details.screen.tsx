@@ -59,10 +59,10 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
   const {
     mutate: cancelRide,
-    isLoading: isCancellingRide
+    isLoading: isCancelingRide
   } = useMutation(performCancelRide)
 
-  const disableButtons = isLoading || startingRide || isEndingRide || isCancellingRide
+  const disableButtons = isLoading || startingRide || isEndingRide || isCancelingRide
 
   return (
     <View
