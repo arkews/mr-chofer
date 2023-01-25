@@ -7,6 +7,10 @@ import { RideStatus } from '@base/rides/types'
 import cn from 'classnames'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
+import { MaterialIcons } from '@expo/vector-icons'
+import { styled } from 'nativewind'
+
+const StyledIcon = styled(MaterialIcons)
 
 type Props = RootStackScreenProps<'DriverRideDetails'>
 
@@ -133,9 +137,16 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
+            <View className="flex flex-row px-2 space-x-2">
+              <StyledIcon name="comment" size={24} className="text-gray-700 dark:text-gray-400" />
+              <Text className="text-gray-700 dark:text-gray-400">
+                {ride.comments}
+              </Text>
+            </View>
+
             {
               (ride.passengers !== undefined && ride.passengers !== null) && (
-                <View>
+                <View className="pt-2">
                   <View>
                     <Text className="text-center font-bold dark:text-white mb-3">
                       Información del pasajero

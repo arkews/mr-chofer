@@ -7,6 +7,10 @@ import { RideStatus } from '@base/rides/types'
 import cn from 'classnames'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
+
+const StyledIcon = styled(MaterialIcons)
 
 type Props = RootStackScreenProps<'PassengerRideDetails'>
 
@@ -102,6 +106,14 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                   style: 'currency',
                   currency: 'COP'
                 }).format(ride.offered_price)}
+              </Text>
+            </View>
+
+            <View className="flex flex-row px-2 space-x-2">
+              <StyledIcon name="comment" size={24}
+                          className="text-gray-700 dark:text-gray-400"/>
+              <Text className="text-gray-700 dark:text-gray-400">
+                {ride.comments}
               </Text>
             </View>
 
