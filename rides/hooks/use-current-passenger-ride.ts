@@ -43,7 +43,7 @@ const useCurrentPassengerRide = (): UseRide => {
 
   const queryClient = useQueryClient()
   useEffect(() => {
-    if (passenger === undefined) {
+    if (passenger === undefined || passenger === null) {
       return
     }
 
@@ -54,10 +54,11 @@ const useCurrentPassengerRide = (): UseRide => {
         {
           event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
           schema: 'public',
-          table: 'rides'
+          table: 'rides',
+          filter: `passenger_id=eq.${passenger.id}`
         },
         () => {
-          void queryClient.invalidateQueries(['current-drive', passenger?.id])
+          void queryClient.invalidateQueries(['current-drive', passenger.id])
         }
       )
       .subscribe()
@@ -68,7 +69,7 @@ const useCurrentPassengerRide = (): UseRide => {
   }, [passenger])
 
   return {
-    ride: data,
+    ride: error === null ? data : undefined,
     isLoading,
     error: error as Error
   }

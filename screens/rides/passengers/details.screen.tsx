@@ -1,8 +1,12 @@
 import { FC, useEffect } from 'react'
-import { Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
 import { RootStackScreenProps } from '@navigation/types'
+import { RideStatus } from '@base/rides/types'
+import cn from 'classnames'
+import { supabase } from '@base/supabase'
+import { useMutation } from '@tanstack/react-query'
 
 type Props = RootStackScreenProps<'PassengerRideDetails'>
 
@@ -19,10 +23,30 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoading])
 
+  const performCancelRide = async () => {
+    const { error } = await supabase.from('rides')
+      .update({
+        status: RideStatus.canceled
+      })
+      .eq('id', ride?.id)
+
+    if (error !== null) {
+      throw Error(error.message)
+    }
+  }
+
+  const {
+    mutate: cancelRide,
+    isLoading: isCancelingRide
+  } = useMutation(performCancelRide)
+
+  const disableButtons = isLoading || isCancelingRide
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoading && <Text className="dark:text-white">Cargando recorrido...</Text>}
+      {isLoading &&
+        <Text className="dark:text-white">Cargando recorrido...</Text>}
       {ride !== undefined && (
         <View className="flex flex-col space-y-5">
           <View className="mb-5">
@@ -91,6 +115,34 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                 </View>
               )
             }
+
+            <View className="flex flex-row space-x-5 justify-around py-5">
+              {
+                (ride.status !== RideStatus.canceled && ride.status !== RideStatus.completed) && (
+                  <View className="flex-1">
+                    <Pressable
+                      onPress={() => {
+                        cancelRide()
+                      }}
+                      disabled={disableButtons}
+                      className={
+                        cn('text-base px-4 py-3.5 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
+                          (disableButtons) && 'border-gray-300 cursor-not-allowed dark:border-gray-800'
+                        )
+                      }
+                    >
+                      <Text
+                        className={
+                          cn('text-center text-red-700 dark:text-red-500',
+                            (disableButtons) && 'text-gray-700 dark:text-gray-400')
+                        }>
+                        Cancelar
+                      </Text>
+                    </Pressable>
+                  </View>
+                )
+              }
+            </View>
           </View>
         </View>
       )}
