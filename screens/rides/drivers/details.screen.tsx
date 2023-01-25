@@ -24,10 +24,18 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
   }, [ride, isLoading])
 
   const updateRideStatus = async (newStatus: RideStatus) => {
-    const { error } = await supabase.from('rides')
-      .update({
-        status: newStatus
+    const newValues = {
+      status: newStatus,
+      ...(newStatus === RideStatus.in_progress && {
+        start_time: new Date().toISOString()
+      }),
+      ...(newStatus === RideStatus.completed && {
+        end_time: new Date().toISOString()
       })
+    }
+
+    const { error } = await supabase.from('rides')
+      .update(newValues)
       .eq('id', ride?.id)
 
     if (error !== null) {
