@@ -138,7 +138,8 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
             </View>
 
             <View className="flex flex-row px-2 space-x-2">
-              <StyledIcon name="comment" size={24} className="text-gray-700 dark:text-gray-400" />
+              <StyledIcon name="comment" size={24}
+                          className="text-gray-700 dark:text-gray-400"/>
               <Text className="text-gray-700 dark:text-gray-400">
                 {ride.comments}
               </Text>
