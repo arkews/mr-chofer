@@ -41,6 +41,8 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
   } = useMutation(performCancelRide)
 
   const disableButtons = isLoading || isCancelingRide
+  const canCancelRide = [RideStatus.requested, RideStatus.accepted]
+    .includes(ride?.status ?? RideStatus.requested)
 
   return (
     <View
@@ -118,7 +120,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
             <View className="flex flex-row space-x-5 justify-around py-5">
               {
-                (ride.status !== RideStatus.canceled && ride.status !== RideStatus.completed) && (
+                (canCancelRide) && (
                   <View className="flex-1">
                     <Pressable
                       onPress={() => {
