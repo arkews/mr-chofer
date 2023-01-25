@@ -78,6 +78,16 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           </View>
         </View>
 
+        {
+          ride.comments !== undefined && (
+            <View className="flex mt-2 px-2">
+              <Text className="text-xs text-gray-500 dark:text-gray-400">
+                {ride.comments}
+              </Text>
+            </View>
+          )
+        }
+
         <View className="flex justify-end mt-3">
           <Pressable
             onPress={() => { onAccept(ride.id) }}
