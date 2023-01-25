@@ -3,6 +3,10 @@ import { Image, Pressable, Text, View } from 'react-native'
 import { Ride } from '@base/rides/types'
 import { genders } from '@constants/genders'
 import { getAvatarUrl } from '@base/supabase/storage'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
+
+const StyledIcon = styled(MaterialIcons)
 
 type Props = {
   ride: Ride
@@ -78,9 +82,23 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           </View>
         </View>
 
+        {
+          ride.comments !== undefined && (
+            <View className="flex flex-row px-2 space-x-2">
+              <StyledIcon name="comment"
+                          className="text-sm text-gray-700 dark:text-gray-400"/>
+              <Text className="text-gray-700 dark:text-gray-400">
+                {ride.comments}
+              </Text>
+            </View>
+          )
+        }
+
         <View className="flex justify-end mt-3">
           <Pressable
-            onPress={() => { onAccept(ride.id) }}
+            onPress={() => {
+              onAccept(ride.id)
+            }}
             className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
             <Text className="text-xs text-white text-center font-medium">
               Aceptar solicitud
