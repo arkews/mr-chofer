@@ -9,6 +9,8 @@ import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
+import { REALTIME_LISTEN_TYPES } from '@supabase/supabase-js'
+import { useToast } from 'react-native-toast-notifications'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -47,6 +49,30 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
   const disableButtons = isLoading || isCancelingRide
   const canCancelRide = [RideStatus.requested, RideStatus.accepted]
     .includes(ride?.status ?? RideStatus.requested)
+
+  const toast = useToast()
+  useEffect(() => {
+    if (ride === undefined) {
+      return
+    }
+
+    supabase.channel('rides-changes')
+      .on(
+        REALTIME_LISTEN_TYPES.BROADCAST,
+        {
+          event: `accept-ride-request-${ride.id}`
+        },
+        (payload) => {
+          toast.show('Tu solicitud ha sido aceptada', {
+            type: 'ride_toast',
+            placement: 'top',
+            data: payload.payload,
+            duration: 5000
+          })
+        }
+      )
+      .subscribe()
+  }, [ride])
 
   return (
     <View

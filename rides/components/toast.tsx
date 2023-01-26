@@ -1,14 +1,18 @@
 import { FC, useEffect, useState } from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
-import { Ride } from '@base/rides/types'
+import { Ride, RideStatus } from '@base/rides/types'
 import { getAvatarUrl } from '@base/supabase/storage'
 import { genders } from '@constants/genders'
+import { supabase } from '@base/supabase'
+import { useMutation } from '@tanstack/react-query'
 
 type Props = {
   ride: Ride
+
+  onPress: () => void
 }
 
-const RideToast: FC<Props> = ({ ride }) => {
+const RideToast: FC<Props> = ({ ride, onPress }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
@@ -19,6 +23,28 @@ const RideToast: FC<Props> = ({ ride }) => {
         })
     }
   }, [ride])
+
+  const performAcceptRideRequest = async () => {
+    const { error } = await supabase
+      .from('rides')
+      .update({
+        driver_id: ride.driver_id,
+        status: RideStatus.accepted
+      })
+      .eq('id', ride.id)
+
+    if (error !== null) {
+      throw Error(error.message)
+    }
+  }
+
+  const {
+    mutate: acceptRideRequest
+  } = useMutation(performAcceptRideRequest, {
+    onSuccess: () => {
+      onPress()
+    }
+  })
 
   return (
     <View className="px-7 w-full center-items">
@@ -95,6 +121,9 @@ const RideToast: FC<Props> = ({ ride }) => {
 
           <View className="flex justify-end mt-3">
             <Pressable
+              onPress={() => {
+                acceptRideRequest()
+              }}
               className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
               <Text className="text-xs text-white text-center font-medium">
                 Aceptar conductor

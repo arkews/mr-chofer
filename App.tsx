@@ -33,7 +33,7 @@ const App: FC = () => {
           <AuthProvider>
             <ToastProvider offsetTop={50} renderType={{
               ride_toast: (toast) => (
-                <RideToast ride={toast.data}/>
+                <RideToast ride={toast.data} onPress={toast.onHide}/>
               )
             }}>
               <Navigation colorScheme={colorScheme}/>
