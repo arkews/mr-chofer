@@ -10,7 +10,6 @@ import SignInScreen from '@screens/auth/sign-in.screen'
 import SignUpScreen from '@screens/auth/sign-up.screen'
 import { RootStackParamList } from './types'
 import HomeScreen from '@screens/home.screen'
-import RoleSelectionScreen from '@screens/role-selection.screen'
 import RegisterDriverScreen from '@screens/drivers/register.screen'
 import DriverDetailsScreen from '@screens/drivers/details.screen'
 import RegisterPassengerScreen from '@screens/passengers/register.screen'
@@ -58,8 +57,6 @@ const RootNavigator: FC = () => {
                           component={RegisterVehicleScreen}/>
             <Stack.Screen name="RegisterRideRequest"
                           component={RegisterRideRequestScreen}/>
-            <Stack.Screen name="RoleSelection"
-                          component={RoleSelectionScreen}/>
             <Stack.Screen name="PassengerRideDetails"
                           component={PassengerRideDetailsScreen}/>
             <Stack.Screen name="DriverRideDetails"

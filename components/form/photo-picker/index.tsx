@@ -3,6 +3,7 @@ import { Pressable, Text } from 'react-native'
 import DocumentPicker, { types } from 'react-native-document-picker'
 import { Photo } from '@shared/types'
 import { launchCamera } from 'react-native-image-picker'
+import ImageResizer from '@bam.tech/react-native-image-resizer'
 
 type Mode = 'take' | 'pick'
 
@@ -26,10 +27,18 @@ const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
         mode: 'open'
       })
 
+      const resized = await ImageResizer.createResizedImage(
+        res.uri,
+        500,
+        500,
+        'JPEG',
+        80
+      )
+
       const photo: Photo = {
-        uri: res.uri,
-        type: res.type ?? 'image/jpeg',
-        name: res.name ?? 'photo'
+        uri: resized.uri,
+        type: 'image/jpeg',
+        name: resized.name ?? 'photo'
       }
 
       onSelect?.(photo)
@@ -46,8 +55,8 @@ const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
     const result = await launchCamera({
       mediaType: 'photo',
       cameraType: 'back',
-      maxHeight: 200,
-      maxWidth: 200,
+      maxHeight: 500,
+      maxWidth: 500,
       saveToPhotos: true
     })
 

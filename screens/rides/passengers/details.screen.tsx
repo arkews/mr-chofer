@@ -116,13 +116,18 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-            <View className="flex flex-row px-2 space-x-2">
-              <StyledIcon name="comment" size={24}
-                          className="text-gray-700 dark:text-gray-400"/>
-              <Text className="text-gray-700 dark:text-gray-400">
-                {ride.comments}
-              </Text>
-            </View>
+            {
+              (ride.comments !== undefined && ride.comments !== null && ride.comments.length > 0) &&
+              (
+                <View className="flex flex-row px-2 space-x-2">
+                  <StyledIcon name="comment" size={24}
+                              className="text-gray-700 dark:text-gray-400"/>
+                  <Text className="text-gray-700 dark:text-gray-400">
+                    {ride.comments}
+                  </Text>
+                </View>
+              )
+            }
 
             {
               (ride.drivers !== undefined && ride.drivers !== null) && (
