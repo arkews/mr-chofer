@@ -46,8 +46,8 @@ const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
     const result = await launchCamera({
       mediaType: 'photo',
       cameraType: 'back',
-      maxHeight: 200,
-      maxWidth: 200,
+      maxHeight: 500,
+      maxWidth: 500,
       saveToPhotos: true
     })
 
