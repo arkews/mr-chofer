@@ -9,6 +9,8 @@ import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import { MaterialIcons } from '@expo/vector-icons'
 import { styled } from 'nativewind'
+import useRealtimeCurrentDriverRide
+  from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -16,6 +18,8 @@ type Props = RootStackScreenProps<'DriverRideDetails'>
 
 const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
   const { ride, isLoading } = useCurrentDriverRide()
+
+  useRealtimeCurrentDriverRide()
 
   useEffect(() => {
     if (isLoading) {

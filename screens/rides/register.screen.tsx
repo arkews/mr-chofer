@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import cn from 'classnames'
 import { supabase } from '@base/supabase'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   RegisterRideRequest,
   RegisterRideRequestSchema
@@ -43,8 +43,10 @@ const RegisterRideRequestScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
+  const queryClient = useQueryClient()
   const { mutate, isLoading, error } = useMutation(sendRideRequest, {
     onSuccess: () => {
+      void queryClient.invalidateQueries(['current-ride', passenger?.id])
       navigation.replace('PassengerRideDetails')
     }
   })
