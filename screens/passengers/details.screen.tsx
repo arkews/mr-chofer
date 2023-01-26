@@ -9,7 +9,6 @@ import { useMutation } from '@tanstack/react-query'
 import useDriver from '@hooks/drivers/use-driver'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
-import { useIsFocused } from '@react-navigation/native'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -48,12 +47,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
   const { driver, isLoading: isLoadingDriver } = useDriver()
 
   const { ride, isLoading: isLoadingPassengerRide } = useCurrentPassengerRide()
-  const isFocused = useIsFocused()
   useEffect(() => {
-    if (!isFocused) {
-      return
-    }
-
     if (isLoadingPassengerRide) {
       return
     }
@@ -61,7 +55,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
     if (ride !== undefined) {
       navigation.replace('PassengerRideDetails')
     }
-  }, [isLoadingPassengerRide, ride, isFocused])
+  }, [isLoadingPassengerRide, ride])
 
   const isLoadingData = isLoading || isLoadingPassengerRide
 

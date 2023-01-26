@@ -8,7 +8,6 @@ import { signOut } from '@base/auth'
 import cn from 'classnames'
 import useVehicle from '@hooks/vehicles/use-vehicle'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
-import { useIsFocused } from '@react-navigation/native'
 
 type Props = RootStackScreenProps<'DriverDetails'>
 
@@ -36,12 +35,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
   }, [isLoading, driver])
 
   const { ride, isLoading: isLoadingRide } = useCurrentDriverRide()
-  const isFocused = useIsFocused()
   useEffect(() => {
-    if (!isFocused) {
-      return
-    }
-
     if (isLoadingRide) {
       return
     }
@@ -49,7 +43,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     if (ride !== undefined) {
       navigation.replace('DriverRideDetails')
     }
-  }, [ride, isLoadingRide, isFocused])
+  }, [ride, isLoadingRide])
 
   const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
 
