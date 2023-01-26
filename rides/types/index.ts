@@ -15,9 +15,22 @@ type RidePassenger = {
   photo_url: string
 }
 
+type RideDriverVehicle = {
+  license_plate: string
+  model: string
+  line: string
+  brand: string
+  color: string
+  engine_displacement: string
+}
+
 type RideDriver = {
   name: string
   phone: string
+  gender: string
+  photo_url: string
+
+  vehicles?: RideDriverVehicle[]
 }
 
 export type Ride = RegisterRideRequest & {

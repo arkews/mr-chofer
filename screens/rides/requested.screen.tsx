@@ -11,12 +11,14 @@ import {
 } from '@supabase/realtime-js/src/RealtimeChannel'
 import { RootStackScreenProps } from '@navigation/types'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
+import useVehicle from '@hooks/vehicles/use-vehicle'
 
 type Props = RootStackScreenProps<'RequestedRides'>
 
 const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
   const { driver } = useDriver()
+  const { vehicle } = useVehicle()
 
   const { ride, isLoading: isLoadingCurrentRide } = useCurrentDriverRide()
   useEffect(() => {
@@ -30,17 +32,34 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   }, [ride, isLoadingCurrentRide])
 
   const performAcceptRideRequest = async (rideId: number) => {
-    if (driver !== undefined) {
-      const { error } = await supabase.from('rides')
-        .update({
-          driver_id: driver?.id,
-          status: RideStatus.accepted
-        })
-        .eq('id', rideId)
+    if (driver !== undefined && driver !== null && rides !== undefined) {
+      const ride = rides.find((ride) => ride.id === rideId)
+      const channel = supabase.channel('rides-changes').subscribe(
+        async (status) => {
+          if (status === 'SUBSCRIBED') {
+            const result = await channel
+              .send({
+                type: REALTIME_LISTEN_TYPES.BROADCAST,
+                event: `accept-ride-request-${rideId}`,
+                payload: {
+                  ...ride,
+                  driver_id: driver.id,
+                  drivers: {
+                    name: driver.name,
+                    phone: driver.phone,
+                    gender: driver.gender,
+                    photo_url: driver.photo_url,
+                    vehicles: [vehicle]
+                  }
+                }
+              })
 
-      if (error !== null) {
-        throw Error(error.message)
-      }
+            if (result !== 'ok') {
+              throw Error('No se pudo aceptar la solicitud')
+            }
+          }
+        }
+      )
     }
   }
 
@@ -48,11 +67,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const {
     mutate,
     isLoading: isAcceptingRequest
-  } = useMutation(performAcceptRideRequest, {
-    onSuccess: () => {
-      navigation.replace('DriverRideDetails')
-    }
-  })
+  } = useMutation(performAcceptRideRequest)
 
   const handleAcceptRideRequest = (rideId: number) => {
     mutate(rideId)
