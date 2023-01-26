@@ -23,6 +23,9 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { driver } = useDriver()
   const { vehicle } = useVehicle()
 
+  useRealtimeRequestedRides()
+  useRealtimeCurrentDriverRide()
+
   const { ride, isLoading: isLoadingCurrentRide } = useCurrentDriverRide()
   useEffect(() => {
     if (isLoadingCurrentRide) {
@@ -74,9 +77,6 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const handleAcceptRideRequest = (rideId: number) => {
     mutate(rideId)
   }
-
-  useRealtimeRequestedRides()
-  useRealtimeCurrentDriverRide()
 
   return (
     <>
