@@ -66,7 +66,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
 
   const { mutate, isLoading, error } = useMutation(registerPassenger, {
     onSuccess: () => {
-      navigation.navigate('PassengerDetails')
+      navigation.replace('PassengerDetails')
     }
   })
 
