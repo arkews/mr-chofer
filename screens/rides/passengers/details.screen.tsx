@@ -34,6 +34,14 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoading])
 
+  useEffect(() => navigation.addListener('beforeRemove', (e) => {
+    if (ride === undefined) {
+      return
+    }
+
+    e.preventDefault()
+  }), [navigation, ride])
+
   const performCancelRide = async () => {
     const { error } = await supabase.from('rides')
       .update({

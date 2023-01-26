@@ -31,6 +31,14 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoading])
 
+  useEffect(() => navigation.addListener('beforeRemove', (e) => {
+    if (ride === undefined) {
+      return
+    }
+
+    e.preventDefault()
+  }), [navigation, ride])
+
   const updateRideStatus = async (newStatus: RideStatus) => {
     const newValues = {
       status: newStatus,
