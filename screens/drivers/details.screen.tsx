@@ -8,6 +8,7 @@ import { signOut } from '@base/auth'
 import cn from 'classnames'
 import useVehicle from '@hooks/vehicles/use-vehicle'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
+import { useIsFocused } from '@react-navigation/native'
 
 type Props = RootStackScreenProps<'DriverDetails'>
 
@@ -34,6 +35,22 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [isLoading, driver])
 
+  const { ride, isLoading: isLoadingRide } = useCurrentDriverRide()
+  const isFocused = useIsFocused()
+  useEffect(() => {
+    if (!isFocused) {
+      return
+    }
+
+    if (isLoadingRide) {
+      return
+    }
+
+    if (ride !== undefined) {
+      navigation.replace('DriverRideDetails')
+    }
+  }, [ride, isLoadingRide, isFocused])
+
   const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
 
   const goToPassengerProfile = (): void => {
@@ -47,17 +64,6 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
   const goToRequestedRides = (): void => {
     navigation.navigate('RequestedRides')
   }
-
-  const { ride, isLoading: isLoadingRide } = useCurrentDriverRide()
-  useEffect(() => {
-    if (isLoadingRide) {
-      return
-    }
-
-    if (ride !== undefined) {
-      navigation.navigate('DriverRideDetails')
-    }
-  }, [ride, isLoadingRide])
 
   const isLoadingData = isLoading || isLoadingRide
 
