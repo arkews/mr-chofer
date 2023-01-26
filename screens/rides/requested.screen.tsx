@@ -3,8 +3,7 @@ import { ScrollView, Text, View } from 'react-native'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
 import useDriver from '@hooks/drivers/use-driver'
 import { supabase } from '@base/supabase'
-import { RideStatus } from '@base/rides/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import RequestedRideCard from '@base/rides/components/requested'
 import {
   REALTIME_LISTEN_TYPES
@@ -12,6 +11,10 @@ import {
 import { RootStackScreenProps } from '@navigation/types'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import useVehicle from '@hooks/vehicles/use-vehicle'
+import useRealtimeRequestedRides
+  from '@base/rides/hooks/realtime/use-realtime-requested-rides'
+import useRealtimeCurrentDriverRide
+  from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
 
 type Props = RootStackScreenProps<'RequestedRides'>
 
@@ -63,7 +66,6 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
-  const queryClient = useQueryClient()
   const {
     mutate,
     isLoading: isAcceptingRequest
@@ -73,44 +75,8 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     mutate(rideId)
   }
 
-  useEffect(() => {
-    const newRequestChannel = supabase
-      .channel('new-rides')
-      .on(
-        REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'rides',
-          filter: `status=eq.${RideStatus.requested}`
-        },
-        () => {
-          void queryClient.invalidateQueries(['requested-rides'])
-        }
-      )
-      .subscribe()
-
-    const acceptedRequestChannel = supabase
-      .channel('rides-changes')
-      .on(
-        REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'rides',
-          filter: `status=eq.${RideStatus.accepted}`
-        },
-        () => {
-          void queryClient.invalidateQueries(['requested-rides'])
-        }
-      )
-      .subscribe()
-
-    return () => {
-      void newRequestChannel.unsubscribe()
-      void acceptedRequestChannel.unsubscribe()
-    }
-  }, [])
+  useRealtimeRequestedRides()
+  useRealtimeCurrentDriverRide()
 
   return (
     <>
