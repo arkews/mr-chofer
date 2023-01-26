@@ -6,7 +6,7 @@ import useDriver from '@hooks/drivers/use-driver'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { supabase } from '@base/supabase'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import cn from 'classnames'
 import RadioGroup from '@components/form/radio-group'
 import { vehicleTypes } from '@constants/vehicle-types'
@@ -80,8 +80,10 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
     }
   }
 
+  const queryClient = useQueryClient()
   const { mutate, isLoading, error } = useMutation(registerVehicle, {
     onSuccess: () => {
+      void queryClient.invalidateQueries(['vehicle', driver?.id])
       navigation.replace('DriverDetails')
     }
   })
@@ -191,7 +193,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                 />
 
                 {(errors.brand != null) &&
-                  <Text className="text-red-500 text-xs mt-0.5">{errors.brand.message}</Text>}
+                  <Text
+                    className="text-red-500 text-xs mt-0.5">{errors.brand.message}</Text>}
               </View>
             )}
             name="brand"
@@ -219,7 +222,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                 />
 
                 {(errors.line != null) &&
-                  <Text className="text-red-500 text-xs mt-0.5">{errors.line.message}</Text>}
+                  <Text
+                    className="text-red-500 text-xs mt-0.5">{errors.line.message}</Text>}
               </View>
             )}
             name="line"
@@ -250,7 +254,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                 />
 
                 {(errors.model != null) &&
-                  <Text className="text-red-500 text-xs mt-0.5">{errors.model.message}</Text>}
+                  <Text
+                    className="text-red-500 text-xs mt-0.5">{errors.model.message}</Text>}
               </View>
             )}
             name="model"
@@ -278,7 +283,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                 />
 
                 {(errors.color != null) &&
-                  <Text className="text-red-500 text-xs mt-0.5">{errors.color.message}</Text>}
+                  <Text
+                    className="text-red-500 text-xs mt-0.5">{errors.color.message}</Text>}
               </View>
             )}
             name="color"
@@ -295,7 +301,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                         onSelect={onChange}/>
 
             {(errors.type != null) &&
-              <Text className="text-red-500 text-xs mt-0.5">{errors.type.message}</Text>}
+              <Text
+                className="text-red-500 text-xs mt-0.5">{errors.type.message}</Text>}
           </View>
         )}
         name="type"
@@ -305,7 +312,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
           <View className="mt-2">
-            <Text className="dark:text-white">N° documento del propietario</Text>
+            <Text className="dark:text-white">N° documento del
+              propietario</Text>
             <TextInput
               keyboardType="numeric"
               onBlur={onBlur}
