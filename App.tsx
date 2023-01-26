@@ -7,12 +7,14 @@ import { Buffer } from 'buffer'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ToastProvider } from 'react-native-toast-notifications'
 
 import useCachedResources from './hooks/useCachedResources'
 import useColorScheme from './hooks/useColorScheme'
 import Navigation from './navigation'
 import { AuthProvider } from './auth/context'
 import { FC } from 'react'
+import RideToast from '@base/rides/components/toast'
 
 global.Buffer = Buffer
 
@@ -29,8 +31,14 @@ const App: FC = () => {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <Navigation colorScheme={colorScheme}/>
-            <StatusBar/>
+            <ToastProvider offsetTop={50} renderType={{
+              ride_toast: (toast) => (
+                <RideToast ride={toast.data}/>
+              )
+            }}>
+              <Navigation colorScheme={colorScheme}/>
+              <StatusBar/>
+            </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
