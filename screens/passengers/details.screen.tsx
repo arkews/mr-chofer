@@ -7,6 +7,8 @@ import cn from 'classnames'
 import { signOut } from '@base/auth'
 import { useMutation } from '@tanstack/react-query'
 import useDriver from '@hooks/drivers/use-driver'
+import useCurrentPassengerRide
+  from '@base/rides/hooks/use-current-passenger-ride'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -44,10 +46,23 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
 
   const { driver, isLoading: isLoadingDriver } = useDriver()
 
+  const { ride, isLoading: isLoadingPassengerRide } = useCurrentPassengerRide()
+  useEffect(() => {
+    if (isLoadingPassengerRide) {
+      return
+    }
+
+    if (ride !== undefined) {
+      navigation.navigate('PassengerRideDetails')
+    }
+  }, [isLoadingPassengerRide, ride])
+
+  const isLoadingData = isLoading || isLoadingPassengerRide
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoading && <Text className="dark:text-white">Loading...</Text>}
+      {isLoadingData && <Text className="dark:text-white">Cargando...</Text>}
       {error !== null &&
         <Text className="dark:text-white">{error.message}</Text>}
       {
