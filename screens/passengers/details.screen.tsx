@@ -92,7 +92,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
             {
               isLoadingDriver
                 ? (
-                  <Text className="dark:text-white">Loading...</Text>
+                  <Text className="dark:text-white text-center">Cargando...</Text>
                   )
                 : (
                   <Pressable
