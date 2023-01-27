@@ -16,6 +16,7 @@ type Props = {
 
 const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  const [isAccepting, setIsAccepting] = useState(false)
 
   useEffect(() => {
     if (ride.passengers?.photo_url !== undefined && ride.passengers?.photo_url !== null) {
@@ -94,17 +95,31 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           )
         }
 
-        <View className="flex justify-end mt-3">
-          <Pressable
-            onPress={() => {
-              onAccept(ride.id)
-            }}
-            className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
-            <Text className="text-xs text-white text-center font-medium">
-              Aceptar solicitud
-            </Text>
-          </Pressable>
-        </View>
+        {
+          isAccepting
+            ? (
+              <View className="mt-3">
+                <Text
+                  className="text-xs text-center text-green-700 dark:text-green-400">
+                  Solicitud enviada
+                </Text>
+              </View>
+              )
+            : (
+              <View className="flex justify-end mt-3">
+                <Pressable
+                  onPress={() => {
+                    setIsAccepting(true)
+                    onAccept(ride.id)
+                  }}
+                  className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
+                  <Text className="text-xs text-white text-center font-medium">
+                    Enviar solicitud
+                  </Text>
+                </Pressable>
+              </View>
+              )
+        }
       </View>
     </View>
   )
