@@ -23,6 +23,7 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting }
   } = useForm<RegisterRideRequest>({
     resolver: zodResolver(RegisterRideRequestSchema),
@@ -37,6 +38,11 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
       setValue('gender', passenger.gender)
     }
   }, [passenger])
+
+  const gender = watch('gender')
+  useEffect(() => {
+    setValue('offered_price', gender === 'Male' ? 3000 : 2000)
+  }, [gender])
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
     const { error } = await supabase.from('rides').insert(data)
@@ -127,7 +133,6 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           control={control}
           render={({ field: { onChange, value } }) => (
             <View className="mt-4">
-              <Text className="mb-2 dark:text-white">Sexo</Text>
               <RadioGroup values={genders} selected={value}
                           onSelect={onChange}/>
 
