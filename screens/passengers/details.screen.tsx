@@ -3,16 +3,22 @@ import { RootStackScreenProps } from '@navigation/types'
 import { getAvatarUrl } from '@base/supabase/storage'
 import usePassenger from '@hooks/passengers/use-passenger'
 import { Image, Pressable, Text, View } from 'react-native'
-import cn from 'classnames'
 import { signOut } from '@base/auth'
 import { useMutation } from '@tanstack/react-query'
-import useDriver from '@hooks/drivers/use-driver'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
+import RegisterRideRequestForm from '@base/rides/components/register.form'
+import {
+  KeyboardAwareScrollView
+} from 'react-native-keyboard-aware-scroll-view'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
-const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
+const StyledIcon = styled(MaterialIcons)
+
+const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
   const { passenger, isLoading, error } = usePassenger()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
@@ -34,17 +40,14 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [isLoading, passenger])
 
-  const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
+  const {
+    mutate: mutateSignOut,
+    isLoading: isLoadingSignOut
+  } = useMutation(signOut)
 
   const goToDriverProfile = (): void => {
-    navigation.navigate('DriverDetails')
+    navigation.navigate('DriverNavigation')
   }
-
-  const goToRegisterRideRequest = (): void => {
-    navigation.navigate('PassengerRideDetails')
-  }
-
-  const { driver, isLoading: isLoadingDriver } = useDriver()
 
   const { ride, isLoading: isLoadingPassengerRide } = useCurrentPassengerRide()
   useEffect(() => {
@@ -59,94 +62,86 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation }) => {
 
   const isLoadingData = isLoading || isLoadingPassengerRide
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: '',
+      headerRight: () => (
+        <Pressable
+          disabled={isLoadingSignOut}
+          onPress={goToDriverProfile}>
+          <StyledIcon name="motorcycle"
+                      className="text-4xl text-blue-700 dark:text-blue-400"/>
+        </Pressable>
+      ),
+      headerLeft: () => (
+        <Pressable
+          disabled={isLoadingSignOut}
+          onPress={() => {
+            mutateSignOut()
+          }}>
+          <StyledIcon name="logout"
+                      className="text-2xl text-red-700 dark:text-red-400"/>
+        </Pressable>
+      )
+    })
+  }, [navigation])
+
   return (
-    <View
-      className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoadingData && <Text className="dark:text-white">Cargando...</Text>}
-      {error !== null &&
-        <Text className="dark:text-white">{error.message}</Text>}
-      {
-        (passenger !== undefined) && (
-          <View className="flex flex-col space-y-5">
-            {
-              avatarUrl !== null
-                ? (
-                  <Image
-                    source={{ uri: avatarUrl }}
-                    className="w-32 h-32 rounded-full mx-auto"
-                  />
+    <KeyboardAwareScrollView>
+      <View className="flex">
+        <View className="py-3">
+          <View
+            className="flex flex-col flex-grow px-3 justify-center space-y-4">
+            <View className="basis-1/4 justify-center">
+              <View>
+                {isLoadingData &&
+                  <Text
+                    className="text-sm text-center text-gray-500 dark:text-gray-400">Cargando...</Text>}
+                {error !== null &&
+                  <Text className="dark:text-white">{error.message}</Text>}
+
+                {
+                  (passenger !== undefined) && (
+                    <View className="flex flex-col space-y-2">
+                      {
+                        avatarUrl !== null
+                          ? (
+                            <Image
+                              source={{ uri: avatarUrl }}
+                              className="w-24 h-24 rounded-full mx-auto"
+                            />
+                            )
+                          : (
+                            <View
+                              className="w-24 h-24 rounded-full mx-auto bg-gray-200"/>
+                            )
+                      }
+                      <View>
+                        <Text
+                          className="text-xl text-center mb-1 dark:text-white">
+                          {passenger.name}
+                        </Text>
+                        <Text
+                          className="text-md text-center text-gray-500 dark:text-gray-400">
+                          {passenger.phone}
+                        </Text>
+                      </View>
+                    </View>
                   )
-                : (
-                  <View className="w-32 h-32 rounded-full mx-auto bg-gray-200"/>
-                  )
-            }
-            <View className="mb-5">
-              <Text className="text-xl text-center mb-3 dark:text-white">
-                {passenger.name}
-              </Text>
-              <Text className="text-base text-center dark:text-white">
-                {passenger.phone}
-              </Text>
+                }
+              </View>
             </View>
 
-            {
-              isLoadingDriver
-                ? (
-                  <Text className="dark:text-white text-center">Cargando...</Text>
-                  )
-                : (
-                  <Pressable
-                    onPress={goToDriverProfile}
-                    className={
-                      cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                        'active:bg-green-800',
-                        (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                        (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-                    }
-                  >
-                    <Text
-                      className="text-base text-white font-medium text-center text-white">
-                      {driver !== undefined ? 'Cambiar a modo conductor' : '¿Quieres trabajar con nosotros?'}
-                    </Text>
-                  </Pressable>
-                  )
-            }
-
-            <Pressable
-              onPress={goToRegisterRideRequest}
-              className={
-                cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                  'active:bg-blue-800',
-                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            >
-              <Text
-                className="text-base text-white font-medium text-center text-white">
-                Registrar solicitud de viaje
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => {
-                mutate()
-              }}
-              className={
-                cn('text-base px-6 py-3.5 bg-red-700 rounded-lg border border-transparent',
-                  'active:bg-red-800',
-                  (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                  (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-              }
-            >
-              <Text
-                className="text-base text-white font-medium text-center text-white">
-                Cerrar sesión
-              </Text>
-            </Pressable>
+            <View className="basis-3/4 justify-center">
+              <View className="flex px-2">
+                <RegisterRideRequestForm navigation={navigation} route={route}/>
+              </View>
+            </View>
           </View>
-        )
-      }
-    </View>
+        </View>
+      </View>
+    </KeyboardAwareScrollView>
   )
 }
 
