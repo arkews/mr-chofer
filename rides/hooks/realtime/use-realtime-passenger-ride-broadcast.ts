@@ -15,6 +15,7 @@ const useRealtimePassengerRideBroadcast = () => {
     }
 
     if (ride === undefined) {
+      void RideChangesBroadcastChannel.unsubscribe()
       return
     }
 
