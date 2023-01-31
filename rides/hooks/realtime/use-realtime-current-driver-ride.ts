@@ -20,11 +20,8 @@ const useRealtimeCurrentDriverRide = () => {
       return
     }
 
-    if (DriverRideChannel.joinedOnce) {
-      return
-    }
-
-    DriverRideChannel.on(
+    const channel = DriverRideChannel()
+    channel.on(
       REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
       {
         event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
@@ -33,9 +30,13 @@ const useRealtimeCurrentDriverRide = () => {
         filter: `driver_id=eq.${driver.id}`
       },
       () => {
-        void queryClient.invalidateQueries(['current-ride', driver.id])
+        void queryClient.invalidateQueries(['current-driver-ride'])
       }
     ).subscribe()
+
+    return () => {
+      void channel.unsubscribe()
+    }
   }, [driver, isLoading])
 }
 

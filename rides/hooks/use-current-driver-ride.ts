@@ -28,8 +28,8 @@ const useCurrentDriverRide = (): UseRide => {
     return data
   }
 
-  const { data, isLoading, error } = useQuery(
-    ['current-ride', driver?.id],
+  const { data, isLoading, isFetching, isRefetching, error } = useQuery(
+    ['current-driver-ride'],
     fetchRide,
     {
       enabled: driver?.id !== undefined,
@@ -38,7 +38,7 @@ const useCurrentDriverRide = (): UseRide => {
 
   return {
     ride: error === null ? data : undefined,
-    isLoading,
+    isLoading: isLoading || isFetching || isRefetching,
     error: error as Error
   }
 }
