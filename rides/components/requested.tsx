@@ -27,6 +27,16 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
     }
   }, [ride])
 
+  const handleAccept = (): void => {
+    setIsAccepting(true)
+    onAccept(ride.id)
+
+    // After 5s set is accepting false
+    setTimeout(() => {
+      setIsAccepting(false)
+    }, 5000)
+  }
+
   return (
     <View
       className="px-1 py-2 pb-1 mt-2 w-full bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800">
@@ -108,10 +118,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
             : (
               <View className="flex justify-end mt-3">
                 <Pressable
-                  onPress={() => {
-                    setIsAccepting(true)
-                    onAccept(ride.id)
-                  }}
+                  onPress={handleAccept}
                   className="px-3 py-2 text-center text-white bg-green-700 rounded-md active:bg-green-800">
                   <Text className="text-xs text-white text-center font-medium">
                     Enviar solicitud
