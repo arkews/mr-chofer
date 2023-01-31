@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
 import useDriver from '@hooks/drivers/use-driver'
 import { supabase } from '@base/supabase'
@@ -15,6 +15,11 @@ import useRealtimeRequestedRides
   from '@base/rides/hooks/realtime/use-realtime-requested-rides'
 import useRealtimeCurrentDriverRide
   from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
+import { signOut } from '@base/auth'
+
+const StyledIcon = styled(MaterialIcons)
 
 type Props = RootStackScreenProps<'RequestedRides'>
 
@@ -78,23 +83,63 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     mutate(rideId)
   }
 
+  const {
+    mutate: mutateSignOut,
+    isLoading: isLoadingSignOut
+  } = useMutation(signOut)
+
+  const goToPassengerProfile = (): void => {
+    navigation.navigate('PassengerDetails')
+  }
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      header: () => (
-        <View
-          className="flex flex-row px-2 py-12 pb-2 bg-white shadow-2xl justify-center dark:bg-black">
-          <Text
-            className="text-xl text-center font-medium text-gray-500 dark:text-gray-400">
-            Saldo {Intl.NumberFormat('es', {
-              style: 'currency',
-              currency: 'COP'
-            }).format(driver?.balance ?? 0)}
-          </Text>
-        </View>
-      )
+      headerRight: () => (
+        <Pressable
+          disabled={isLoadingSignOut}
+          onPress={goToPassengerProfile}>
+          <StyledIcon name="person"
+                      className="text-4xl text-blue-700 dark:text-blue-400"/>
+        </Pressable>
+      ),
+      headerLeft: () => (
+        <Pressable
+          disabled={isLoadingSignOut}
+          onPress={() => {
+            mutateSignOut()
+          }}>
+          <StyledIcon name="logout"
+                      className="text-2xl text-red-700 dark:text-red-400"/>
+        </Pressable>
+      ),
+      headerTitle: () => (
+        <Text
+          className="text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400">
+          Saldo {driver?.balance}
+        </Text>
+      ),
+      header: (props) => {
+        const HeaderRight = props.options.headerRight as FC
+        const HeaderLeft = props.options.headerLeft as FC
+        const HeaderTitle = props.options.headerTitle as FC
+        return (
+          <View
+            className="flex flex-row px-3 py-12 pb-2 justify-between items-center bg-whitel border border-b-gray-300 dark:border-b-gray-100">
+            <View className="justify-center">
+              <HeaderLeft key={props.route.key}/>
+            </View>
+            <View className="justify-center">
+              <HeaderTitle key={props.route.key}/>
+            </View>
+            <View className="justify-center">
+              <HeaderRight key={props.route.key}/>
+            </View>
+          </View>
+        )
+      }
     })
-  }, [navigation])
+  }, [navigation, isLoadingSignOut])
 
   return (
     <>
