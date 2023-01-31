@@ -1,5 +1,8 @@
 import { useEffect } from 'react'
-import { NewRidesChannel, RideChangesChannel } from '@base/rides/realtime/channels'
+import {
+  NewRidesChannel,
+  RideChangesChannel
+} from '@base/rides/realtime/channels'
 import {
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT
@@ -38,7 +41,19 @@ const useRealtimeRequestedRides = () => {
         () => {
           void queryClient.invalidateQueries(['requested-rides'])
         }
-      ).subscribe()
+      ).on(
+        REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+        {
+          event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
+          schema: 'public',
+          table: 'rides',
+          filter: `status=eq.${RideStatus.canceled}&driver_id=is.null`
+        },
+        () => {
+          void queryClient.invalidateQueries(['requested-rides'])
+        }
+      )
+        .subscribe()
     }
   }, [])
 }
