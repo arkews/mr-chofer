@@ -8,8 +8,12 @@ import { signOut } from '@base/auth'
 import cn from 'classnames'
 import useVehicle from '@hooks/vehicles/use-vehicle'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
 
 type Props = RootStackScreenProps<'DriverDetails'>
+
+const StyledIcon = styled(MaterialIcons)
 
 const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
   const { driver, isLoading, error } = useDriver()
@@ -45,7 +49,10 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoadingRide])
 
-  const { mutate, isLoading: isLoadingSignOut } = useMutation(signOut)
+  const {
+    mutate: mutateSignOut,
+    isLoading: isLoadingSignOut
+  } = useMutation(signOut)
 
   const goToPassengerProfile = (): void => {
     navigation.navigate('PassengerDetails')
@@ -55,139 +62,115 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('RegisterVehicle')
   }
 
-  const goToRequestedRides = (): void => {
-    navigation.navigate('RequestedRides')
-  }
-
   const isLoadingData = isLoading || isLoadingRide
 
-  return (
-    <View
-      className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-      {isLoadingData && <Text>Cargando...</Text>}
-      {error !== null && <Text>{error.message}</Text>}
-      {driver !== undefined && driver !== null && (
-        <View className="flex flex-col space-y-5">
-          {
-            avatarUrl !== null
-              ? (
-                <Image
-                  source={{ uri: avatarUrl }}
-                  className="w-32 h-32 rounded-full mx-auto"
-                />
-                )
-              : (
-                <View className="w-32 h-32 rounded-full mx-auto bg-gray-200"/>
-                )
-          }
-          <View className="mb-5">
-            <Text className="text-xl text-center dark:text-white">
-              {driver.name}
-            </Text>
-            <Text className="text-base text-center dark:text-white">
-              {driver.phone}
-            </Text>
-            <Text
-              className="text-base text-center font-medium text-gray-500 dark:text-gray-400">
-              Saldo actual: {Intl.NumberFormat('es', {
-                style: 'currency',
-                currency: 'COP'
-              }).format(driver.balance)}
-            </Text>
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      headerRight: () => (
+        <Pressable
+          disabled={isLoadingSignOut}
+          onPress={goToPassengerProfile}>
+          <StyledIcon name="person"
+                      className="text-4xl text-blue-700 dark:text-blue-400"/>
+        </Pressable>
+      ),
+      headerLeft: () => (
+        <Pressable
+          className="ml-3"
+          disabled={isLoadingSignOut}
+          onPress={() => {
+            mutateSignOut()
+          }}>
+          <StyledIcon name="logout"
+                      className="text-2xl text-red-700 dark:text-red-400"/>
+        </Pressable>
+      )
+    })
+  }, [navigation])
 
-            <View className="mt-3">
-              {
-                isLoadingVehicle && (
-                  <Text
-                    className="text-base text-center text-gray-500 dark:text-gray-400">
-                    Cargando vehículo...
-                  </Text>
-                )
-              }
-              {
-                !isLoadingVehicle && (vehicle === null || vehicle === undefined) && (
-                  <Pressable
-                    onPress={goToRegisterVehicle}
-                    className={
-                      cn('text-base px-6 py-3.5 bg-pink-100 rounded-lg border border-transparent',
-                        'active:bg-pink-200',
-                        (isLoadingSignOut) && 'bg-pink-200 cursor-not-allowed',
-                        (isLoadingSignOut) && 'dark:bg-pink-200 dark:text-gray-400')
-                    }
-                  >
-                    <Text
-                      className="text-base text-white font-medium text-center text-pink-900">
-                      Debes registrar un vehículo
-                    </Text>
-                  </Pressable>
-                )
-              }
-              {
-                !isLoadingVehicle && vehicle !== null && vehicle !== undefined && (
-                  <>
+  return (
+    <View className="mt-3">
+      <View
+        className="flex w-full px-5 justify-center mx-auto space-y-5">
+        {isLoadingData && <Text>Cargando...</Text>}
+        {error !== null && <Text>{error.message}</Text>}
+        {driver !== undefined && driver !== null && (
+          <View className="flex flex-col space-y-5">
+            {
+              avatarUrl !== null
+                ? (
+                  <Image
+                    source={{ uri: avatarUrl }}
+                    className="w-32 h-32 rounded-full mx-auto"
+                  />
+                  )
+                : (
+                  <View className="w-32 h-32 rounded-full mx-auto bg-gray-200"/>
+                  )
+            }
+            <View className="mb-5">
+              <Text className="text-xl text-center dark:text-white">
+                {driver.name}
+              </Text>
+              <Text className="text-base text-center dark:text-white">
+                {driver.phone}
+              </Text>
+              <Text
+                className="text-base text-center font-medium text-gray-500 dark:text-gray-400">
+                Saldo actual: {Intl.NumberFormat('es', {
+                  style: 'currency',
+                  currency: 'COP'
+                }).format(driver.balance)}
+              </Text>
+
+              <View className="mt-3">
+                {
+                  isLoadingVehicle && (
                     <Text
                       className="text-base text-center text-gray-500 dark:text-gray-400">
-                      Vehículo: {vehicle.brand}, {vehicle.line} {vehicle.model} -
-                      CC {vehicle.engine_displacement}
+                      Cargando vehículo...
                     </Text>
-                    <Text
-                      className="text-base text-center text-gray-500 dark:text-gray-400">
-                      Placa {vehicle.license_plate}
-                    </Text>
-                  </>
-                )
-              }
+                  )
+                }
+                {
+                  !isLoadingVehicle && (vehicle === null || vehicle === undefined) && (
+                    <Pressable
+                      onPress={goToRegisterVehicle}
+                      className={
+                        cn('text-base px-6 py-3.5 bg-pink-100 rounded-lg border border-transparent',
+                          'active:bg-pink-200',
+                          (isLoadingSignOut) && 'bg-pink-200 cursor-not-allowed',
+                          (isLoadingSignOut) && 'dark:bg-pink-200 dark:text-gray-400')
+                      }
+                    >
+                      <Text
+                        className="text-base text-white font-medium text-center text-pink-900">
+                        Debes registrar un vehículo
+                      </Text>
+                    </Pressable>
+                  )
+                }
+                {
+                  !isLoadingVehicle && vehicle !== null && vehicle !== undefined && (
+                    <>
+                      <Text
+                        className="text-base text-center text-gray-500 dark:text-gray-400">
+                        Vehículo: {vehicle.brand}, {vehicle.line} {vehicle.model} -
+                        CC {vehicle.engine_displacement}
+                      </Text>
+                      <Text
+                        className="text-base text-center text-gray-500 dark:text-gray-400">
+                        Placa {vehicle.license_plate}
+                      </Text>
+                    </>
+                  )
+                }
+              </View>
             </View>
           </View>
-
-          <Pressable
-            onPress={goToRequestedRides}
-            className={
-              cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                'active:bg-blue-800',
-                (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-            }
-          >
-            <Text
-              className="text-base text-white font-medium text-center text-white">
-              Ver solicitudes
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={goToPassengerProfile}
-            className={
-              cn('text-base px-6 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                'active:bg-green-800',
-                (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-            }
-          >
-            <Text
-              className="text-base text-white font-medium text-center text-white">
-              Cambiar a modo pasajero
-            </Text>
-          </Pressable>
-
-          <Pressable
-            onPress={() => {
-              mutate()
-            }}
-            className={
-              cn('text-base px-6 py-3.5 bg-red-700 rounded-lg border border-transparent',
-                'active:bg-red-800',
-                (isLoadingSignOut) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                (isLoadingSignOut) && 'dark:bg-gray-800 dark:text-gray-400')
-            }
-          >
-            <Text
-              className="text-base text-white font-medium text-center text-white">
-              Cerrar sesión
-            </Text>
-          </Pressable>
-        </View>
-      )}
+        )}
+      </View>
     </View>
   )
 }

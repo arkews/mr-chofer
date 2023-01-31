@@ -46,7 +46,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
   } = useMutation(signOut)
 
   const goToDriverProfile = (): void => {
-    navigation.navigate('DriverDetails')
+    navigation.navigate('DriverNavigation')
   }
 
   const { ride, isLoading: isLoadingPassengerRide } = useCurrentPassengerRide()

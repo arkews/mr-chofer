@@ -78,6 +78,24 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     mutate(rideId)
   }
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      header: () => (
+        <View
+          className="flex flex-row px-2 py-12 pb-2 bg-white shadow-2xl justify-center dark:bg-black">
+          <Text
+            className="text-xl text-center font-medium text-gray-500 dark:text-gray-400">
+            Saldo {Intl.NumberFormat('es', {
+              style: 'currency',
+              currency: 'COP'
+            }).format(driver?.balance ?? 0)}
+          </Text>
+        </View>
+      )
+    })
+  }, [navigation])
+
   return (
     <>
       <View className="flex h-full">
@@ -92,7 +110,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
         {
           !isAcceptingRequest && (
-            <View className="flex py-12 px-3 space-y-7">
+            <View className="flex py-2 px-3 space-y-7">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
                   Solicitudes de viaje
@@ -110,7 +128,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
               {!isLoading && rides?.length === 0 && (
                 <View>
                   <Text
-                    className="text-base text-center my-auto dark:text-white">
+                    className="text-base text-center my-auto text-gray-500 dark:text-gray-400">
                     No tienes solicitudes de viaje
                   </Text>
                 </View>

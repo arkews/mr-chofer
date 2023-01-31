@@ -6,6 +6,7 @@ export type RootStackParamList = {
   SignIn: undefined
   SignUp: undefined
 
+  DriverNavigation: undefined
   RegisterDriver: undefined
   DriverDetails: undefined
 

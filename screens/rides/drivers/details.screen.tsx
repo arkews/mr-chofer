@@ -27,7 +27,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (ride === undefined) {
-      navigation.replace('RequestedRides')
+      navigation.replace('DriverNavigation')
     }
   }, [ride, isLoading])
 

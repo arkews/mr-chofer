@@ -21,9 +21,42 @@ import PassengerRideDetailsScreen
   from '@screens/rides/passengers/details.screen'
 import RequestedRidesScreen from '@screens/rides/requested.screen'
 import DriverRideDetailsScreen from '@screens/rides/drivers/details.screen'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { styled } from 'nativewind'
+import { MaterialIcons } from '@expo/vector-icons'
+
+const DriverTabNavigation = createBottomTabNavigator<RootStackParamList>()
+const StyledIcon = styled(MaterialIcons)
+
+const DriverNavigation: FC = () => {
+  return (
+    <DriverTabNavigation.Navigator
+      initialRouteName="RequestedRides"
+      screenOptions={{ headerShown: false }}>
+      <DriverTabNavigation.Screen
+        name="RequestedRides"
+        options={{
+          title: 'Solicitudes',
+          tabBarIcon: () => (
+            <StyledIcon name="near-me"
+                        className="h-30 w-30 text-2xl dark:text-white"/>)
+
+        }}
+        component={RequestedRidesScreen}/>
+      <DriverTabNavigation.Screen
+        name="DriverDetails"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: () => (
+            <StyledIcon name="person"
+                        className="h-30 w-30 text-2xl dark:text-white"/>)
+        }}
+        component={DriverDetailsScreen}/>
+    </DriverTabNavigation.Navigator>
+  )
+}
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
-
 const RootNavigator: FC = () => {
   const { session } = useAuth()
 
@@ -52,8 +85,8 @@ const RootNavigator: FC = () => {
                           component={RegisterPassengerScreen}/>
             <Stack.Screen name="RegisterDriver"
                           component={RegisterDriverScreen}/>
-            <Stack.Screen name="DriverDetails"
-                          component={DriverDetailsScreen}/>
+            <Stack.Screen name="DriverNavigation"
+                          component={DriverNavigation}/>
             <Stack.Screen name="RegisterVehicle"
                           component={RegisterVehicleScreen}/>
             <Stack.Screen name="RegisterRideRequest"
@@ -62,8 +95,6 @@ const RootNavigator: FC = () => {
                           component={PassengerRideDetailsScreen}/>
             <Stack.Screen name="DriverRideDetails"
                           component={DriverRideDetailsScreen}/>
-            <Stack.Screen name="RequestedRides"
-                          component={RequestedRidesScreen}/>
           </>
         )
       }
