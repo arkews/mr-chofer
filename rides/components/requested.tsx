@@ -110,9 +110,9 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                   </Text>
                 </View>
 
-                <View className="mt-1.5">
+                <View className="mt-1">
                   <Text
-                    className="text-sm font-medium text-green-700 dark:text-green-400">
+                    className="text-md font-medium text-green-700 dark:text-green-400">
                     {Intl.NumberFormat('es', {
                       style: 'currency',
                       currency: 'COP'
@@ -129,13 +129,13 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                 <StyledIcon name="comment"
                             className="text-sm text-gray-700 dark:text-gray-400"/>
                 <Text className="text-gray-700 dark:text-gray-400">
-                  {ride.comments}
+                  {ride.comments?.replace(/(\r\n|\n|\r)/gm, '')}
                 </Text>
               </View>
             )
           }
 
-          <View className="mt-3">
+          <View className="mt-1.5">
             {
               isAccepting
                 ? (
