@@ -90,7 +90,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                   ride.passengers !== undefined && (
                     <Text
                       className="text-xs font-medium leading-none text-gray-500 dark:text-gray-400">
-                      {ride.passengers?.name}, {genders.find((g) => g.value === ride.gender)?.title}
+                      {ride.passengers?.name}
                     </Text>
                   )
                 }
@@ -100,8 +100,13 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                     className="text-base dark:text-white text-pink-800 font-medium dark:text-pink-300">
                     Origen: {ride.pickup_location}
                   </Text>
+
                   <Text className="dark:text-white">
                     Destino: {ride.destination}
+                  </Text>
+
+                  <Text className="text-gray-600 dark:text-gray-400 mt-1">
+                    Genero: {genders.find((g) => g.value === ride.gender)?.title}
                   </Text>
                 </View>
 
