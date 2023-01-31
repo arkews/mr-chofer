@@ -30,7 +30,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (ride === undefined) {
-      navigation.replace('RegisterRideRequest')
+      navigation.replace('PassengerDetails')
     }
   }, [ride, isLoading])
 

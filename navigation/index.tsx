@@ -45,8 +45,9 @@ const RootNavigator: FC = () => {
       {
         session !== null && (
           <>
-            <Stack.Screen name="PassengerDetails"
-                          component={PassengerDetailsScreen}/>
+            <Stack.Screen
+              name="PassengerDetails"
+              component={PassengerDetailsScreen}/>
             <Stack.Screen name="RegisterPassenger"
                           component={RegisterPassengerScreen}/>
             <Stack.Screen name="RegisterDriver"
