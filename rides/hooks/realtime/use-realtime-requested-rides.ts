@@ -57,7 +57,7 @@ const useRealtimeRequestedRides = () => {
         event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
         schema: 'public',
         table: 'rides',
-        filter: `status=eq.${RideStatus.canceled}&driver_id=is.null`
+        filter: `status=eq.${RideStatus.canceled}`
       },
       () => {
         void queryClient.invalidateQueries(['requested-rides'])
