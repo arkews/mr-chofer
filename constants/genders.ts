@@ -3,10 +3,10 @@ import { RadioValue } from '@components/form/radio-group'
 export const genders: RadioValue[] = [
   {
     value: 'Male',
-    title: 'Masculino'
+    title: 'Hombre'
   },
   {
     value: 'Female',
-    title: 'Femenino'
+    title: 'Mujer'
   }
 ]
