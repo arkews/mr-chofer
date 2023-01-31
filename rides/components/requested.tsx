@@ -65,7 +65,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                 ride.passengers !== undefined && (
                   <Text
                     className="text-xs font-medium leading-none text-gray-500 dark:text-gray-400">
-                    {ride.passengers?.name}, {genders.find((g) => g.value === ride.passengers?.gender)?.title}
+                    {ride.passengers?.name}, {genders.find((g) => g.value === ride.gender)?.title}
                   </Text>
                 )
               }

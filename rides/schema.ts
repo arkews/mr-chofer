@@ -13,6 +13,8 @@ export const RegisterRideRequestSchema = z.object({
   })
     .positive('El precio debe ser mayor a 0'),
   payment_method: z.enum(['cash']),
+  gender: z.string({ required_error: 'El género es requerido' })
+    .min(1, 'El género es requerido'),
   comments: z.string().optional().nullable()
 })
 
