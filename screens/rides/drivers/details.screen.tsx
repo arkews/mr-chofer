@@ -184,7 +184,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                       Genero
                     </Text>
                     <Text className="dark:text-white font-bold">
-                      {genders.find((g) => g.value === ride.passengers?.gender)?.title}
+                      {genders.find((g) => g.value === ride?.gender)?.title}
                     </Text>
                   </View>
 

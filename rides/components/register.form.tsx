@@ -11,6 +11,8 @@ import {
   RegisterRideRequest,
   RegisterRideRequestSchema
 } from '@base/rides/schema'
+import RadioGroup from '@components/form/radio-group'
+import { genders } from '@constants/genders'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -32,6 +34,7 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
   useEffect(() => {
     if (passenger !== undefined) {
       setValue('passenger_id', passenger.id)
+      setValue('gender', passenger.gender)
     }
   }, [passenger])
 
@@ -68,9 +71,10 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View>
-              <Text className="dark:text-white">Dirección de recogida</Text>
               <TextInput
                 onBlur={onBlur}
+                placeholder="Dirección de recogida"
+                placeholderTextColor="#9CA3AF"
                 onChangeText={onChange}
                 value={value}
                 editable={!isSubmitting && !isLoading}
@@ -95,8 +99,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="mt-2.5">
-              <Text className="dark:text-white">Destino</Text>
               <TextInput
+                placeholder="Destino"
+                placeholderTextColor="#9CA3AF"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -120,13 +125,27 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
 
         <Controller
           control={control}
+          render={({ field: { onChange, value } }) => (
+            <View className="mt-4">
+              <Text className="mb-2 dark:text-white">Sexo</Text>
+              <RadioGroup values={genders} selected={value}
+                          onSelect={onChange}/>
+
+              {(errors.gender != null) &&
+                <Text className="text-red-500">{errors.gender.message}</Text>}
+            </View>
+          )}
+          name="gender"
+        />
+
+        <Controller
+          control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="mt-2.5">
-              <Text className="dark:text-white">
-                Precio ofrecido
-              </Text>
               <TextInput
                 keyboardType="numeric"
+                placeholder="Precio ofrecido"
+                placeholderTextColor="#9CA3AF"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={`${value ?? ''}`}
@@ -152,8 +171,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <View className="mt-2.5">
-              <Text className="dark:text-white">Comentarios</Text>
               <TextInput
+                placeholder="Comentarios"
+                placeholderTextColor="#9CA3AF"
                 multiline
                 numberOfLines={3}
                 onBlur={onBlur}
