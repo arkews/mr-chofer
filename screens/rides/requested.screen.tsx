@@ -116,7 +116,10 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
       headerTitle: () => (
         <Text
           className="text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400">
-          Saldo {driver?.balance}
+          Saldo {Intl.NumberFormat('es', {
+            style: 'currency',
+            currency: 'COP'
+          }).format(driver?.balance ?? 0)}
         </Text>
       ),
       header: (props) => {

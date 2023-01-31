@@ -65,7 +65,6 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: '',
       headerRight: () => (
         <Pressable
           disabled={isLoadingSignOut}
@@ -83,9 +82,29 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
           <StyledIcon name="logout"
                       className="text-2xl text-red-700 dark:text-red-400"/>
         </Pressable>
-      )
+      ),
+      headerTitle: () => (<View/>),
+      header: (props) => {
+        const HeaderRight = props.options.headerRight as FC
+        const HeaderLeft = props.options.headerLeft as FC
+        const HeaderTitle = props.options.headerTitle as FC
+        return (
+          <View
+            className="flex flex-row px-3 py-12 pb-2 justify-between items-center dark:bg-black border border-b-gray-300 dark:border-b-gray-100">
+            <View className="justify-center">
+              <HeaderLeft key={props.route.key}/>
+            </View>
+            <View className="justify-center">
+              <HeaderTitle key={props.route.key}/>
+            </View>
+            <View className="justify-center">
+              <HeaderRight key={props.route.key}/>
+            </View>
+          </View>
+        )
+      }
     })
-  }, [navigation])
+  }, [navigation, isLoadingSignOut])
 
   return (
     <KeyboardAwareScrollView>
