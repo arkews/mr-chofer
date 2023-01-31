@@ -29,6 +29,7 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
       .from('rides')
       .update({
         driver_id: ride.driver_id,
+        offered_price: ride.offered_price,
         status: RideStatus.accepted
       })
       .eq('id', ride.id)
