@@ -14,16 +14,16 @@ const useRealtimePassengerRideBroadcast = () => {
       return
     }
 
-    if (ride === undefined) {
-      void RideChangesBroadcastChannel.unsubscribe()
+    if (ride === undefined || ride === null) {
       return
     }
 
-    if (RideChangesBroadcastChannel.joinedOnce) {
+    if (ride.status !== 'requested') {
       return
     }
 
-    RideChangesBroadcastChannel.on(
+    const channel = RideChangesBroadcastChannel()
+    channel.on(
       REALTIME_LISTEN_TYPES.BROADCAST,
       {
         event: `accept-ride-request-${ride.id}`
@@ -37,6 +37,10 @@ const useRealtimePassengerRideBroadcast = () => {
         })
       }
     ).subscribe()
+
+    return () => {
+      void channel.unsubscribe()
+    }
   }, [ride, isLoading])
 }
 

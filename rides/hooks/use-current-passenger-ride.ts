@@ -28,8 +28,8 @@ const useCurrentPassengerRide = (): UseRide => {
     return data
   }
 
-  const { data, isLoading, error } = useQuery(
-    ['current-ride', passenger?.id],
+  const { data, isLoading, error, isFetching, isRefetching } = useQuery(
+    ['current-passenger-ride'],
     fetchRide,
     {
       enabled: passenger?.id !== undefined,
@@ -38,7 +38,7 @@ const useCurrentPassengerRide = (): UseRide => {
 
   return {
     ride: error === null ? data : undefined,
-    isLoading,
+    isLoading: isLoading || isFetching || isRefetching,
     error: error as Error
   }
 }
