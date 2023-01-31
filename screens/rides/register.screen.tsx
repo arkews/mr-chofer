@@ -46,7 +46,7 @@ const RegisterRideRequestScreen: FC<Props> = ({ navigation }) => {
   const queryClient = useQueryClient()
   const { mutate, isLoading, error } = useMutation(sendRideRequest, {
     onSuccess: () => {
-      void queryClient.invalidateQueries(['current-ride', passenger?.id])
+      void queryClient.invalidateQueries(['current-passenger-ride'])
       navigation.replace('PassengerRideDetails')
     }
   })
