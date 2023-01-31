@@ -42,18 +42,22 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoadingCurrentRide])
 
-  const performAcceptRideRequest = async (rideId: number) => {
+  const performAcceptRideRequest = async (data: { rideId: number, price?: number }) => {
     if (driver !== undefined && driver !== null && rides !== undefined) {
-      const ride = rides.find((ride) => ride.id === rideId)
+      const ride = rides.find((ride) => ride.id === data.rideId)
+
       const channel = supabase.channel('rides-changes').subscribe(
         async (status) => {
           if (status === 'SUBSCRIBED') {
             const result = await channel
               .send({
                 type: REALTIME_LISTEN_TYPES.BROADCAST,
-                event: `accept-ride-request-${rideId}`,
+                event: `accept-ride-request-${data.rideId}`,
                 payload: {
                   ...ride,
+                  ...(data.price !== undefined && data.price !== null) && {
+                    offered_price: data.price
+                  },
                   driver_id: driver.id,
                   drivers: {
                     name: driver.name,
@@ -79,8 +83,8 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     isLoading: isAcceptingRequest
   } = useMutation(performAcceptRideRequest)
 
-  const handleAcceptRideRequest = (rideId: number) => {
-    mutate(rideId)
+  const handleAcceptRideRequest = (rideId: number, price?: number) => {
+    mutate({ rideId, price })
   }
 
   const {
