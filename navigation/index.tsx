@@ -16,7 +16,6 @@ import RegisterPassengerScreen from '@screens/passengers/register.screen'
 import PassengerDetailsScreen from '@screens/passengers/details.screen'
 import RegisterVehicleScreen from '@screens/vehicles/register.screen'
 import { useAuth } from '@base/auth/context'
-import RegisterRideRequestScreen from '@screens/rides/register.screen'
 import PassengerRideDetailsScreen
   from '@screens/rides/passengers/details.screen'
 import RequestedRidesScreen from '@screens/rides/requested.screen'
@@ -89,8 +88,6 @@ const RootNavigator: FC = () => {
                           component={DriverNavigation}/>
             <Stack.Screen name="RegisterVehicle"
                           component={RegisterVehicleScreen}/>
-            <Stack.Screen name="RegisterRideRequest"
-                          component={RegisterRideRequestScreen}/>
             <Stack.Screen name="PassengerRideDetails"
                           component={PassengerRideDetailsScreen}/>
             <Stack.Screen name="DriverRideDetails"
