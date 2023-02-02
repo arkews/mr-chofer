@@ -1,8 +1,4 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer
-} from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { ColorSchemeName } from 'react-native'
 import { FC } from 'react'
@@ -23,6 +19,7 @@ import DriverRideDetailsScreen from '@screens/rides/drivers/details.screen'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
+import { darkTheme, lightTheme } from '@constants/theme'
 
 const DriverTabNavigation = createBottomTabNavigator<RootStackParamList>()
 const StyledIcon = styled(MaterialIcons)
@@ -102,7 +99,7 @@ const RootNavigator: FC = () => {
 const Navigation: FC<{ colorScheme: ColorSchemeName }> = ({ colorScheme }) => {
   return (
     <NavigationContainer
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === 'dark' ? darkTheme : lightTheme}>
       <RootNavigator/>
     </NavigationContainer>
   )

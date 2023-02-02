@@ -1,4 +1,10 @@
-import { Text, TextInput, TextInputProps, View } from 'react-native'
+import {
+  Text,
+  TextInput,
+  TextInputProps,
+  useColorScheme,
+  View
+} from 'react-native'
 import {
   useController,
   UseControllerProps,
@@ -7,6 +13,7 @@ import {
 import { FC } from 'react'
 import cn from 'classnames'
 import FieldError from '@components/form/feedback/field/field.error'
+import colors from 'tailwindcss/colors'
 
 type Props = TextInputProps & UseControllerProps & {
   label?: string
@@ -35,6 +42,8 @@ const Input: FC<Props> = (props) => {
 
   const hasError = errors[name] !== undefined
 
+  const scheme = useColorScheme()
+
   return (
     <View>
       {
@@ -56,6 +65,7 @@ const Input: FC<Props> = (props) => {
             disabled && 'bg-neutral-200 text-neutral-400 cursor-not-allowed',
             disabled && 'dark:bg-neutral-800 dark:text-neutral-500')
         }
+        cursorColor={scheme === 'dark' ? colors.gray['300'] : colors.gray['700']}
         {...rest}
       />
 
