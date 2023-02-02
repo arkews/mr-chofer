@@ -32,7 +32,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
       return
     }
 
-    if (passenger.photo_url !== null) {
+    if (passenger.photo_url !== null && avatarUrl === null) {
       getAvatarUrl(passenger.photo_url)
         .then(url => {
           setAvatarUrl(url)

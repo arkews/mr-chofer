@@ -30,7 +30,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
-    if (driver.photo_url !== null) {
+    if (driver.photo_url !== null && avatarUrl === null) {
       getAvatarUrl(driver.photo_url)
         .then(url => {
           setAvatarUrl(url)
