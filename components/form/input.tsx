@@ -9,7 +9,7 @@ import cn from 'classnames'
 import FieldError from '@components/form/feedback/field/field.error'
 
 type Props = TextInputProps & UseControllerProps & {
-  label: string
+  label?: string
   name: string
   defaultValue?: string
 
@@ -20,27 +20,35 @@ const Input: FC<Props> = (props) => {
   const {
     label,
     name,
+    rules,
     disabled = false,
     defaultValue,
     ...rest
   } = props
 
   const { formState: { errors } } = useFormContext()
-  const { field: { onChange, onBlur, value } } = useController({ name, defaultValue })
+  const { field: { onChange, onBlur, value } } = useController({
+    name,
+    rules,
+    defaultValue
+  })
 
   const hasError = errors[name] !== undefined
 
   return (
     <View>
-      <Text className="font-medium text-gray-700 dark:text-gray-300">
-        {label}
-      </Text>
+      {
+        label !== undefined &&
+        <Text className="font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </Text>
+      }
 
       <TextInput
         onBlur={onBlur}
         onChangeText={onChange}
         editable={!disabled}
-        value={value}
+        value={`${value as string ?? ''}`}
         className={
           cn('border text-lg px-4 py-3 mt-1 rounded-lg bg-neutral-100 border-neutral-400 text-gray-900 border-[1px]',
             'focus:border-blue-600 focus:ring-0 ',
