@@ -4,11 +4,15 @@ import {
   KeyboardAvoidingView,
   Pressable,
   Text,
-  TextInput,
   View
 } from 'react-native'
 import { z } from 'zod'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  Controller,
+  FormProvider,
+  SubmitHandler,
+  useForm
+} from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
@@ -20,6 +24,8 @@ import cn from 'classnames'
 import PhotoPicker from '@components/form/photo-picker'
 import RadioGroup from '@components/form/radio-group'
 import { genders } from '@constants/genders'
+import Input from '@components/form/input'
+import FieldError from '@components/form/feedback/field/field.error'
 
 const RegisterPassengerSchema = z.object({
   name: z.string({ required_error: 'Nombre requerido' })
@@ -53,14 +59,17 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     }
   }, [session])
 
+  const form = useForm<PassengerData>({
+    resolver: zodResolver(RegisterPassengerSchema)
+  })
+
   const {
     control,
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting }
-  } = useForm<PassengerData>({
-    resolver: zodResolver(RegisterPassengerSchema)
-  })
+  } = form
+
   const [photo, setPhoto] = useState<Photo | null>(null)
 
   const registerPassenger = async (data: PassengerMutationData): Promise<void> => {
@@ -94,177 +103,105 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAvoidingView>
-      <View className="py-36">
-        <View
-          className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-          <View className="mb-5">
-            <Text className="text-xl text-center dark:text-white">
-              Cuentanos un poco sobre ti
-            </Text>
-            <Text
-              className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
-              Solo necesitamos algunos datos para poder crear tu perfil
-            </Text>
-          </View>
+    <FormProvider {...form}>
+      <KeyboardAvoidingView>
+        <View className="py-24">
+          <View
+            className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
+            <View className="mb-3">
+              <Text className="text-xl text-center dark:text-white">
+                Cuentanos un poco sobre ti
+              </Text>
+              <Text
+                className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
+                Solo necesitamos algunos datos para poder crear tu perfil
+              </Text>
+            </View>
 
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <>
-                <Text className="dark:text-white">Nombre</Text>
-                <TextInput
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  editable={!isSubmitting && !isLoading}
-                  className={
-                    cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                      'focus:border-blue-600 focus:ring-0',
-                      'dark:text-white',
-                      isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                      isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
+            <View>
+              <Input
+                name="name"
+                label="Nombre"
+                enablesReturnKeyAutomatically/>
+            </View>
+
+            <View>
+              <Input
+                name="city"
+                label="Ciudad"
+                enablesReturnKeyAutomatically/>
+            </View>
+
+            <View>
+              <Input
+                name="phone"
+                label="Teléfono"
+                keyboardType="numeric"
+                enablesReturnKeyAutomatically/>
+            </View>
+
+            <View>
+              <Input
+                name="phoneConfirmation"
+                label="Confirmar teléfono"
+                keyboardType="numeric"
+                enablesReturnKeyAutomatically/>
+            </View>
+
+            <Controller
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="mt-4">
+                  <Text className="mb-2 dark:text-white">Sexo</Text>
+                  <RadioGroup values={genders} selected={value}
+                              onSelect={onChange}/>
+
+                  {(errors.gender != null) &&
+                    <FieldError message={errors.gender.message}/>
                   }
-                />
+                </View>
+              )}
+              name="gender"
+            />
 
-                {(errors.name != null) &&
-                  <Text className="text-red-500">{errors.name.message}</Text>}
-              </>
-            )}
-            name="name"
-          />
+            <View>
+              <PhotoPicker onSelect={setPhoto}/>
+              {
+                photo !== null &&
+                <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                  Foto seleccionada {photo.name}
+                </Text>
+              }
+            </View>
 
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mt-4">
-                <Text className="dark:text-white">Ciudad</Text>
-                <TextInput
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  editable={!isSubmitting && !isLoading}
-                  className={
-                    cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                      'focus:border-blue-600 focus:ring-0',
-                      'dark:text-white',
-                      isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                      isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-                  }
-                />
-
-                {(errors.city != null) &&
-                  <Text className="text-red-500">{errors.city.message}</Text>}
-              </View>
-            )}
-            name="city"
-          />
-
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mt-4">
-                <Text className="dark:text-white">Teléfono</Text>
-                <TextInput
-                  keyboardType="numeric"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  editable={!isSubmitting && !isLoading}
-                  className={
-                    cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                      'focus:border-blue-600 focus:ring-0',
-                      'dark:text-white',
-                      isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                      isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-                  }
-                />
-
-                {(errors.phone != null) &&
-                  <Text className="text-red-500">{errors.phone.message}</Text>}
-              </View>
-            )}
-            name="phone"
-          />
-
-          <Controller
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View className="mt-4">
-                <Text className="dark:text-white">Confirmar teléfono</Text>
-                <TextInput
-                  keyboardType="numeric"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  editable={!isSubmitting && !isLoading}
-                  className={
-                    cn('border text-lg px-4 py-3 mt-2 rounded-lg border-gray-200 text-gray-900 outline-none',
-                      'focus:border-blue-600 focus:ring-0',
-                      'dark:text-white',
-                      isSubmitting && 'bg-gray-100 text-gray-400 cursor-not-allowed',
-                      isSubmitting && 'dark:bg-gray-800 dark:text-gray-400')
-                  }
-                />
-
-                {(errors.phoneConfirmation != null) &&
-                  <Text
-                    className="text-red-500">{errors.phoneConfirmation.message}</Text>}
-              </View>
-            )}
-            name="phoneConfirmation"
-          />
-
-          <Controller
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <View className="mt-4">
-                <Text className="mb-2 dark:text-white">Sexo</Text>
-                <RadioGroup values={genders} selected={value}
-                            onSelect={onChange}/>
-
-                {(errors.gender != null) &&
-                  <Text className="text-red-500">{errors.gender.message}</Text>}
-              </View>
-            )}
-            name="gender"
-          />
-
-          <View>
-            <PhotoPicker onSelect={setPhoto}/>
             {
-              photo !== null &&
-              <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-                Foto seleccionada {photo.name}
+              error !== null &&
+              <Text className="text-red-500 text-xs">
+                Ha ocurrido un error, verifique los datos e intente nuevamente.
               </Text>
             }
+
+            <View className="pt-5">
+              <Pressable
+                onPress={handleSubmit(onSubmit)}
+                disabled={isSubmitting || isLoading}
+                className={
+                  cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                    'active:bg-blue-800',
+                    (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                    (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
+                }
+              >
+                <Text
+                  className="text-base text-white font-medium text-center text-white">
+                  Enviar
+                </Text>
+              </Pressable>
+            </View>
           </View>
-
-          {
-            error !== null &&
-            <Text className="text-red-500 text-xs">
-              Ha ocurrido un error, verifique los datos e intente nuevamente.
-            </Text>
-          }
-
-          <Pressable
-            onPress={handleSubmit(onSubmit)}
-            disabled={isSubmitting || isLoading}
-            className={
-              cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                'active:bg-blue-800',
-                (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
-            }
-          >
-            <Text
-              className="text-base text-white font-medium text-center text-white">
-              Enviar
-            </Text>
-          </Pressable>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </FormProvider>
   )
 }
 
