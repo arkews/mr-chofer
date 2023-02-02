@@ -58,6 +58,11 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
             autoCapitalize="none"
             autoCorrect={false}
             enablesReturnKeyAutomatically
+            accessibilityLabel="Email"
+            accessibilityHint="Ingrese su email"
+            accessibilityRole="text"
+            accessibilityState={{ disabled: isDisabled }}
+            accessibilityValue={{ text: 'Email' }}
             disabled={isDisabled}/>
         </View>
 
@@ -68,6 +73,11 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
             secureTextEntry={!showPassword}
             autoCorrect={false}
             enablesReturnKeyAutomatically
+            accessibilityLabel="Contraseña"
+            accessibilityHint="Ingrese su contraseña"
+            accessibilityRole="text"
+            accessibilityState={{ disabled: isDisabled }}
+            accessibilityValue={{ text: 'Contraseña' }}
             disabled={isDisabled}/>
 
           <View className="flex flex-row mt-3 items-center">
@@ -76,6 +86,11 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
               onValueChange={setShowPassword}
               disabled={isDisabled}
               color={showPassword ? '#2563eb' : undefined}
+              accessibilityLabel="Mostrar contraseña"
+              accessibilityHint="Marque para mostrar la contraseña"
+              accessibilityRole="checkbox"
+              accessibilityState={{ disabled: isDisabled }}
+              accessibilityValue={{ text: 'Mostrar contraseña' }}
               className={
                 cn('rounded-md w-6 h-6 justify-center items-center')
               }/>
@@ -95,13 +110,18 @@ const SignInScreen: FC<Props> = ({ navigation }) => {
         <View>
           <Pressable
             onPress={handleSubmit(onSubmit)}
-            disabled={isDisabled}
             className={
               cn('text-base mt-4 px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
                 'active:bg-blue-800',
                 (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
                 (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
             }
+            accessibilityLabel="Iniciar sesión"
+            accessibilityHint="Presione para iniciar sesión"
+            accessibilityRole="button"
+            accessibilityState={{ disabled: isDisabled }}
+            accessibilityValue={{ text: 'Iniciar sesión' }}
+            disabled={isDisabled}
           >
             <Text
               className="text-base text-white font-medium text-center text-white">
