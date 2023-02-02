@@ -90,7 +90,7 @@ const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
         const HeaderTitle = props.options.headerTitle as FC
         return (
           <View
-            className="flex flex-row px-3 py-12 pb-2 justify-between items-center dark:bg-black border border-b-gray-300 dark:border-b-gray-100">
+            className="flex flex-row px-3 py-12 pb-2 justify-between items-center border border-b-neutral-300 dark:border-b-neutral-600 dark:bg-black">
             <View className="justify-center">
               <HeaderLeft key={props.route.key}/>
             </View>
