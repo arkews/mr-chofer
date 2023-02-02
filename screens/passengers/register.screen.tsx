@@ -102,6 +102,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     mutate(rest)
   }
 
+  const isDisabled = isLoading || isSubmitting
+
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
@@ -122,6 +124,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
               <Input
                 name="name"
                 label="Nombre"
+                disabled={isDisabled}
                 enablesReturnKeyAutomatically/>
             </View>
 
@@ -129,6 +132,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
               <Input
                 name="city"
                 label="Ciudad"
+                disabled={isDisabled}
                 enablesReturnKeyAutomatically/>
             </View>
 
@@ -137,6 +141,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 name="phone"
                 label="Teléfono"
                 keyboardType="numeric"
+                disabled={isDisabled}
                 enablesReturnKeyAutomatically/>
             </View>
 
@@ -145,6 +150,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 name="phoneConfirmation"
                 label="Confirmar teléfono"
                 keyboardType="numeric"
+                disabled={isDisabled}
                 enablesReturnKeyAutomatically/>
             </View>
 
@@ -165,7 +171,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
             />
 
             <View>
-              <PhotoPicker onSelect={setPhoto}/>
+              <PhotoPicker onSelect={setPhoto} disabled={isDisabled}/>
               {
                 photo !== null &&
                 <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
@@ -184,12 +190,12 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
             <View className="pt-5">
               <Pressable
                 onPress={handleSubmit(onSubmit)}
-                disabled={isSubmitting || isLoading}
+                disabled={isDisabled}
                 className={
                   cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
                     'active:bg-blue-800',
-                    (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
+                    (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                    (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
                 }
               >
                 <Text
