@@ -200,7 +200,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
               <View className="flex flex-row space-x-2">
                 <View className="basis-1/2">
                   <PhotoPicker label="Parte frontal" mode="take"
-                               disabled={isSubmitting || isLoading}
+                               disabled={isDisabled}
                                onSelect={(photo) => {
                                  handleDocumentPhotoChange('id_photo_url_front', photo)
                                }}/>
@@ -218,7 +218,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                 </View>
                 <View className="basis-1/2">
                   <PhotoPicker label="Parte trasera" mode="take"
-                               disabled={isSubmitting || isLoading}
+                               disabled={isDisabled}
                                onSelect={(photo) => {
                                  handleDocumentPhotoChange('id_photo_url_back', photo)
                                }}/>
@@ -264,7 +264,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                 </View>
                 <View className="basis-1/2">
                   <PhotoPicker label="Parte trasera" mode="take"
-                               disabled={isSubmitting || isLoading}
+                               disabled={isDisabled}
                                onSelect={(photo) => {
                                  handleDocumentPhotoChange('license_photo_url_back', photo)
                                }}/>
@@ -286,20 +286,18 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
             {
               error !== null &&
-              <Text className="text-red-500 text-xs">
-                Ha ocurrido un error, verifique los datos e intente nuevamente.
-              </Text>
+              <FieldError message="Ha ocurrido un error, verifique los datos e intente nuevamente."/>
             }
 
             <View>
               <Pressable
                 onPress={handleSubmit(onSubmit)}
-                disabled={isSubmitting || isLoading}
+                disabled={isDisabled}
                 className={
                   cn('text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
                     'active:bg-blue-800',
-                    (isSubmitting || isLoading) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    (isSubmitting || isLoading) && 'dark:bg-gray-800 dark:text-gray-400')
+                    (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                    (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
                 }
               >
                 <Text
