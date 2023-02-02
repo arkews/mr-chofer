@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useCallback, useEffect } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
 import useDriver from '@hooks/drivers/use-driver'
@@ -18,6 +18,7 @@ import useRealtimeCurrentDriverRide
 import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
 import { signOut } from '@base/auth'
+import { useFocusEffect } from '@react-navigation/native'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -26,7 +27,21 @@ type Props = RootStackScreenProps<'RequestedRides'>
 const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
   const { driver } = useDriver()
-  const { vehicle } = useVehicle()
+  const { vehicle, isLoading: isLoadingVehicle } = useVehicle()
+
+  const checkVehicle = useCallback(() => {
+    if (isLoadingVehicle) {
+      return
+    }
+
+    if (vehicle === undefined || vehicle === null) {
+      navigation.navigate('DriverDetails')
+    }
+  }, [isLoadingVehicle, vehicle])
+
+  useFocusEffect(() => {
+    checkVehicle()
+  })
 
   useRealtimeRequestedRides()
   useRealtimeCurrentDriverRide()
@@ -161,7 +176,18 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         )}
 
         {
-          !isAcceptingRequest && (
+          isLoadingVehicle && (
+            <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+              <Text
+                className="text-2xl font-bold text-center my-auto dark:text-white">
+                Verificando información...
+              </Text>
+            </View>
+          )
+        }
+
+        {
+          !isAcceptingRequest && !isLoadingVehicle && (
             <View className="flex py-2 px-3 space-y-7">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">

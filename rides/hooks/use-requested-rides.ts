@@ -1,6 +1,7 @@
 import { supabase } from '@base/supabase'
 import { useQuery } from '@tanstack/react-query'
 import { Ride } from '@base/rides/types'
+import useVehicle from '@hooks/vehicles/use-vehicle'
 
 type UseRequestedRides = {
   rides?: Ride[]
@@ -23,11 +24,13 @@ const useRequestedRides = (): UseRequestedRides => {
     return data
   }
 
+  const { vehicle } = useVehicle()
   const { data, isLoading, error } = useQuery(
     ['requested-rides'],
     fetchRides,
     {
-      retry: false
+      retry: false,
+      enabled: vehicle !== null && vehicle !== undefined
     })
 
   return {
