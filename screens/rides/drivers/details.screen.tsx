@@ -88,6 +88,37 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
   const disableButtons = isLoading || startingRide || isEndingRide || isCancelingRide
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: '',
+      headerRight: () => (
+        <View>
+          <Pressable
+            onPress={() => {
+              cancelRide()
+            }}
+            disabled={disableButtons}
+            className={
+              cn('text-base px-3 py-2 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
+                (disableButtons) && 'border-gray-300 cursor-not-allowed dark:border-gray-800'
+              )
+            }
+          >
+            <Text
+              className={
+                cn('text-xs font-bold text-center text-red-700 dark:text-red-500',
+                  (disableButtons) && 'text-gray-700 dark:text-gray-400')
+              }>
+              Cancelar
+            </Text>
+          </Pressable>
+        </View>
+      ),
+      headerLeft: () => (<View></View>)
+    })
+  }, [navigation, disableButtons])
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -96,7 +127,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
       {ride !== undefined && (
         <View className="flex flex-col space-y-5">
           <View className="mb-5">
-            <Text className="text-xl text-center dark:text-white">
+            <Text className="text-2xl text-center font-bold text-gray-900 dark:text-gray-200">
               Información del recorrido
             </Text>
           </View>
@@ -138,10 +169,10 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
             <View className="flex flex-row justify-between px-2 py-2">
               <Text className="text-gray-700 dark:text-gray-400">
-                Precio ofrecido
+                Precio final
               </Text>
               <Text
-                className="font-medium text-green-700 dark:text-green-400">
+                className="font-bold text-green-700 dark:text-green-400">
                 {Intl.NumberFormat('es', {
                   style: 'currency',
                   currency: 'COP'
@@ -154,7 +185,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               (
                 <View className="flex flex-row px-2 space-x-2">
                   <StyledIcon name="comment" size={24}
-                              className="text-gray-700 dark:text-gray-400"/>
+                              className="text-gray-600 dark:text-gray-400"/>
                   <Text className="text-gray-700 dark:text-gray-400">
                     {ride.comments}
                   </Text>
@@ -201,7 +232,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
             }
           </View>
 
-          <View className="flex flex-row space-x-5 justify-around">
+          <View className="flex flex-row justify-around pt-3">
             {
               ride.status === RideStatus.accepted && (
                 <View className="flex-1">
@@ -211,15 +242,15 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                     }}
                     disabled={disableButtons}
                     className={
-                      cn('text-base px-4 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                      cn('text-base px-5 py-3 bg-blue-700 rounded-lg border border-transparent',
                         'active:bg-blue-800',
                         (disableButtons) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
                         (disableButtons) && 'dark:bg-gray-800 dark:text-gray-400')
                     }
                   >
                     <Text
-                      className="text-white text-center text-white">
-                      Iniciar recorrido
+                      className="text-base text-center text-white font-medium">
+                      ¡Ya llegue!
                     </Text>
                   </Pressable>
                 </View>
@@ -235,42 +266,20 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                     }}
                     disabled={disableButtons}
                     className={
-                      cn('text-base px-4 py-3.5 bg-green-700 rounded-lg border border-transparent',
-                        'active:bg-blue-800',
+                      cn('text-base px-5 py-3 bg-green-700 rounded-lg border border-transparent',
+                        'active:bg-green-800',
                         (disableButtons) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
                         (disableButtons) && 'dark:bg-gray-800 dark:text-gray-400')
                     }
                   >
                     <Text
-                      className="text-white text-center text-white">
+                      className="text-base text-center text-white font-medium">
                       Finalizar
                     </Text>
                   </Pressable>
                 </View>
               )
             }
-
-            <View className="flex-1">
-              <Pressable
-                onPress={() => {
-                  cancelRide()
-                }}
-                disabled={disableButtons}
-                className={
-                  cn('text-base px-4 py-3.5 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
-                    (disableButtons) && 'border-gray-300 cursor-not-allowed dark:border-gray-800'
-                  )
-                }
-              >
-                <Text
-                  className={
-                    cn('text-center text-red-700 dark:text-red-500',
-                      (disableButtons) && 'text-gray-700 dark:text-gray-400')
-                  }>
-                  Cancelar
-                </Text>
-              </Pressable>
-            </View>
           </View>
         </View>
       )}

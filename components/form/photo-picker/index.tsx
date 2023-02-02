@@ -91,7 +91,7 @@ const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
       disabled={disabled}
       onPress={finalMode === 'take' ? handleTakePhoto : handlePickPhoto}
       className="text-base px-6 py-3.5 border-blue-500 rounded-lg border dark:border-blue-300">
-      <Text className="text-blue-500 text-center dark:text-blue-300">
+      <Text className="text-blue-500 text-center font-medium dark:text-blue-300">
         {label ?? 'Seleccionar foto'}
       </Text>
     </Pressable>

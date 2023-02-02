@@ -30,7 +30,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
-    if (driver.photo_url !== null) {
+    if (driver.photo_url !== null && avatarUrl === null) {
       getAvatarUrl(driver.photo_url)
         .then(url => {
           setAvatarUrl(url)
@@ -94,7 +94,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
         const HeaderTitle = props.options.headerTitle as FC
         return (
           <View
-            className="flex flex-row px-3 py-12 pb-2 justify-between items-center border border-b-gray-300 dark:border-b-gray-100">
+            className="flex flex-row px-3 py-12 pb-2 justify-between items-center border border-b-neutral-300 dark:border-b-neutral-600">
             <View className="justify-center">
               <HeaderLeft key={props.route.key}/>
             </View>
