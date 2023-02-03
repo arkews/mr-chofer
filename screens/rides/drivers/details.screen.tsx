@@ -127,6 +127,15 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     await Linking.openURL(`tel:${ride.passengers.phone}`)
   }
 
+  const performMessage = async () => {
+    if (ride?.passengers === undefined) {
+      return
+    }
+
+    const message = 'Hola, soy tu conductor de MrChoffer'
+    await Linking.openURL(`whatsapp://send?text=${message}&phone=${ride.passengers.phone}`)
+  }
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -229,7 +238,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                   </View>
 
                   <View className="pt-5">
-                    <View className="flex flex-row justify-end">
+                    <View className="flex flex-row justify-end space-x-5">
                       <Pressable
                         onPress={async () => {
                           await performCall()
@@ -237,6 +246,17 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                         className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
                         <StyledIcon
                           name="call"
+                          size={30}
+                          className="text-gray-700 dark:text-gray-400"/>
+                      </Pressable>
+
+                      <Pressable
+                        onPress={async () => {
+                          await performMessage()
+                        }}
+                        className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
+                        <StyledIcon
+                          name="send"
                           size={30}
                           className="text-gray-700 dark:text-gray-400"/>
                       </Pressable>
