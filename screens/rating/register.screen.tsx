@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { RootStackScreenProps } from '@navigation/types'
 import {
@@ -71,6 +71,11 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
   }
 
   const isDisabled = isLoading || isSubmitting
+
+  useEffect(() => navigation.addListener('beforeRemove', () => {
+    const queryKey = type === 'driver' ? 'current-passenger-ride' : 'current-driver-ride'
+    void queryClient.invalidateQueries([queryKey])
+  }), [navigation])
 
   return (
     <FormProvider {...form}>
