@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Linking, Pressable, Text, View } from 'react-native'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
 import { RootStackScreenProps } from '@navigation/types'
@@ -96,6 +96,14 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, disableButtons])
 
+  const performCall = async () => {
+    if (ride?.drivers === undefined) {
+      return
+    }
+
+    await Linking.openURL(`tel:${ride.drivers.phone}`)
+  }
+
   return (
     <View className="mt-7">
       <View
@@ -150,7 +158,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                   Precio ofrecido
                 </Text>
                 <Text
-                  className="font-medium text-green-700 dark:text-green-400">
+                  className="font-bold text-green-700 dark:text-green-400">
                   {Intl.NumberFormat('es', {
                     style: 'currency',
                     currency: 'COP'
@@ -173,13 +181,30 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
               {
                 (ride.drivers !== undefined && ride.drivers !== null) && (
-                  <View className="flex flex-row justify-between px-2 py-2">
-                    <Text className="text-gray-700 dark:text-gray-400">
-                      Conductor
-                    </Text>
-                    <Text className="dark:text-white font-bold">
-                      {ride.drivers.name}
-                    </Text>
+                  <View>
+                    <View className="flex flex-row justify-between px-2 py-2">
+                      <Text className="text-gray-700 dark:text-gray-400">
+                        Conductor
+                      </Text>
+                      <Text className="dark:text-white font-bold">
+                        {ride.drivers.name}
+                      </Text>
+                    </View>
+
+                    <View className="pt-5">
+                      <View className="flex flex-row justify-end">
+                        <Pressable
+                          onPress={async () => {
+                            await performCall()
+                          }}
+                          className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
+                          <StyledIcon
+                            name="call"
+                            size={30}
+                            className="text-gray-700 dark:text-gray-400"/>
+                        </Pressable>
+                      </View>
+                    </View>
                   </View>
                 )
               }

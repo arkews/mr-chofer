@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { Linking, Pressable, Text, View } from 'react-native'
 import { RootStackScreenProps } from '@navigation/types'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import { genders } from '@constants/genders'
@@ -119,6 +119,14 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, disableButtons])
 
+  const performCall = async () => {
+    if (ride?.passengers === undefined) {
+      return
+    }
+
+    await Linking.openURL(`tel:${ride.passengers.phone}`)
+  }
+
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
@@ -127,7 +135,8 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
       {ride !== undefined && (
         <View className="flex flex-col space-y-5">
           <View className="mb-5">
-            <Text className="text-2xl text-center font-bold text-gray-900 dark:text-gray-200">
+            <Text
+              className="text-2xl text-center font-bold text-gray-900 dark:text-gray-200">
               Información del recorrido
             </Text>
           </View>
@@ -219,13 +228,19 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                     </Text>
                   </View>
 
-                  <View className="flex flex-row justify-between px-2 py-2">
-                    <Text className="text-gray-700 dark:text-gray-400">
-                      Número de contacto
-                    </Text>
-                    <Text className="dark:text-white font-bold">
-                      {ride.passengers.phone}
-                    </Text>
+                  <View className="pt-5">
+                    <View className="flex flex-row justify-end">
+                      <Pressable
+                        onPress={async () => {
+                          await performCall()
+                        }}
+                        className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
+                        <StyledIcon
+                          name="call"
+                          size={30}
+                          className="text-gray-700 dark:text-gray-400"/>
+                      </Pressable>
+                    </View>
                   </View>
                 </View>
               )
