@@ -15,6 +15,7 @@ const useRequestedRides = (): UseRequestedRides => {
       .from('rides')
       .select('*, passengers:passenger_id(name,phone,gender,photo_url)')
       .eq('status', 'requested')
+      .order('created_at', { ascending: false })
       .limit(20)
 
     if (error !== null) {
