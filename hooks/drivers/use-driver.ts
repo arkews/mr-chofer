@@ -2,6 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@base/supabase'
 import { useAuth } from '@base/auth/context'
 
+export enum DriverStatus {
+  pending = 'pending',
+  accepted = 'accepted',
+  rejected = 'rejected',
+  blocked = 'blocked'
+}
+
 type Driver = {
   id: string
   name: string
@@ -12,6 +19,8 @@ type Driver = {
 
   created_at: string
   updated_at: string
+
+  status: DriverStatus
 }
 
 type UseDriver = {

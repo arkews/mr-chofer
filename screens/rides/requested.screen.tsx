@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
-import useDriver from '@hooks/drivers/use-driver'
+import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import RequestedRideCard from '@base/rides/components/requested'
@@ -187,7 +187,18 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         }
 
         {
-          !isAcceptingRequest && !isLoadingVehicle && (
+          driver !== undefined && driver !== null && driver.status !== DriverStatus.accepted && (
+            <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+              <Text
+                className="text-2xl font-bold text-center my-auto dark:text-white">
+                Aún no has sido aceptado como conductor
+              </Text>
+            </View>
+          )
+        }
+
+        {
+          !isAcceptingRequest && !isLoadingVehicle && driver?.status === DriverStatus.accepted && (
             <View className="flex py-2 px-3 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
