@@ -165,7 +165,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
   return (
     <>
-      <View className="flex h-full">
+      <View className="flex h-full pb-10">
         {isAcceptingRequest && (
           <View className="flex flex-grow w-full px-5 justify-center mx-auto">
             <Text
@@ -188,7 +188,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
         {
           !isAcceptingRequest && !isLoadingVehicle && (
-            <View className="flex py-2 px-3 space-y-7">
+            <View className="flex py-2 px-3 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
                   Solicitudes de viaje
