@@ -20,6 +20,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
 import { darkTheme, lightTheme } from '@constants/theme'
+import RegisterRatingScreen from '@screens/rating/register.screen'
 
 const DriverTabNavigation = createBottomTabNavigator<RootStackParamList>()
 const StyledIcon = styled(MaterialIcons)
@@ -89,6 +90,10 @@ const RootNavigator: FC = () => {
                           component={PassengerRideDetailsScreen}/>
             <Stack.Screen name="DriverRideDetails"
                           component={DriverRideDetailsScreen}/>
+            <Stack.Group screenOptions={{ presentation: 'modal' }}>
+              <Stack.Screen name="RegisterRating"
+                            component={RegisterRatingScreen}/>
+            </Stack.Group>
           </>
         )
       }

@@ -7,10 +7,14 @@ import {
 } from '@supabase/supabase-js'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
+import { useNavigation } from '@react-navigation/native'
+import { RideStatus } from '@base/rides/types'
+import { StackNavigation } from '@navigation/types'
 
 const useRealtimeCurrentPassengerRide = () => {
   const { ride, isLoading } = useCurrentPassengerRide()
   const queryClient = useQueryClient()
+  const navigation = useNavigation<StackNavigation>()
 
   useEffect(() => {
     if (isLoading) {
@@ -30,7 +34,19 @@ const useRealtimeCurrentPassengerRide = () => {
         table: 'rides',
         filter: `passenger_id=eq.${ride.passenger_id}`
       },
-      () => {
+      (payload) => {
+        const { new: updated } = payload
+        const { status, driver_id: driverId, passenger_id: passengerId } = updated
+
+        if (status === RideStatus.completed) {
+          navigation.navigate('RegisterRating', {
+            type: 'driver',
+            driverId,
+            passengerId
+          })
+          return
+        }
+
         void queryClient.invalidateQueries(['current-passenger-ride'])
       }
     ).subscribe()
