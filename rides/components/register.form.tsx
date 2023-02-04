@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
 import { RootStackScreenProps } from '@navigation/types'
 import usePassenger from '@hooks/passengers/use-passenger'
@@ -19,6 +19,8 @@ import {
 import RadioGroup from '@components/form/radio-group'
 import { genders } from '@constants/genders'
 import Input from '@components/form/input'
+import ConfirmVehicleContractModal
+  from '@base/rides/components/confirm-vehicle-contract.modal'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -36,8 +38,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     control,
     handleSubmit,
     setValue,
+    resetField,
     watch,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting, isValid }
   } = form
 
   useEffect(() => {
@@ -49,7 +52,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
 
   const gender = watch('gender')
   useEffect(() => {
-    setValue('offered_price', gender === 'Male' ? 3000 : 2000)
+    resetField('offered_price', {
+      defaultValue: gender === 'Male' ? 3000 : 2000
+    })
   }, [gender])
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
@@ -68,8 +73,18 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     }
   })
 
-  const onSubmit: SubmitHandler<RegisterRideRequest> = async (data) => {
-    mutate(data)
+  const [confirmContractIsOpen, setConfirmContractIsOpen] = useState(false)
+
+  const onCloseConfirmContract = (confirmed: boolean) => {
+    setConfirmContractIsOpen(false)
+
+    if (confirmed && isValid) {
+      mutate(form.getValues())
+    }
+  }
+
+  const onSubmit: SubmitHandler<RegisterRideRequest> = async () => {
+    setConfirmContractIsOpen(true)
   }
 
   const isDisabled = isSubmitting || isLoading
@@ -77,6 +92,10 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
   return (
     <FormProvider {...form}>
       <View className="flex flex-grow w-full justify-center mx-auto space-y-2">
+        <ConfirmVehicleContractModal
+          open={confirmContractIsOpen}
+          onClose={onCloseConfirmContract}/>
+
         <View className="mb-5">
           <Text className="text-xl font-bold text-center dark:text-white">
             ¿A dónde quieres ir?
