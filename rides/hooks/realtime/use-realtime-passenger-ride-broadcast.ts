@@ -33,7 +33,7 @@ const useRealtimePassengerRideBroadcast = () => {
           type: 'ride_toast',
           placement: 'top',
           data: payload.payload,
-          duration: 7000
+          duration: 10000
         })
       }
     ).subscribe()
