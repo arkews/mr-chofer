@@ -100,7 +100,8 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                     Origen: {ride.pickup_location}
                   </Text>
 
-                  <Text className="dark:text-white">
+                  <Text
+                    className="text-base text-gray-900 dark:text-gray-100 font-medium">
                     Destino: {ride.destination}
                   </Text>
 
@@ -123,7 +124,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           </View>
 
           {
-            ride.comments !== undefined && (
+            ride.comments !== undefined && ride.comments !== null && (
               <View className="flex flex-row px-2 space-x-2">
                 <StyledIcon name="comment"
                             className="text-sm text-gray-700 dark:text-gray-400"/>

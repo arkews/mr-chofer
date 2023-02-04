@@ -9,7 +9,13 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signUpWithPassword } from '../../auth'
 import { useMutation } from '@tanstack/react-query'
-import { KeyboardAvoidingView, Pressable, Text, View } from 'react-native'
+import {
+  KeyboardAvoidingView,
+  Linking,
+  Pressable,
+  Text,
+  View
+} from 'react-native'
 import Checkbox from 'expo-checkbox'
 import cn from 'classnames'
 import { RootStackScreenProps } from '@navigation/types'
@@ -68,6 +74,15 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const isDisabled = isSubmitting || isLoading
+
+  const goToTermsAndConditions = async () => {
+    if (process.env.TERMS_AND_CONDITIONS_URL !== undefined) {
+      const canOpen = await Linking.canOpenURL(process.env.TERMS_AND_CONDITIONS_URL)
+      if (canOpen) {
+        await Linking.openURL(process.env.TERMS_AND_CONDITIONS_URL)
+      }
+    }
+  }
 
   return (
     <FormProvider {...form}>
@@ -149,10 +164,14 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
                         cn('rounded-md w-6 h-6 justify-center items-center')
                       }/>
 
-                    <Text
-                      className="block ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Acepto los términos y condiciones de uso.
-                    </Text>
+                    <View className="ml-3">
+                      <Pressable onPress={goToTermsAndConditions}>
+                        <Text
+                          className="block text-sm font-medium text-blue-700 dark:text-blue-300 underline">
+                          Acepto los términos y condiciones de uso.
+                        </Text>
+                      </Pressable>
+                    </View>
                   </View>
 
                   {(errors.acceptTerms !== undefined) &&
@@ -185,10 +204,12 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               </Pressable>
             </View>
 
-            <Text className="text-blue-700 dark:text-blue-300 text-center"
-                  onPress={goToSignIn}>
-              ¿Ya tienes una cuenta? Inicia sesión
-            </Text>
+            <View>
+              <Text className="text-blue-700 mt-3 dark:text-blue-300 text-center"
+                    onPress={goToSignIn}>
+                ¿Ya tienes una cuenta? Inicia sesión
+              </Text>
+            </View>
 
           </View>
         </View>
