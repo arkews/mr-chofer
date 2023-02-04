@@ -13,6 +13,7 @@ import useRealtimeCurrentPassengerRide
   from '@base/rides/hooks/realtime/use-realtime-current-passenger-ride'
 import useRealtimePassengerRideBroadcast
   from '@base/rides/hooks/realtime/use-realtime-passenger-ride-broadcast'
+import FloatingObject from '@components/floating-object'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -118,28 +119,34 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
       <View
         className="flex w-full px-5 justify-center mx-auto space-y-5">
         {isLoading &&
-          <Text className="dark:text-white">Cargando recorrido...</Text>}
+          <View>
+            <Text className="dark:text-white">
+              Cargando recorrido...
+            </Text>
+          </View>
+        }
         {ride !== undefined && (
           <View className="flex flex-col space-y-5">
             <View className="mb-3">
               <Text className="text-xl font-bold text-center dark:text-white">
-                Tu recorrido
+                {ride.status === 'requested' && 'Su solicitud ha sido enviada a los conductores disponibles'}
+                {ride.status === 'accepted' && 'Su solicitud ha sido aceptada, el conductor se encuentra en camino'}
+                {ride.status === 'in_progress' && 'Su recorrido ha comenzado'}
+                {ride.status === 'completed' && 'Su recorrido ha finalizado'}
+                {ride.status === 'canceled' && 'Su recorrido ha sido cancelado'}
               </Text>
             </View>
 
-            <View className="flex flex-row justify-between">
-              <View
-                className="bg-blue-100 mr-2 px-2.5 py-0.5 rounded border border-blue-400 dark:bg-gray-700 w-min">
-                <Text
-                  className="text-blue-800 text-xs font-medium dark:text-blue-400">
-                  {ride.status === 'requested' && 'Solicitado'}
-                  {ride.status === 'accepted' && 'Aceptado'}
-                  {ride.status === 'in_progress' && 'En progreso'}
-                  {ride.status === 'completed' && 'Finalizado'}
-                  {ride.status === 'canceled' && 'Cancelado'}
-                </Text>
-              </View>
-            </View>
+            {
+              (ride.status === 'requested') && (
+                <View className="mb-10">
+                  <FloatingObject>
+                    <StyledIcon name="search" size={70}
+                                className="text-gray-700 dark:text-gray-400"/>
+                  </FloatingObject>
+                </View>
+              )
+            }
 
             <View className="flex flex-col space-y-3">
               <View className="flex flex-row justify-between px-2 py-2">
