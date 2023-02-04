@@ -13,7 +13,8 @@ import useRealtimeCurrentPassengerRide
   from '@base/rides/hooks/realtime/use-realtime-current-passenger-ride'
 import useRealtimePassengerRideBroadcast
   from '@base/rides/hooks/realtime/use-realtime-passenger-ride-broadcast'
-import FloatingObject from '@components/floating-object'
+import FloatingObject from '@components/animations/floating-object'
+import SkeletonView from '@components/animations/skeleton-view'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -118,12 +119,8 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     <View className="mt-7">
       <View
         className="flex w-full px-5 justify-center mx-auto space-y-5">
-        {isLoading &&
-          <View>
-            <Text className="dark:text-white">
-              Cargando recorrido...
-            </Text>
-          </View>
+        {isLoading && ride === undefined &&
+          <SkeletonView amount={3}/>
         }
         {ride !== undefined && (
           <View className="flex flex-col space-y-5">
