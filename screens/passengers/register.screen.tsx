@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
-  Pressable,
+  Pressable, ScrollView,
   Text,
   View
 } from 'react-native'
@@ -107,8 +107,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
-        <View className="py-24">
-          <View
+        <View className="py-24 pb-2">
+          <ScrollView
             className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
             <View className="mb-3">
               <Text className="text-xl text-center dark:text-white">
@@ -204,7 +204,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 </Text>
               </Pressable>
             </View>
-          </View>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </FormProvider>

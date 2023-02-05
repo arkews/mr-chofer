@@ -12,7 +12,7 @@ import { useMutation } from '@tanstack/react-query'
 import {
   KeyboardAvoidingView,
   Linking,
-  Pressable,
+  Pressable, ScrollView,
   Text,
   View
 } from 'react-native'
@@ -87,9 +87,9 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
-        <View className="py-36">
-          <View
-            className="flex flex-grow w-full px-7 justify-center mx-auto space-y-4">
+        <View className="py-36 pb-2">
+          <ScrollView
+            className="flex flex-grow w-full px-7 mx-auto space-y-4">
             <View>
               <Input
                 name="email"
@@ -211,7 +211,7 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-          </View>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </FormProvider>

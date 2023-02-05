@@ -3,6 +3,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Pressable,
+  ScrollView,
   Text,
   View
 } from 'react-native'
@@ -122,8 +123,8 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
-        <View className="py-20">
-          <View
+        <View className="py-20 pb-2">
+          <ScrollView
             className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
             <View className="mb-5">
               <Text
@@ -278,7 +279,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                 </Text>
               </Pressable>
             </View>
-          </View>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </FormProvider>
