@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { z } from 'zod'
 import Input from '@components/form/input'
-import { Pressable, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -48,18 +48,8 @@ const OfferForm: FC<Props> = ({ onClose }) => {
                 name="offer"
                 label="Precio ofrecido"
                 keyboardType="numeric"
+                onSubmitEditing={handleSubmit(onSubmit)}
               />
-            </View>
-
-            <View className="w-full">
-              <Pressable
-                onPress={handleSubmit(onSubmit)}
-                className="px-5 py-2.5 text-center bg-purple-700 rounded-md active:bg-purple-800">
-                <Text
-                  className="text-sm text-white text-center font-medium">
-                  Hacer oferta
-                </Text>
-              </Pressable>
             </View>
           </View>
         </View>
