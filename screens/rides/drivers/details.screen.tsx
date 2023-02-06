@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Linking, Pressable, Text, View } from 'react-native'
 import { RootStackScreenProps } from '@navigation/types'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { styled } from 'nativewind'
 import useRealtimeCurrentDriverRide
   from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
+import ConfirmModal from '@components/confirm.modal'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -77,6 +78,18 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     isLoading: isEndingRide
   } = useMutation(performFinishRide)
 
+  const [isFinishRideModalOpen, setIsFinishRideModalOpen] = useState(false)
+  const openFinishRideModal = () => {
+    setIsFinishRideModalOpen(true)
+  }
+  const closeFinishRideModal = (confirmed: boolean) => {
+    if (confirmed) {
+      finishRide()
+    }
+
+    setIsFinishRideModalOpen(false)
+  }
+
   const performCancelRide = async () => {
     await updateRideStatus(RideStatus.canceled)
   }
@@ -85,6 +98,19 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     mutate: cancelRide,
     isLoading: isCancelingRide
   } = useMutation(performCancelRide)
+
+  const [isCancelRideModalOpen, setIsCancelRideModalOpen] = useState(false)
+  const openCancelRideModal = () => {
+    setIsCancelRideModalOpen(true)
+  }
+
+  const closeCancelRideModal = (confirmed: boolean) => {
+    if (confirmed) {
+      cancelRide()
+    }
+
+    setIsCancelRideModalOpen(false)
+  }
 
   const disableButtons = isLoading || startingRide || isEndingRide || isCancelingRide
 
@@ -95,9 +121,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
       headerRight: () => (
         <View>
           <Pressable
-            onPress={() => {
-              cancelRide()
-            }}
+            onPress={openCancelRideModal}
             disabled={disableButtons}
             className={
               cn('text-base px-3 py-2 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
@@ -130,6 +154,21 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
+
+      <View>
+        <ConfirmModal
+          open={isFinishRideModalOpen}
+          title="¿Estas seguro de finalizar el recorrido?"
+          onClosed={closeFinishRideModal}/>
+      </View>
+
+      <View>
+        <ConfirmModal
+          open={isCancelRideModalOpen}
+          title="¿Estas seguro de cancelar el recorrido?"
+          onClosed={closeCancelRideModal}/>
+      </View>
+
       {isLoading &&
         <Text className="dark:text-white">Cargando recorrido...</Text>}
       {ride !== undefined && (
@@ -277,9 +316,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               ride.status === RideStatus.in_progress && (
                 <View className="flex-1">
                   <Pressable
-                    onPress={() => {
-                      finishRide()
-                    }}
+                    onPress={openFinishRideModal}
                     disabled={disableButtons}
                     className={
                       cn('text-base px-5 py-3 bg-green-700 rounded-lg border border-transparent',
