@@ -50,6 +50,13 @@ const ConfirmVehicleContractModal: FC<Props> = ({ open, onClose }) => {
               </View>
 
               <View>
+                <Text
+                  className="text-xs font-medium text-gray-900 dark:text-gray-200">
+                  Recuerda que puedes elegir la ruta que desees.
+                </Text>
+              </View>
+
+              <View>
                 <Pressable
                   onPress={() => {
                     onClose(true)
