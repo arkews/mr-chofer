@@ -17,6 +17,7 @@ import FloatingObject from '@components/animations/floating-object'
 import SkeletonView from '@components/animations/skeleton-view'
 import DriverArriveNotificationModal
   from '@base/rides/components/driver-arrive-notification.modal'
+import ConfirmModal from '@components/confirm.modal'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -62,6 +63,18 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     mutate: cancelRide,
     isLoading: isCancelingRide
   } = useMutation(performCancelRide)
+
+  const [isCancelRideModalOpen, setIsCancelRideModalOpen] = useState(false)
+  const openCancelRideModal = () => {
+    setIsCancelRideModalOpen(true)
+  }
+  const closeCancelRideModal = (confirmed: boolean) => {
+    if (confirmed) {
+      cancelRide()
+    }
+
+    setIsCancelRideModalOpen(false)
+  }
 
   const performPhoneCall = async () => {
     if (ride?.drivers === undefined) {
@@ -121,9 +134,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
           {
             (canCancelRide) && (
               <Pressable
-                onPress={() => {
-                  cancelRide()
-                }}
+                onPress={openCancelRideModal}
                 disabled={disableButtons}
                 className={
                   cn('text-base px-3 py-2 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
@@ -151,6 +162,13 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
         <DriverArriveNotificationModal
           open={isDriverArriveNotificationModalOpen}
           onClose={closeDriverArriveNotificationModal}/>
+      </View>
+
+      <View>
+        <ConfirmModal
+          open={isCancelRideModalOpen}
+          title="¿Estas seguro de cancelar tu recorrido?"
+          onClosed={closeCancelRideModal}/>
       </View>
       <View
         className="flex w-full px-5 justify-center mx-auto space-y-5">
