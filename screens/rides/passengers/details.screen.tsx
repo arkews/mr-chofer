@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Linking, Pressable, Text, View } from 'react-native'
 import useCurrentPassengerRide
   from '@base/rides/hooks/use-current-passenger-ride'
@@ -15,6 +15,9 @@ import useRealtimePassengerRideBroadcast
   from '@base/rides/hooks/realtime/use-realtime-passenger-ride-broadcast'
 import FloatingObject from '@components/animations/floating-object'
 import SkeletonView from '@components/animations/skeleton-view'
+import DriverArriveNotificationModal
+  from '@base/rides/components/driver-arrive-notification.modal'
+import ConfirmModal from '@components/confirm.modal'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -61,7 +64,64 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     isLoading: isCancelingRide
   } = useMutation(performCancelRide)
 
-  const disableButtons = isLoading || isCancelingRide
+  const [isCancelRideModalOpen, setIsCancelRideModalOpen] = useState(false)
+  const openCancelRideModal = () => {
+    setIsCancelRideModalOpen(true)
+  }
+  const closeCancelRideModal = (confirmed: boolean) => {
+    if (confirmed) {
+      cancelRide()
+    }
+
+    setIsCancelRideModalOpen(false)
+  }
+
+  const performPhoneCall = async () => {
+    if (ride?.drivers === undefined) {
+      return
+    }
+
+    await Linking.openURL(`tel:${ride.drivers.phone}`)
+  }
+
+  const performStartRide = async () => {
+    const { error } = await supabase.from('rides')
+      .update({
+        status: RideStatus.in_progress
+      })
+      .eq('id', ride?.id)
+
+    if (error !== null) {
+      throw Error(error.message)
+    }
+  }
+
+  const {
+    mutate: startRideMutation,
+    isLoading: isStartingRide
+  } = useMutation(performStartRide)
+
+  const [isDriverArriveNotificationModalOpen, setIsDriverArriveNotificationModalOpen] = useState(false)
+  const openDriverArriveNotificationModal = () => {
+    setIsDriverArriveNotificationModalOpen(true)
+  }
+
+  const closeDriverArriveNotificationModal = () => {
+    startRideMutation()
+    setIsDriverArriveNotificationModalOpen(false)
+  }
+
+  useEffect(() => {
+    if (ride === undefined) {
+      return
+    }
+
+    if (ride.status === RideStatus.waiting) {
+      openDriverArriveNotificationModal()
+    }
+  }, [ride])
+
+  const disableButtons = isLoading || isCancelingRide || isStartingRide
   const canCancelRide = [RideStatus.requested, RideStatus.accepted]
     .includes(ride?.status ?? RideStatus.requested)
 
@@ -74,9 +134,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
           {
             (canCancelRide) && (
               <Pressable
-                onPress={() => {
-                  cancelRide()
-                }}
+                onPress={openCancelRideModal}
                 disabled={disableButtons}
                 className={
                   cn('text-base px-3 py-2 border border-red-700 rounded-lg dark:border-red-500 active:border-red-900 dark:active:border-red-700',
@@ -98,18 +156,20 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, disableButtons])
 
-  const performCall = async () => {
-    if (ride?.drivers === undefined) {
-      return
-    }
-
-    await Linking.openURL(`tel:${ride.drivers.phone}`)
-  }
-
-  console.log(ride?.drivers?.vehicles)
-
   return (
     <View className="mt-7">
+      <View>
+        <DriverArriveNotificationModal
+          open={isDriverArriveNotificationModalOpen}
+          onClose={closeDriverArriveNotificationModal}/>
+      </View>
+
+      <View>
+        <ConfirmModal
+          open={isCancelRideModalOpen}
+          title="¿Estas seguro de cancelar tu recorrido?"
+          onClosed={closeCancelRideModal}/>
+      </View>
       <View
         className="flex w-full px-5 justify-center mx-auto space-y-5">
         {isLoading && ride === undefined &&
@@ -121,6 +181,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
               <Text className="text-xl font-bold text-center dark:text-white">
                 {ride.status === 'requested' && 'Su solicitud ha sido enviada a los conductores disponibles'}
                 {ride.status === 'accepted' && 'Su solicitud ha sido aceptada, el conductor se encuentra en camino'}
+                {ride.status === 'waiting' && 'Su conductor ha llegado!'}
                 {ride.status === 'in_progress' && 'Su recorrido ha comenzado'}
                 {ride.status === 'completed' && 'Su recorrido ha finalizado'}
                 {ride.status === 'canceled' && 'Su recorrido ha sido cancelado'}
@@ -217,7 +278,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                       <View className="flex flex-row justify-end space-x-5">
                         <Pressable
                           onPress={async () => {
-                            await performCall()
+                            await performPhoneCall()
                           }}
                           className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
                           <StyledIcon

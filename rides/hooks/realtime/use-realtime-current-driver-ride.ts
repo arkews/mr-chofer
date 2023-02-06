@@ -6,14 +6,10 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT
 } from '@supabase/supabase-js'
 import useDriver from '@hooks/drivers/use-driver'
-import { RideStatus } from '@base/rides/types'
-import { useNavigation } from '@react-navigation/native'
-import { StackNavigation } from '@navigation/types'
 
 const useRealtimeCurrentDriverRide = () => {
   const { driver, isLoading } = useDriver()
   const queryClient = useQueryClient()
-  const navigation = useNavigation<StackNavigation>()
 
   useEffect(() => {
     if (isLoading) {
@@ -33,19 +29,7 @@ const useRealtimeCurrentDriverRide = () => {
         table: 'rides',
         filter: `driver_id=eq.${driver.id}`
       },
-      (payload) => {
-        const { new: updated } = payload
-        const { status, driver_id: driverId, passenger_id: passengerId } = updated
-
-        if (status === RideStatus.completed) {
-          navigation.navigate('RegisterRating', {
-            type: 'passenger',
-            driverId,
-            passengerId
-          })
-          return
-        }
-
+      () => {
         void queryClient.invalidateQueries(['current-driver-ride'])
       }
     ).subscribe()

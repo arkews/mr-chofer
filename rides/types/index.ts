@@ -3,6 +3,7 @@ import { RegisterRideRequest } from '@base/rides/schema'
 export enum RideStatus {
   requested = 'requested',
   accepted = 'accepted',
+  waiting = 'waiting',
   in_progress = 'in_progress',
   completed = 'completed',
   canceled = 'canceled'

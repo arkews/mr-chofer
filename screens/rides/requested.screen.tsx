@@ -231,7 +231,6 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
                   ))}
                 </ScrollView>
               )}
-
             </View>
           )
         }

@@ -5,6 +5,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Pressable,
+  ScrollView,
   Text,
   View
 } from 'react-native'
@@ -145,8 +146,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
-        <View className="py-24">
-          <View
+        <View className="py-24 pb-0">
+          <ScrollView
             className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
             <View className="mb-7">
               <Text className="text-xl text-center font-bold dark:text-white">
@@ -176,7 +177,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
                 {
                   watch('photo_url') !== null &&
-                  <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  <Text
+                    className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                     Foto cargada
                   </Text>
                 }
@@ -207,7 +209,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
                   {
                     watch('id_photo_url_front') !== undefined &&
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                    <Text
+                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
                   }
@@ -225,7 +228,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
                   {
                     watch('id_photo_url_back') !== undefined &&
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                    <Text
+                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
                   }
@@ -252,7 +256,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
                   {
                     watch('license_photo_url_front') !== undefined &&
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                    <Text
+                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
                   }
@@ -271,7 +276,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
                   {
                     watch('license_photo_url_back') !== undefined &&
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                    <Text
+                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
                   }
@@ -286,7 +292,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
             {
               error !== null &&
-              <FieldError message="Ha ocurrido un error, verifique los datos e intente nuevamente."/>
+              <FieldError
+                message="Ha ocurrido un error, verifique los datos e intente nuevamente."/>
             }
 
             <View>
@@ -306,7 +313,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                 </Text>
               </Pressable>
             </View>
-          </View>
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </FormProvider>

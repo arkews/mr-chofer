@@ -34,7 +34,7 @@ const ConfirmVehicleContractModal: FC<Props> = ({ open, onClose }) => {
               <View className="justify-center">
                 <Text
                   className="text-base font-medium text-gray-900 dark:text-gray-200">
-                  Al acceder aceptar celebrar el contrato de arrendamiento de
+                  Al acceder aceptas celebrar el contrato de arrendamiento de
                   vehículo con arrendador y declaras y garantizas que conoces su
                   contenido.
                 </Text>
@@ -54,7 +54,7 @@ const ConfirmVehicleContractModal: FC<Props> = ({ open, onClose }) => {
                   onPress={() => {
                     onClose(true)
                   }}
-                  className="px-5 py-3 bg-green-100 rounded-lg active:bg-green-800 shadow-none">
+                  className="px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none">
                   <Text
                     className="text-base text-green-900 text-center font-medium">
                     Estoy de acuerdo
