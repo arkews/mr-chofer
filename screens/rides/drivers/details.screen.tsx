@@ -60,7 +60,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
   }
 
   const performStartRide = async () => {
-    await updateRideStatus(RideStatus.in_progress)
+    await updateRideStatus(RideStatus.waiting)
   }
 
   const {
@@ -119,7 +119,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, disableButtons])
 
-  const performCall = async () => {
+  const performPhoneCall = async () => {
     if (ride?.passengers === undefined) {
       return
     }
@@ -148,6 +148,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                 className="text-blue-800 text-xs font-medium dark:text-blue-400">
                 {ride.status === 'requested' && 'Solicitado'}
                 {ride.status === 'accepted' && 'Aceptado'}
+                {ride.status === 'waiting' && 'Esperando'}
                 {ride.status === 'in_progress' && 'En progreso'}
                 {ride.status === 'completed' && 'Finalizado'}
                 {ride.status === 'canceled' && 'Cancelado'}
@@ -232,7 +233,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                     <View className="flex flex-row justify-end space-x-5">
                       <Pressable
                         onPress={async () => {
-                          await performCall()
+                          await performPhoneCall()
                         }}
                         className="border rounded-full p-2 border-gray-700 dark:border-gray-400 active:border-gray-800 dark:active:border-gray-300">
                         <StyledIcon

@@ -17,7 +17,7 @@ const useCurrentDriverRide = (): UseRide => {
       .from('rides')
       .select('*, passengers:passenger_id(name,phone,gender,photo_url)')
       .eq('driver_id', driver?.id)
-      .in('status', ['requested', 'accepted', 'in_progress'])
+      .in('status', ['requested', 'accepted', 'waiting', 'in_progress'])
       .limit(1)
       .single()
 
