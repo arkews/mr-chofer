@@ -78,18 +78,6 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
     isLoading: isEndingRide
   } = useMutation(performFinishRide)
 
-  const [isFinishRideModalOpen, setIsFinishRideModalOpen] = useState(false)
-  const openFinishRideModal = () => {
-    setIsFinishRideModalOpen(true)
-  }
-  const closeFinishRideModal = (confirmed: boolean) => {
-    if (confirmed) {
-      finishRide()
-    }
-
-    setIsFinishRideModalOpen(false)
-  }
-
   const performCancelRide = async () => {
     await updateRideStatus(RideStatus.canceled)
   }
@@ -154,13 +142,6 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
   return (
     <View
       className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
-
-      <View>
-        <ConfirmModal
-          open={isFinishRideModalOpen}
-          title="¿Estas seguro de finalizar el recorrido?"
-          onClosed={closeFinishRideModal}/>
-      </View>
 
       <View>
         <ConfirmModal
@@ -316,7 +297,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               ride.status === RideStatus.in_progress && (
                 <View className="flex-1">
                   <Pressable
-                    onPress={openFinishRideModal}
+                    onPress={() => { finishRide() }}
                     disabled={disableButtons}
                     className={
                       cn('text-base px-5 py-3 bg-green-700 rounded-lg border border-transparent',
