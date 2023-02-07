@@ -12,7 +12,8 @@ import { useMutation } from '@tanstack/react-query'
 import {
   KeyboardAvoidingView,
   Linking,
-  Pressable, ScrollView,
+  Pressable,
+  ScrollView,
   Text,
   View
 } from 'react-native'
@@ -21,6 +22,7 @@ import cn from 'classnames'
 import { RootStackScreenProps } from '@navigation/types'
 import FieldError from '@components/form/feedback/field/field.error'
 import Input from '@components/form/input'
+import Constants from 'expo-constants'
 
 const SignUpSchema = z.object({
   email: z.string({ required_error: 'Email requerido' })
@@ -76,11 +78,13 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
   const isDisabled = isSubmitting || isLoading
 
   const goToTermsAndConditions = async () => {
-    if (process.env.TERMS_AND_CONDITIONS_URL !== undefined) {
-      const canOpen = await Linking.canOpenURL(process.env.TERMS_AND_CONDITIONS_URL)
-      if (canOpen) {
-        await Linking.openURL(process.env.TERMS_AND_CONDITIONS_URL)
-      }
+    const termsAndConditionsUrl = Constants.manifest?.extra?.legal.terms as string
+
+    console.assert(termsAndConditionsUrl !== undefined, 'TERMS_AND_CONDITIONS_URL is not defined in .env file')
+
+    const canOpen = await Linking.canOpenURL(termsAndConditionsUrl)
+    if (canOpen) {
+      await Linking.openURL(termsAndConditionsUrl)
     }
   }
 
@@ -205,8 +209,9 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
             </View>
 
             <View>
-              <Text className="text-blue-700 mt-3 dark:text-blue-300 text-center"
-                    onPress={goToSignIn}>
+              <Text
+                className="text-blue-700 mt-3 dark:text-blue-300 text-center"
+                onPress={goToSignIn}>
                 ¿Ya tienes una cuenta? Inicia sesión
               </Text>
             </View>
