@@ -30,6 +30,7 @@ type RideDriver = {
   phone: string
   gender: string
   photo_url: string
+  rating: number
 
   vehicles?: RideDriverVehicle[]
 }

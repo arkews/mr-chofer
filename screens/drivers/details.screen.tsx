@@ -10,6 +10,7 @@ import useVehicle from '@hooks/vehicles/use-vehicle'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
+import RatingView from '@components/rating.view'
 
 type Props = RootStackScreenProps<'DriverDetails'>
 
@@ -134,16 +135,34 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
               <Text className="text-xl text-center dark:text-white">
                 {driver.name}
               </Text>
-              <Text className="text-base text-center dark:text-white">
+              <Text className="text-md text-center text-gray-500 dark:text-gray-400">
                 {driver.phone}
               </Text>
-              <Text
-                className="text-base text-center font-medium text-gray-500 dark:text-gray-400">
-                Saldo actual: {Intl.NumberFormat('es', {
-                  style: 'currency',
-                  currency: 'COP'
-                }).format(driver.balance)}
-              </Text>
+              <View className="flex flex-row justify-center space-x-2">
+                <View>
+                  <RatingView rating={driver.rating} size={24}/>
+                </View>
+                <View>
+                  <Text
+                    className="text-base text-neutral-400 dark:text-neutral-300">
+                    {
+                      Intl.NumberFormat('es', {
+                        style: 'decimal',
+                        maximumFractionDigits: 1
+                      }).format(driver.rating)
+                    }
+                  </Text>
+                </View>
+              </View>
+              <View className="mt-3">
+                <Text
+                  className="text-base text-center font-medium text-gray-500 dark:text-gray-400">
+                  Saldo actual: {Intl.NumberFormat('es', {
+                    style: 'currency',
+                    currency: 'COP'
+                  }).format(driver.balance)}
+                </Text>
+              </View>
 
               <View className="mt-3">
                 {
