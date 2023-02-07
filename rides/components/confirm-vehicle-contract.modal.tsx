@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { Linking, Modal, Pressable, Text, View } from 'react-native'
+import Constants from 'expo-constants'
 
 type Props = {
   open: boolean
@@ -9,11 +10,13 @@ type Props = {
 
 const ConfirmVehicleContractModal: FC<Props> = ({ open, onClose }) => {
   const goToVehicleContract = async () => {
-    if (process.env.VEHICLE_LEASING_CONTRACT_URL !== undefined) {
-      const canOpen = await Linking.canOpenURL(process.env.VEHICLE_LEASING_CONTRACT_URL)
-      if (canOpen) {
-        await Linking.openURL(process.env.VEHICLE_LEASING_CONTRACT_URL)
-      }
+    const vehicleLeasingContractUrl = Constants.manifest?.extra?.legal.vehicleLeasing as string
+
+    console.assert(vehicleLeasingContractUrl, 'VEHICLE_LEASING_CONTRACT_URL is not defined in app.json')
+
+    const canOpen = await Linking.canOpenURL(vehicleLeasingContractUrl)
+    if (canOpen) {
+      await Linking.openURL(vehicleLeasingContractUrl)
     }
   }
 
