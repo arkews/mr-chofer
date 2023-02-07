@@ -62,6 +62,17 @@ const useRealtimeRequestedRides = () => {
       () => {
         void queryClient.invalidateQueries(['requested-rides'])
       }
+    ).on(
+      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+      {
+        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
+        schema: 'public',
+        table: 'rides',
+        filter: `status=eq.${RideStatus.requested}`
+      },
+      () => {
+        void queryClient.invalidateQueries(['requested-rides'])
+      }
     )
       .subscribe()
 
