@@ -18,6 +18,7 @@ import SkeletonView from '@components/animations/skeleton-view'
 import DriverArriveNotificationModal
   from '@base/rides/components/driver-arrive-notification.modal'
 import ConfirmModal from '@components/confirm.modal'
+import PassengerNewFare from '@base/rides/components/passenger-new-fare'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -158,12 +159,18 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
   }, [navigation, disableButtons])
 
   return (
-    <View className="mt-7">
+    <View className="mt-7 min-h-screen">
       <View>
         <DriverArriveNotificationModal
           open={isDriverArriveNotificationModalOpen}
           onClose={closeDriverArriveNotificationModal}/>
       </View>
+
+      {
+        ride?.status === RideStatus.requested && (
+          <PassengerNewFare/>
+        )
+      }
 
       <View>
         <ConfirmModal
