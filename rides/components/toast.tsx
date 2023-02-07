@@ -5,6 +5,7 @@ import { getAvatarUrl } from '@base/supabase/storage'
 import { genders } from '@constants/genders'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
+import RatingView from '@components/rating.view'
 
 type Props = {
   ride: Ride
@@ -73,10 +74,18 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
 
             <View className="w-4/5">
               <View className="flex flex-col space-y-2">
-                <View>
-                  <Text className="dark:text-white">
-                    {ride.drivers?.name}, {genders.find((g) => g.value === ride.drivers?.gender)?.title}
-                  </Text>
+                <View className="flex flex-row space-x-4 -ml-3 flex-wrap justify-center">
+                  <View>
+                    <Text className="dark:text-white">
+                      {ride.drivers?.name}, {genders.find((g) => g.value === ride.drivers?.gender)?.title}
+                    </Text>
+                  </View>
+
+                  <View className="flex flex-row justify-center">
+                    <View className="flex flex-col justify-center align-middle">
+                      <RatingView rating={ride.drivers?.rating ?? 3.9} size={16} />
+                    </View>
+                  </View>
                 </View>
 
                 <View>
