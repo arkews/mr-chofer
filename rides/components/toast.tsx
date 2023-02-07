@@ -74,7 +74,8 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
 
             <View className="w-4/5">
               <View className="flex flex-col space-y-2">
-                <View className="flex flex-row space-x-4 -ml-3 flex-wrap justify-center">
+                <View
+                  className="flex flex-row space-x-4 -ml-3 flex-wrap justify-center">
                   <View>
                     <Text className="dark:text-white">
                       {ride.drivers?.name}, {genders.find((g) => g.value === ride.drivers?.gender)?.title}
@@ -83,7 +84,8 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
 
                   <View className="flex flex-row justify-center">
                     <View className="flex flex-col justify-center align-middle">
-                      <RatingView rating={ride.drivers?.rating ?? 3.9} size={16} />
+                      <RatingView rating={ride.drivers?.rating ?? 0.0}
+                                  size={16}/>
                     </View>
                   </View>
                 </View>
