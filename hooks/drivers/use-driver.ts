@@ -21,6 +21,7 @@ type Driver = {
   updated_at: string
 
   status: DriverStatus
+  rating: number
 }
 
 type UseDriver = {
