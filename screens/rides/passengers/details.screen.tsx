@@ -87,7 +87,8 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
   const performStartRide = async () => {
     const { error } = await supabase.from('rides')
       .update({
-        status: RideStatus.in_progress
+        status: RideStatus.in_progress,
+        start_time: new Date().toISOString()
       })
       .eq('id', ride?.id)
 
