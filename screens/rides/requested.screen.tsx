@@ -19,6 +19,7 @@ import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
 import { signOut } from '@base/auth'
 import { useFocusEffect } from '@react-navigation/native'
+import cn from 'classnames'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -146,7 +147,10 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
       ),
       headerTitle: () => (
         <Text
-          className="text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400">
+          className={
+            cn('text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400',
+              driver?.balance !== undefined && driver?.balance < 0 && 'text-red-700 dark:text-red-600')
+          }>
           Saldo {Intl.NumberFormat('es', {
             style: 'currency',
             currency: 'COP'
@@ -210,7 +214,18 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         }
 
         {
-          !isAcceptingRequest && !isLoadingVehicle && driver?.status === DriverStatus.accepted && (
+          driver !== undefined && driver !== null && driver.balance <= 0 && (
+            <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+              <Text
+                className="text-2xl font-bold text-center my-auto dark:text-white">
+                Tu saldo es insuficiente para aceptar solicitudes
+              </Text>
+            </View>
+          )
+        }
+
+        {
+          !isAcceptingRequest && !isLoadingVehicle && driver?.status === DriverStatus.accepted && driver.balance > 0 && (
             <View className="flex py-2 px-3 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
