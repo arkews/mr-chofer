@@ -10,6 +10,7 @@ import useCurrentPassengerRide
 import { useNavigation } from '@react-navigation/native'
 import { RideStatus } from '@base/rides/types'
 import { StackNavigation } from '@navigation/types'
+import { Vibration } from 'react-native'
 
 const useRealtimeCurrentPassengerRide = () => {
   const { ride, isLoading } = useCurrentPassengerRide()
@@ -39,6 +40,7 @@ const useRealtimeCurrentPassengerRide = () => {
         const { status, driver_id: driverId, passenger_id: passengerId } = updated
 
         if (status === RideStatus.completed) {
+          Vibration.vibrate(1000)
           navigation.navigate('RegisterRating', {
             type: 'driver',
             driverId,

@@ -1,5 +1,6 @@
-import React, { FC } from 'react'
-import { Modal, Pressable, Text, View } from 'react-native'
+import React, { FC, useEffect } from 'react'
+import { Modal, Pressable, Text, Vibration, View } from 'react-native'
+import { Audio } from 'expo-av'
 
 type Props = {
   open: boolean
@@ -8,6 +9,21 @@ type Props = {
 }
 
 const DriverArriveNotificationModal: FC<Props> = ({ open, onClose }) => {
+  const playSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('../../assets/sounds/driver-arrives.mp3')
+    )
+    await sound.playAsync()
+  }
+
+  useEffect(() => {
+    if (open) {
+      void playSound()
+      Vibration.vibrate(1000)
+    }
+  }, [open])
+
   return (
     <Modal
       visible={open}
