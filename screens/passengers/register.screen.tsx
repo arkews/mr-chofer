@@ -43,7 +43,8 @@ const RegisterPassengerSchema = z.object({
         .single()
 
       if (passengerError !== null) {
-        return false
+        const { details } = passengerError
+        return details.includes('Results contain 0 rows')
       }
 
       return passenger === null || passenger === undefined || passenger.id === ''
