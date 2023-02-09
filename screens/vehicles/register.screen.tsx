@@ -27,6 +27,7 @@ import { uploadDocumentPhoto } from '@base/supabase/storage'
 import PhotoPicker from '@components/form/photo-picker'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
+import Sentry from '@sentry/react-native'
 
 const RegisterVehicleSchema = z.object({
   license_plate: z.string({ required_error: 'Placa requerida' })
@@ -106,6 +107,11 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('vehicles').insert(data)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          data
+        }
+      })
       throw Error(error.message)
     }
   }

@@ -12,6 +12,7 @@ import { styled } from 'nativewind'
 import useRealtimeCurrentDriverRide
   from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
 import ConfirmModal from '@components/confirm.modal'
+import Sentry from '@sentry/react-native'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -56,6 +57,11 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
       .eq('id', ride?.id)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          ride
+        }
+      })
       throw Error(error.message)
     }
   }
@@ -297,7 +303,9 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               ride.status === RideStatus.in_progress && (
                 <View className="flex-1">
                   <Pressable
-                    onPress={() => { finishRide() }}
+                    onPress={() => {
+                      finishRide()
+                    }}
                     disabled={disableButtons}
                     className={
                       cn('text-base px-5 py-3 bg-green-700 rounded-lg border border-transparent',

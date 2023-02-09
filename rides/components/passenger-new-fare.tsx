@@ -5,6 +5,7 @@ import useCurrentPassengerRide
 import cn from 'classnames'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
+import Sentry from '@sentry/react-native'
 
 const PassengerNewFare: FC = () => {
   const { ride, isLoading } = useCurrentPassengerRide()
@@ -55,6 +56,11 @@ const PassengerNewFare: FC = () => {
     }).eq('id', ride?.id)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          ride
+        }
+      })
       throw Error(error.message)
     }
   }

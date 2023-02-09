@@ -21,6 +21,7 @@ import { Photo } from '@shared/types'
 import usePassenger from '@hooks/passengers/use-passenger'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
+import Sentry from '@sentry/react-native'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
@@ -119,6 +120,11 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('drivers').insert(data)
 
     if (error != null) {
+      Sentry.captureException(error, {
+        contexts: {
+          data
+        }
+      })
       throw Error(error.message)
     }
   }

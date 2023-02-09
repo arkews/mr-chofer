@@ -19,6 +19,7 @@ import DriverArriveNotificationModal
   from '@base/rides/components/driver-arrive-notification.modal'
 import ConfirmModal from '@components/confirm.modal'
 import PassengerNewFare from '@base/rides/components/passenger-new-fare'
+import Sentry from '@sentry/react-native'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -56,6 +57,11 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
       .eq('id', ride?.id)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          ride
+        }
+      })
       throw Error(error.message)
     }
   }
@@ -94,6 +100,11 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
       .eq('id', ride?.id)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          ride
+        }
+      })
       throw Error(error.message)
     }
   }
