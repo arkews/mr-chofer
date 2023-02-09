@@ -2,7 +2,8 @@ import { FC, useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
-  Pressable, ScrollView,
+  Pressable,
+  ScrollView,
   Text,
   View
 } from 'react-native'
@@ -33,7 +34,21 @@ const RegisterPassengerSchema = z.object({
   city: z.string({ required_error: 'Ciudad requerida' })
     .min(1, 'Ciudad requerida'),
   phone: z.string({ required_error: 'Número de teléfono requerido' })
-    .min(1, 'Número de teléfono requerido'),
+    .min(1, 'Número de teléfono requerido')
+    .refine(async phone => {
+      const { data: passenger, error: passengerError } = await supabase
+        .from('passengers')
+        .select('id')
+        .eq('phone', phone)
+        .single()
+
+      if (passengerError !== null) {
+        const { details } = passengerError
+        return details.includes('Results contain 0 rows')
+      }
+
+      return passenger === null || passenger === undefined || passenger.id === ''
+    }, 'El número de teléfono ya está registrado'),
   phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
     .min(1, 'Debe confirmar el número de teléfono'),
   gender: z.string({ required_error: 'Debe seleccionar un sexo' })
@@ -109,7 +124,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
       <KeyboardAvoidingView>
         <View className="py-24 pb-2">
           <ScrollView
-            className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
+            className="flex flex-grow w-full px-5 mx-auto space-y-3">
             <View className="mb-3">
               <Text className="text-xl text-center dark:text-white">
                 Cuentanos un poco sobre ti

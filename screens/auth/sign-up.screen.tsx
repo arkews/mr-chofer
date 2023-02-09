@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { z } from 'zod'
 import {
   Controller,
@@ -23,6 +23,7 @@ import { RootStackScreenProps } from '@navigation/types'
 import FieldError from '@components/form/feedback/field/field.error'
 import Input from '@components/form/input'
 import Constants from 'expo-constants'
+import { AuthError } from '@supabase/supabase-js'
 
 const SignUpSchema = z.object({
   email: z.string({ required_error: 'Email requerido' })
@@ -87,6 +88,22 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
       await Linking.openURL(termsAndConditionsUrl)
     }
   }
+
+  const [errorText, setErrorText] = useState('')
+  useEffect(() => {
+    if (error === null) {
+      return
+    }
+
+    const authError = error as AuthError
+
+    if (authError.message.includes('already registered')) {
+      setErrorText('El email ya está registrado')
+      return
+    }
+
+    setErrorText('Ha ocurrido un error, intenta de nuevo')
+  }, [error])
 
   return (
     <FormProvider {...form}>
@@ -186,8 +203,10 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
               name="acceptTerms"
             />
 
-            {error != null &&
-              <FieldError message="Error al crear la cuenta."/>
+            {error !== null &&
+              <View className="flex flex-row justify-center">
+                <FieldError message={errorText}/>
+              </View>
             }
 
             <View>
