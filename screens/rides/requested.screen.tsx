@@ -177,7 +177,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         )
       }
     })
-  }, [navigation, isLoadingSignOut])
+  }, [navigation, isLoadingSignOut, driver?.balance])
 
   return (
     <>
