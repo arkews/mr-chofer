@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Image, Pressable, Text, View } from 'react-native'
+import { Image, Pressable, Text, Vibration, View } from 'react-native'
 import { Ride, RideStatus } from '@base/rides/types'
 import { getAvatarUrl } from '@base/supabase/storage'
 import { genders } from '@constants/genders'
@@ -7,6 +7,8 @@ import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import RatingView from '@components/rating.view'
 import * as Sentry from 'sentry-expo'
+import { Audio } from 'expo-av'
+import { useToast } from 'react-native-toast-notifications'
 
 type Props = {
   ride: Ride
@@ -46,13 +48,28 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
     }
   }
 
+  const toast = useToast()
   const {
     mutate: acceptRideRequest
   } = useMutation(performAcceptRideRequest, {
     onSuccess: () => {
+      toast.hideAll()
       onPress()
     }
   })
+
+  const playSound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require('../../assets/sounds/ride-toast.mp3')
+    )
+    await sound.playAsync()
+  }
+
+  useEffect(() => {
+    void playSound()
+    Vibration.vibrate(1000)
+  }, [])
 
   return (
     <View className="px-7 w-full center-items">

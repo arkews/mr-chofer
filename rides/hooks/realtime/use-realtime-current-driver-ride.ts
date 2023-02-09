@@ -6,8 +6,11 @@ import {
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT
 } from '@supabase/supabase-js'
 import useDriver from '@hooks/drivers/use-driver'
+import { useAuth } from '@base/auth/context'
+import { RideStatus } from '@base/rides/types'
 
 const useRealtimeCurrentDriverRide = () => {
+  const { session } = useAuth()
   const { driver, isLoading } = useDriver()
   const queryClient = useQueryClient()
 
@@ -29,7 +32,12 @@ const useRealtimeCurrentDriverRide = () => {
         table: 'rides',
         filter: `driver_id=eq.${driver.id}`
       },
-      () => {
+      (payload) => {
+        const { status } = payload.new
+        if (status === RideStatus.completed) {
+          void queryClient.invalidateQueries(['driver', session?.user?.id])
+        }
+
         void queryClient.invalidateQueries(['current-driver-ride'])
       }
     ).subscribe()

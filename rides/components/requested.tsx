@@ -33,10 +33,10 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
     setIsAccepting(true)
     onAccept(ride.id)
 
-    // After 5s set is accepting false
+    // After 20s set is accepting false
     setTimeout(() => {
       setIsAccepting(false)
-    }, 5000)
+    }, 20000)
   }
 
   const handleOpenMakeOffer = (): void => {

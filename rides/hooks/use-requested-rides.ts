@@ -35,7 +35,7 @@ const useRequestedRides = (): UseRequestedRides => {
       retry: false,
       enabled: vehicle !== null && vehicle !== undefined &&
         driver !== null && driver !== undefined &&
-        driver.status === 'accepted'
+        driver.status === 'accepted' && driver.balance > 0
     })
 
   return {
