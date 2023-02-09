@@ -6,7 +6,7 @@ import { genders } from '@constants/genders'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
 import RatingView from '@components/rating.view'
-import Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 type Props = {
   ride: Ride
@@ -37,7 +37,7 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
       .eq('id', ride.id)
 
     if (error !== null) {
-      Sentry.captureException(error, {
+      Sentry.Native.captureException(error, {
         contexts: {
           ride
         }

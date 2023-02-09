@@ -27,7 +27,7 @@ import RadioGroup from '@components/form/radio-group'
 import { genders } from '@constants/genders'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
-import Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 const RegisterPassengerSchema = z.object({
   name: z.string({ required_error: 'Nombre requerido' })
@@ -92,7 +92,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('passengers').insert(data)
 
     if (error !== null) {
-      Sentry.captureException(error, {
+      Sentry.Native.captureException(error, {
         contexts: {
           data
         }

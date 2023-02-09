@@ -14,7 +14,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Rating from '@components/form/rating'
 import Input from '@components/form/input'
 import cn from 'classnames'
-import Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 const RegisterRatingSchema = z.object({
   passenger_id: z.string().min(1),
@@ -57,7 +57,7 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
     const { error } = await supabase.from(table).insert(data)
 
     if (error !== null) {
-      Sentry.captureException(error, {
+      Sentry.Native.captureException(error, {
         contexts: {
           data
         }
