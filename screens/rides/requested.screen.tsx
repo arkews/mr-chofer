@@ -26,7 +26,7 @@ type Props = RootStackScreenProps<'RequestedRides'>
 
 const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
-  const { driver } = useDriver()
+  const { driver, isLoading: isLoadingDriver } = useDriver()
   const { vehicle, isLoading: isLoadingVehicle } = useVehicle()
 
   const checkVehicle = useCallback(() => {
@@ -39,7 +39,18 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     }
   }, [isLoadingVehicle, vehicle])
 
+  const checkDriver = useCallback(() => {
+    if (isLoadingDriver) {
+      return
+    }
+
+    if (driver === undefined || driver === null) {
+      navigation.navigate('DriverDetails')
+    }
+  }, [isLoadingDriver, driver])
+
   useFocusEffect(() => {
+    checkDriver()
     checkVehicle()
   })
 
