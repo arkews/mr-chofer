@@ -1,7 +1,7 @@
 import { supabase } from '@base/supabase'
 import { SignInWithPassword } from './types'
 import { AuthResponse } from '@supabase/supabase-js'
-import Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 export const signOut = async (): Promise<void> => {
   await supabase.auth.signOut()
@@ -11,7 +11,7 @@ export const signInWithPassword = async (credentials: SignInWithPassword): Promi
   const response = await supabase.auth.signInWithPassword(credentials)
 
   if (response.error !== null) {
-    Sentry.captureException(response.error, {
+    Sentry.Native.captureException(response.error, {
       contexts: {
         user: {
           email: credentials.email
@@ -28,7 +28,7 @@ export const signUpWithPassword = async (credentials: SignInWithPassword): Promi
   const response = await supabase.auth.signUp(credentials)
 
   if (response.error !== null) {
-    Sentry.captureException(response.error, {
+    Sentry.Native.captureException(response.error, {
       contexts: {
         user: {
           email: credentials.email

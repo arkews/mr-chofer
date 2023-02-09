@@ -1,6 +1,6 @@
 import { supabase } from '../index'
 import { Photo } from '@shared/types'
-import Sentry from '@sentry/react-native'
+import * as Sentry from 'sentry-expo'
 
 const uploadFile = async (bucketName: string, fileName: string, data: FormData) => {
   return await supabase.storage.from(bucketName).upload(fileName, data, {
@@ -23,7 +23,7 @@ const fetchFile = async (bucketName: string, fileName: string): Promise<string> 
   } = await supabase.storage.from(bucketName).download(fileName)
 
   if (error !== null) {
-    Sentry.captureException(error)
+    Sentry.Native.captureException(error)
     throw error
   }
 
@@ -54,7 +54,7 @@ export const uploadAvatar = async (userId: string, photo: Photo): Promise<string
     const { error, data } = await updateFile('avatars', fileName, formData)
 
     if (error !== null) {
-      Sentry.captureException(error)
+      Sentry.Native.captureException(error)
       return undefined
     }
 
@@ -82,7 +82,7 @@ export const uploadDocumentPhoto = async (documentName: string, photo: Photo) =>
     const { error, data } = await updateFile('documents', fileName, formData)
 
     if (error !== null) {
-      Sentry.captureException(error)
+      Sentry.Native.captureException(error)
       return undefined
     }
 
