@@ -21,10 +21,25 @@ import { Photo } from '@shared/types'
 import usePassenger from '@hooks/passengers/use-passenger'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
+import Sentry from '@sentry/react-native'
 
 const RegisterDriverSchema = z.object({
   id: z.string({ required_error: 'Identificación requerida' })
-    .min(1, 'Identificación requerida'),
+    .min(1, 'Identificación requerida')
+    .refine(async id => {
+      const { data: driver, error: driverError } = await supabase
+        .from('drivers')
+        .select('id')
+        .eq('id', id)
+        .single()
+
+      if (driverError !== null) {
+        const { details } = driverError
+        return details.includes('Results contain 0 rows')
+      }
+
+      return driver === null || driver === undefined || driver.id === ''
+    }, 'La identificación ya está registrada'),
   name: z.string({ required_error: 'Nombre requerido' })
     .min(1, 'Nombre requerido'),
   city: z.string({ required_error: 'Ciudad requerida' })
@@ -105,6 +120,11 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('drivers').insert(data)
 
     if (error != null) {
+      Sentry.captureException(error, {
+        contexts: {
+          data
+        }
+      })
       throw Error(error.message)
     }
   }
@@ -143,12 +163,28 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
 
   const isDisabled = isSubmitting || isLoading
 
+  const [errorText, setErrorText] = useState('')
+  useEffect(() => {
+    if (error === null) {
+      return
+    }
+
+    const authError = error as Error
+
+    if (authError.message.includes('already registered')) {
+      setErrorText('Ya existe un conductor registrado con los datos ingresados')
+      return
+    }
+
+    setErrorText('Ha ocurrido un error, intenta de nuevo')
+  }, [error])
+
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
         <View className="py-24 pb-0">
           <ScrollView
-            className="flex flex-grow w-full px-5 justify-center mx-auto space-y-5">
+            className="flex flex-grow w-full px-2 mx-auto space-y-5">
             <View className="mb-7">
               <Text className="text-xl text-center font-bold dark:text-white">
                 ¿Quieres ser conductor?
@@ -293,7 +329,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
             {
               error !== null &&
               <FieldError
-                message="Ha ocurrido un error, verifique los datos e intente nuevamente."/>
+                message={errorText}/>
             }
 
             <View>

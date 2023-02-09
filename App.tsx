@@ -15,10 +15,19 @@ import Navigation from './navigation'
 import { AuthProvider } from './auth/context'
 import { FC } from 'react'
 import RideToast from '@base/rides/components/toast'
+import * as Sentry from 'sentry-expo'
+import Constants from 'expo-constants'
 
 global.Buffer = Buffer
 
 const queryClient = new QueryClient()
+
+Sentry.init({
+  dsn: Constants.manifest?.extra?.sentry.dsn,
+  enableInExpoDevelopment: true,
+  debug: true,
+  tracesSampleRate: 1.0
+})
 
 const App: FC = () => {
   const isLoadingComplete = useCachedResources()

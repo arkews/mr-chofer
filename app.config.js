@@ -44,8 +44,26 @@ export default {
       legal: {
         terms: process.env.TERMS_AND_CONDITIONS_URL,
         vehicleLeasing: process.env.VEHICLE_LEASING_CONTRACT_URL
+      },
+      sentry: {
+        dsn: process.env.SENTRY_DSN
       }
     },
-    owner: 'cantte'
+    owner: 'cantte',
+    plugins: [
+      'sentry-expo'
+    ],
+    hooks: {
+      postPublish: [
+        {
+          file: 'sentry-expo/upload-sourcemaps',
+          config: {
+            organization: process.env.SENTRY_ORG,
+            project: process.env.SENTRY_PROJECT,
+            authToken: process.env.SENTRY_AUTH_TOKEN
+          }
+        }
+      ]
+    }
   }
 }

@@ -21,6 +21,7 @@ import { genders } from '@constants/genders'
 import Input from '@components/form/input'
 import ConfirmVehicleContractModal
   from '@base/rides/components/confirm-vehicle-contract.modal'
+import Sentry from '@sentry/react-native'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -61,6 +62,11 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('rides').insert(data)
 
     if (error != null) {
+      Sentry.captureException(error, {
+        contexts: {
+          data
+        }
+      })
       throw Error(error.message)
     }
   }

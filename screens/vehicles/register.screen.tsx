@@ -27,10 +27,25 @@ import { uploadDocumentPhoto } from '@base/supabase/storage'
 import PhotoPicker from '@components/form/photo-picker'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
+import Sentry from '@sentry/react-native'
 
 const RegisterVehicleSchema = z.object({
   license_plate: z.string({ required_error: 'Placa requerida' })
-    .min(1, 'Placa requerida'),
+    .min(1, 'Placa requerida')
+    .refine(async licensePlate => {
+      const { data: vehicle, error: vehicleError } = await supabase
+        .from('vehicles')
+        .select('license_plate')
+        .eq('license_plate', licensePlate)
+        .single()
+
+      if (vehicleError !== null) {
+        const { details } = vehicleError
+        return details.includes('Results contain 0 rows')
+      }
+
+      return vehicle === null || vehicle === undefined || vehicle.license_plate === ''
+    }, 'La placa ya está registrada'),
   owner_id: z.string({ required_error: 'Dueño requerido' })
     .min(1, 'Dueño requerido'),
   engine_displacement: z.string({ required_error: 'Cilindrada requerida' })
@@ -92,6 +107,11 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('vehicles').insert(data)
 
     if (error !== null) {
+      Sentry.captureException(error, {
+        contexts: {
+          data
+        }
+      })
       throw Error(error.message)
     }
   }
@@ -120,12 +140,28 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
   const isDisabled = isSubmitting || isLoading
 
+  const [errorText, setErrorText] = useState('')
+  useEffect(() => {
+    if (error === null) {
+      return
+    }
+
+    const authError = error as Error
+
+    if (authError.message.includes('already registered')) {
+      setErrorText('Ya existe un conductor registrado con los datos ingresados')
+      return
+    }
+
+    setErrorText('Ha ocurrido un error, intenta de nuevo')
+  }, [error])
+
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView>
         <View className="py-20 pb-2">
           <ScrollView
-            className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
+            className="flex flex-grow w-full px-5 mx-auto space-y-3">
             <View className="mb-5">
               <Text
                 className="text-xl font-medium text-center text-gray-900 dark:text-gray-200">
@@ -259,7 +295,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
             {
               error !== null &&
               <FieldError
-                message="Ha ocurrido un error, verifique los datos e intente nuevamente."/>
+                message={errorText}/>
             }
 
             <View>
