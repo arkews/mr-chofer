@@ -21,7 +21,10 @@ export default {
       '**/*'
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      runtimeVersion: {
+        policy: 'appVersion'
+      }
     },
     android: {
       runtimeVersion: '1.0.0',
