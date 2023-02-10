@@ -44,11 +44,11 @@ const DocumentPickerInput: FC<Props> = ({ disabled, label, onSelect }) => {
     <Pressable
       disabled={disabled}
       onPress={handlePickDocument}
-      className="flex flex-row justify-center items-center space-x-2 px-6 py-3.5 border-blue-500 rounded-lg border dark:border-blue-300">
+      className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 border-blue-500 rounded-lg border dark:border-blue-300">
+      <StyledIcon name="file-upload"
+                  className="text-2xl text-blue-500 dark:text-blue-300"/>
       <Text
         className="text-blue-500 text-center font-medium dark:text-blue-300">
-        <StyledIcon name="file-upload"
-                    className="text-2xl text-white"/>
         {label ?? 'Seleccionar documento'}
       </Text>
     </Pressable>
