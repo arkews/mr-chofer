@@ -22,6 +22,9 @@ type Driver = {
 
   status: DriverStatus
   rating: number
+
+  contract_url: string | null
+  notary_power_url: string | null
 }
 
 type UseDriver = {

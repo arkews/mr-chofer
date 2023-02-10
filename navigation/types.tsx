@@ -9,6 +9,7 @@ export type RootStackParamList = {
 
   DriverNavigation: undefined
   RegisterDriver: undefined
+  AttachDriverDocuments: undefined
   DriverDetails: undefined
 
   RegisterPassenger: undefined

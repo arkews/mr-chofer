@@ -21,6 +21,8 @@ import { styled } from 'nativewind'
 import { MaterialIcons } from '@expo/vector-icons'
 import { darkTheme, lightTheme } from '@constants/theme'
 import RegisterRatingScreen from '@screens/rating/register.screen'
+import AttachDriverDocumentsScreen
+  from '@screens/drivers/attach-documents.screen'
 
 const DriverTabNavigation = createBottomTabNavigator<RootStackParamList>()
 const StyledIcon = styled(MaterialIcons)
@@ -82,6 +84,8 @@ const RootNavigator: FC = () => {
                           component={RegisterPassengerScreen}/>
             <Stack.Screen name="RegisterDriver"
                           component={RegisterDriverScreen}/>
+            <Stack.Screen name="AttachDriverDocuments"
+                          component={AttachDriverDocumentsScreen}/>
             <Stack.Screen name="DriverNavigation"
                           component={DriverNavigation}/>
             <Stack.Screen name="RegisterVehicle"

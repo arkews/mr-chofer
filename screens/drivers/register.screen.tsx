@@ -184,7 +184,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
       <KeyboardAvoidingView>
         <View className="py-24 pb-0">
           <ScrollView
-            className="flex flex-grow w-full px-2 mx-auto space-y-5">
+            className="flex flex-grow w-full px-1.5 mx-auto space-y-5">
             <View className="mb-7">
               <Text className="text-xl text-center font-bold dark:text-white">
                 ¿Quieres ser conductor?
@@ -209,6 +209,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
               (passenger?.photo_url === undefined || passenger.photo_url === null) &&
               <View>
                 <PhotoPicker label="Foto de perfil"
+                             mode="take"
+                             disabled={isDisabled}
                              onSelect={onSelectProfilePhoto}/>
 
                 {
@@ -231,11 +233,13 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
             </Text>
 
             <View>
-              <Text
-                className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Documento de identidad
-              </Text>
-              <View className="flex flex-row space-x-2">
+              <View>
+                <Text
+                  className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Documento de identidad
+                </Text>
+              </View>
+              <View className="flex flex-row justify-between space-x-1">
                 <View className="basis-1/2">
                   <PhotoPicker label="Parte frontal" mode="take"
                                disabled={isDisabled}
@@ -282,7 +286,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Licencia de conducir
               </Text>
-              <View className="flex flex-row space-x-2">
+              <View className="flex flex-row space-x-1">
                 <View className="basis-1/2">
                   <PhotoPicker label="Parte frontal" mode="take"
                                disabled={isSubmitting || isLoading}
