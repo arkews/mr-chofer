@@ -1,25 +1,23 @@
-import { FC, useCallback, useEffect } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
-import useRequestedRides from '@base/rides/hooks/use-requested-rides'
-import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
-import { supabase } from '@base/supabase'
-import { useMutation } from '@tanstack/react-query'
+import { signOut } from '@base/auth'
 import RequestedRideCard from '@base/rides/components/requested'
+import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
+import useRealtimeRequestedRides from '@base/rides/hooks/realtime/use-realtime-requested-rides'
+import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
+import useRequestedRides from '@base/rides/hooks/use-requested-rides'
+import { supabase } from '@base/supabase'
+import { MaterialIcons } from '@expo/vector-icons'
+import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
+import useVehicle from '@hooks/vehicles/use-vehicle'
+import { RootStackScreenProps } from '@navigation/types'
+import { useFocusEffect } from '@react-navigation/native'
 import {
   REALTIME_LISTEN_TYPES
 } from '@supabase/realtime-js/src/RealtimeChannel'
-import { RootStackScreenProps } from '@navigation/types'
-import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
-import useVehicle from '@hooks/vehicles/use-vehicle'
-import useRealtimeRequestedRides
-  from '@base/rides/hooks/realtime/use-realtime-requested-rides'
-import useRealtimeCurrentDriverRide
-  from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
-import { styled } from 'nativewind'
-import { MaterialIcons } from '@expo/vector-icons'
-import { signOut } from '@base/auth'
-import { useFocusEffect } from '@react-navigation/native'
+import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
+import { styled } from 'nativewind'
+import { FC, useCallback, useEffect } from 'react'
+import { Pressable, ScrollView, Text, View } from 'react-native'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -226,8 +224,8 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
                         ¿Tienes documentos adicionales?
                       </Text>
                       <Text
-                        className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
-                        Si tienes documentos adicionales puedes subirlos aquí
+                        className="text-gray-500 text-sm mt-3 dark:text-gray-400">
+                        Si tienes documentos adicionales puedes subirlos aquí.
                       </Text>
                     </View>
 
