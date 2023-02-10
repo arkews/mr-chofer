@@ -179,6 +179,10 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, isLoadingSignOut, driver?.balance])
 
+  const goToAttachDriverDocuments = (): void => {
+    navigation.navigate('AttachDriverDocuments')
+  }
+
   return (
     <>
       <View className="flex h-full pb-10">
@@ -229,6 +233,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
                     <View className="flex flex-row space-x-2 justify-center mt-7">
                       <Pressable
+                        onPress={goToAttachDriverDocuments}
                         className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 rounded-md bg-blue-700 active:bg-blue-800">
                         <Text
                           className="text-white text-base font-bold">
