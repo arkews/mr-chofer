@@ -1,7 +1,7 @@
 import { supabase } from '@base/supabase'
 import { useQuery } from '@tanstack/react-query'
 import { Ride } from '@base/rides/types'
-import useDriver from '@hooks/drivers/use-driver'
+import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
 
 type UseRide = {
   ride?: Ride
@@ -32,7 +32,7 @@ const useCurrentDriverRide = (): UseRide => {
     ['current-driver-ride'],
     fetchRide,
     {
-      enabled: driver?.id !== undefined,
+      enabled: driver?.id !== undefined && driver?.status === DriverStatus.accepted,
       retry: false
     })
 
