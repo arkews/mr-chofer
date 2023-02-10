@@ -4,4 +4,10 @@ export type Photo = {
   name: string
 }
 
-export type PaymentMethod = 'cash'
+export type Document = {
+  uri: string
+  type: string
+  name: string
+}
+
+export type PaymentMethod = 'cash' | 'nequi'
