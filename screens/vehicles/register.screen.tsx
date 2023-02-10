@@ -32,6 +32,7 @@ import * as Sentry from 'sentry-expo'
 const RegisterVehicleSchema = z.object({
   license_plate: z.string({ required_error: 'Placa requerida' })
     .min(1, 'Placa requerida')
+    .transform(licensePlate => licensePlate.toUpperCase().trim())
     .refine(async licensePlate => {
       const { data: vehicle, error: vehicleError } = await supabase
         .from('vehicles')
