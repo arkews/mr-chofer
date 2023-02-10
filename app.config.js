@@ -15,7 +15,7 @@ export default {
       backgroundColor: '#ffffff'
     },
     updates: {
-      fallbackToCacheTimeout: 0
+      url: 'https://u.expo.dev/3a993f1e-cdb7-47d1-80d9-fc623bc77d08'
     },
     assetBundlePatterns: [
       '**/*'
@@ -24,6 +24,7 @@ export default {
       supportsTablet: true
     },
     android: {
+      runtimeVersion: '1.0.0',
       adaptiveIcon: {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff'
