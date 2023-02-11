@@ -342,7 +342,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                   isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
                 )}
               >
-                <Text className="text-base text-white font-medium text-center text-white">
+                <Text className="text-base font-medium text-center text-white">
                   Enviar
                 </Text>
               </Pressable>
