@@ -285,8 +285,8 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                               Vehículo
                             </Text>
                             <Text className="dark:text-white font-bold">
-                              {ride.drivers.vehicles[0].license_plate}, {ride.drivers.vehicles[0].brand}{' '}
-                              {ride.drivers.vehicles[0].line} {ride.drivers.vehicles[0].model} {ride.drivers.vehicles[0].color}
+                              {ride.drivers.vehicles.license_plate}, {ride.drivers.vehicles.brand}{' '}
+                              {ride.drivers.vehicles.line} {ride.drivers.vehicles.model} {ride.drivers.vehicles.color}
                             </Text>
                           </View>
                         </View>
