@@ -92,7 +92,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
                   gender: driver.gender,
                   photo_url: driver.photo_url,
                   rating: driver.rating,
-                  vehicles: [vehicle]
+                  vehicles: vehicle
                 }
               }
             })
