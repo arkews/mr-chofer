@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useCallback, useEffect, useState } from 'react'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -28,6 +28,8 @@ import PhotoPicker from '@components/form/photo-picker'
 import Input from '@components/form/input'
 import FieldError from '@components/form/feedback/field/field.error'
 import * as Sentry from 'sentry-expo'
+import useVehicle from '@hooks/vehicles/use-vehicle'
+import { useFocusEffect } from '@react-navigation/native'
 
 const RegisterVehicleSchema = z.object({
   license_plate: z.string({ required_error: 'Placa requerida' })
@@ -121,7 +123,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
   const { mutate, isLoading, error } = useMutation(registerVehicle, {
     onSuccess: () => {
       void queryClient.invalidateQueries(['vehicle', driver?.id])
-      navigation.replace('DriverDetails')
+      navigation.navigate('DriverDetails')
     }
   })
 
@@ -156,6 +158,14 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
     setErrorText('Ha ocurrido un error, intenta de nuevo')
   }, [error])
+
+  const { vehicle } = useVehicle()
+  const checkVehicle = useCallback(() => {
+    if (vehicle !== undefined && vehicle !== null) {
+      navigation.navigate('DriverDetails')
+    }
+  }, [vehicle])
+  useFocusEffect(checkVehicle)
 
   return (
     <FormProvider {...form}>
