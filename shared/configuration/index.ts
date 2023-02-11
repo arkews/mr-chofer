@@ -29,8 +29,13 @@ export const useConfig = (key: ConfigurationKey[keyof ConfigurationKey]): UseCon
       .single()
 
     if (error !== null) {
-      Sentry.Native.captureException(error)
-      throw Error(error.message)
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
+        contexts: {
+          error
+        }
+      })
+      throw rawError
     }
 
     return data

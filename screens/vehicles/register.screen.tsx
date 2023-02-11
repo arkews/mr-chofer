@@ -125,12 +125,14 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('vehicles').insert(data)
 
     if (error !== null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          data
+          data,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 

@@ -1,20 +1,20 @@
-import { FC, useEffect } from 'react'
-import { Pressable, Text, View } from 'react-native'
+import { supabase } from '@base/supabase'
+import Input from '@components/form/input'
+import Rating from '@components/form/rating'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { RootStackScreenProps } from '@navigation/types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import cn from 'classnames'
+import { FC, useEffect } from 'react'
 import {
   Controller,
   FormProvider,
   SubmitHandler,
   useForm
 } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { supabase } from '@base/supabase'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import Rating from '@components/form/rating'
-import Input from '@components/form/input'
-import cn from 'classnames'
+import { Pressable, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
+import { z } from 'zod'
 
 const RegisterRatingSchema = z.object({
   passenger_id: z.string().min(1),
@@ -47,7 +47,8 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
 
   const queryClient = useQueryClient()
   const goBack = () => {
-    const queryKey = type === 'driver' ? 'current-passenger-ride' : 'current-driver-ride'
+    const queryKey =
+      type === 'driver' ? 'current-passenger-ride' : 'current-driver-ride'
     void queryClient.invalidateQueries([queryKey])
     navigation.goBack()
   }
@@ -57,12 +58,14 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
     const { error } = await supabase.from(table).insert(data)
 
     if (error !== null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          data
+          data,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 
@@ -72,31 +75,33 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
     }
   })
 
-  const onSubmit: SubmitHandler<RegisterRatingData> = async data => {
+  const onSubmit: SubmitHandler<RegisterRatingData> = async (data) => {
     mutate(data)
   }
 
   const isDisabled = isLoading || isSubmitting
 
-  useEffect(() => navigation.addListener('beforeRemove', () => {
-    const queryKey = type === 'driver' ? 'current-passenger-ride' : 'current-driver-ride'
-    void queryClient.invalidateQueries([queryKey])
-  }), [navigation])
+  useEffect(
+    () =>
+      navigation.addListener('beforeRemove', () => {
+        const queryKey =
+          type === 'driver' ? 'current-passenger-ride' : 'current-driver-ride'
+        void queryClient.invalidateQueries([queryKey])
+      }),
+    [navigation]
+  )
 
   return (
     <FormProvider {...form}>
-      <View
-        className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
+      <View className="flex flex-grow w-full px-5 justify-center mx-auto space-y-3">
         <View className="mb-3">
-          <Text
-            className="text-2xl font-medium text-center text-gray-900 dark:text-gray-200">
+          <Text className="text-2xl font-medium text-center text-gray-900 dark:text-gray-200">
             ¡Termino tu recorrido!
           </Text>
 
-          <Text
-            className="text-gray-500 text-sm font-medium text-center mt-3 dark:text-gray-400">
-            Califica tu experiencia con
-            el {type === 'passenger' ? 'pasajero' : 'conductor'}.
+          <Text className="text-gray-500 text-sm font-medium text-center mt-3 dark:text-gray-400">
+            Califica tu experiencia con el{' '}
+            {type === 'passenger' ? 'pasajero' : 'conductor'}.
           </Text>
         </View>
 
@@ -105,7 +110,7 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
             control={control}
             render={({ field: { onChange } }) => (
               <View>
-                <Rating onChange={onChange}/>
+                <Rating onChange={onChange} />
               </View>
             )}
             name="rating"
@@ -119,30 +124,29 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
             placeholderTextColor="#9CA3AF"
             multiline
             numberOfLines={3}
-            disabled={isDisabled}/>
+            disabled={isDisabled}
+          />
         </View>
 
-        {
-          error !== null &&
+        {error !== null && (
           <Text className="text-red-500 text-xs">
             Ha ocurrido un error, verifique los datos e intente nuevamente.
           </Text>
-        }
+        )}
 
         <View>
           <View className="py-3">
             <Pressable
               onPress={handleSubmit(onSubmit)}
               disabled={isDisabled}
-              className={
-                cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                  'active:bg-blue-800',
-                  (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                  (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
-              }
+              className={cn(
+                'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                'active:bg-blue-800',
+                isDisabled && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+              )}
             >
-              <Text
-                className="text-base text-white font-medium text-center text-white">
+              <Text className="text-base font-medium text-center text-white">
                 Calificar
               </Text>
             </Pressable>
@@ -152,15 +156,14 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
             <Pressable
               onPress={goBack}
               disabled={isDisabled}
-              className={
-                cn('bg-white border border-zinc-300 rounded-lg px-5 py-2.5 dark:bg-zinc-800 dark:border-zinc-600',
-                  'active:bg-zinc-100 dark:active:bg-zinc-700',
-                  (isDisabled) && 'bg-gray-300 text-zinc-700 cursor-not-allowed',
-                  (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
-              }
+              className={cn(
+                'bg-white border border-zinc-300 rounded-lg px-5 py-2.5 dark:bg-zinc-800 dark:border-zinc-600',
+                'active:bg-zinc-100 dark:active:bg-zinc-700',
+                isDisabled && 'bg-gray-300 text-zinc-700 cursor-not-allowed',
+                isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+              )}
             >
-              <Text
-                className="text-gray-900 font-medium text-sm dark:text-white text-center">
+              <Text className="text-gray-900 font-medium text-sm dark:text-white text-center">
                 En otro momento
               </Text>
             </Pressable>

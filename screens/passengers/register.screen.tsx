@@ -1,4 +1,23 @@
+import { useAuth } from '@base/auth/context'
+import { supabase } from '@base/supabase'
+import { uploadAvatar } from '@base/supabase/storage'
+import FieldError from '@components/form/feedback/field/field.error'
+import Input from '@components/form/input'
+import PhotoPicker from '@components/form/photo-picker'
+import RadioGroup from '@components/form/radio-group'
+import { genders } from '@constants/genders'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { RootStackScreenProps } from '@navigation/types'
+import { Photo } from '@shared/types'
+import { useMutation } from '@tanstack/react-query'
+import cn from 'classnames'
 import { FC, useEffect, useState } from 'react'
+import {
+  Controller,
+  FormProvider,
+  SubmitHandler,
+  useForm
+} from 'react-hook-form'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -7,60 +26,51 @@ import {
   Text,
   View
 } from 'react-native'
-import { z } from 'zod'
-import {
-  Controller,
-  FormProvider,
-  SubmitHandler,
-  useForm
-} from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { supabase } from '@base/supabase'
-import { useMutation } from '@tanstack/react-query'
-import { RootStackScreenProps } from '@navigation/types'
-import { useAuth } from '@base/auth/context'
-import { Photo } from '@shared/types'
-import { uploadAvatar } from '@base/supabase/storage'
-import cn from 'classnames'
-import PhotoPicker from '@components/form/photo-picker'
-import RadioGroup from '@components/form/radio-group'
-import { genders } from '@constants/genders'
-import Input from '@components/form/input'
-import FieldError from '@components/form/feedback/field/field.error'
 import * as Sentry from 'sentry-expo'
+import { z } from 'zod'
 
-const RegisterPassengerSchema = z.object({
-  name: z.string({ required_error: 'Nombre requerido' })
-    .min(1, 'Nombre requerido'),
-  city: z.string({ required_error: 'Ciudad requerida' })
-    .min(1, 'Ciudad requerida'),
-  phone: z.string({ required_error: 'Número de teléfono requerido' })
-    .min(1, 'Número de teléfono requerido')
-    .refine(async phone => {
-      const { data: passenger, error: passengerError } = await supabase
-        .from('passengers')
-        .select('id')
-        .eq('phone', phone)
-        .single()
+const RegisterPassengerSchema = z
+  .object({
+    name: z
+      .string({ required_error: 'Nombre requerido' })
+      .min(1, 'Nombre requerido'),
+    city: z
+      .string({ required_error: 'Ciudad requerida' })
+      .min(1, 'Ciudad requerida'),
+    phone: z
+      .string({ required_error: 'Número de teléfono requerido' })
+      .min(1, 'Número de teléfono requerido')
+      .refine(async (phone) => {
+        const { data: passenger, error: passengerError } = await supabase
+          .from('passengers')
+          .select('id')
+          .eq('phone', phone)
+          .single()
 
-      if (passengerError !== null) {
-        const { details } = passengerError
-        return details.includes('Results contain 0 rows')
-      }
+        if (passengerError !== null) {
+          const { details } = passengerError
+          return details.includes('Results contain 0 rows')
+        }
 
-      return passenger === null || passenger === undefined || passenger.id === ''
-    }, 'El número de teléfono ya está registrado'),
-  phoneConfirmation: z.string({ required_error: 'Debe confirmar el número de teléfono' })
-    .min(1, 'Debe confirmar el número de teléfono'),
-  gender: z.string({ required_error: 'Debe seleccionar un sexo' })
-    .min(1, 'Debe seleccionar un sexo'),
-  photo_url: z.string().optional().nullable(),
-  user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
-    .min(1, 'Debe seleccionar un usuario')
-}).refine(data => data.phone === data.phoneConfirmation, {
-  message: 'Los números de teléfono no coinciden',
-  path: ['phoneConfirmation']
-})
+        return (
+          passenger === null || passenger === undefined || passenger.id === ''
+        )
+      }, 'El número de teléfono ya está registrado'),
+    phoneConfirmation: z
+      .string({ required_error: 'Debe confirmar el número de teléfono' })
+      .min(1, 'Debe confirmar el número de teléfono'),
+    gender: z
+      .string({ required_error: 'Debe seleccionar un sexo' })
+      .min(1, 'Debe seleccionar un sexo'),
+    photo_url: z.string().optional().nullable(),
+    user_id: z
+      .string({ required_error: 'Debe seleccionar un usuario' })
+      .min(1, 'Debe seleccionar un usuario')
+  })
+  .refine((data) => data.phone === data.phoneConfirmation, {
+    message: 'Los números de teléfono no coinciden',
+    path: ['phoneConfirmation']
+  })
 
 type PassengerData = z.infer<typeof RegisterPassengerSchema>
 type PassengerMutationData = Omit<PassengerData, 'phoneConfirmation'>
@@ -88,16 +98,20 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
 
   const [photo, setPhoto] = useState<Photo | null>(null)
 
-  const registerPassenger = async (data: PassengerMutationData): Promise<void> => {
+  const registerPassenger = async (
+    data: PassengerMutationData
+  ): Promise<void> => {
     const { error } = await supabase.from('passengers').insert(data)
 
     if (error !== null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          data
+          data,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 
@@ -107,7 +121,7 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     }
   })
 
-  const onSubmit: SubmitHandler<PassengerData> = async data => {
+  const onSubmit: SubmitHandler<PassengerData> = async (data) => {
     if (photo !== null) {
       const photoUrl = await uploadAvatar(data.user_id, photo)
       if (photoUrl === undefined) {
@@ -129,14 +143,12 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
     <FormProvider {...form}>
       <KeyboardAvoidingView>
         <View className="py-24 pb-2">
-          <ScrollView
-            className="flex flex-grow w-full px-5 mx-auto space-y-3">
+          <ScrollView className="flex flex-grow w-full px-5 mx-auto space-y-3">
             <View className="mb-3">
               <Text className="text-xl text-center dark:text-white">
                 Cuentanos un poco sobre ti
               </Text>
-              <Text
-                className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
+              <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
                 Solo necesitamos algunos datos para poder crear tu perfil
               </Text>
             </View>
@@ -146,7 +158,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 name="name"
                 label="Nombre"
                 disabled={isDisabled}
-                enablesReturnKeyAutomatically/>
+                enablesReturnKeyAutomatically
+              />
             </View>
 
             <View>
@@ -154,7 +167,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 name="city"
                 label="Ciudad"
                 disabled={isDisabled}
-                enablesReturnKeyAutomatically/>
+                enablesReturnKeyAutomatically
+              />
             </View>
 
             <View>
@@ -163,7 +177,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 label="Teléfono"
                 keyboardType="numeric"
                 disabled={isDisabled}
-                enablesReturnKeyAutomatically/>
+                enablesReturnKeyAutomatically
+              />
             </View>
 
             <View>
@@ -172,7 +187,8 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 label="Confirmar teléfono"
                 keyboardType="numeric"
                 disabled={isDisabled}
-                enablesReturnKeyAutomatically/>
+                enablesReturnKeyAutomatically
+              />
             </View>
 
             <Controller
@@ -180,47 +196,47 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
               render={({ field: { onChange, value } }) => (
                 <View className="mt-4">
                   <Text className="mb-2 dark:text-white">Sexo</Text>
-                  <RadioGroup values={genders} selected={value}
-                              onSelect={onChange}/>
+                  <RadioGroup
+                    values={genders}
+                    selected={value}
+                    onSelect={onChange}
+                  />
 
-                  {(errors.gender != null) &&
-                    <FieldError message={errors.gender.message}/>
-                  }
+                  {errors.gender != null && (
+                    <FieldError message={errors.gender.message} />
+                  )}
                 </View>
               )}
               name="gender"
             />
 
             <View>
-              <PhotoPicker onSelect={setPhoto} disabled={isDisabled}/>
-              {
-                photo !== null &&
+              <PhotoPicker onSelect={setPhoto} disabled={isDisabled} />
+              {photo !== null && (
                 <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
                   Foto seleccionada {photo.name}
                 </Text>
-              }
+              )}
             </View>
 
-            {
-              error !== null &&
+            {error !== null && (
               <Text className="text-red-500 text-xs">
                 Ha ocurrido un error, verifique los datos e intente nuevamente.
               </Text>
-            }
+            )}
 
             <View className="pt-5">
               <Pressable
                 onPress={handleSubmit(onSubmit)}
                 disabled={isDisabled}
-                className={
-                  cn('text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                    'active:bg-blue-800',
-                    (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
-                }
+                className={cn(
+                  'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                  'active:bg-blue-800',
+                  isDisabled && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                  isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                )}
               >
-                <Text
-                  className="text-base text-white font-medium text-center text-white">
+                <Text className="text-base font-medium text-center text-white">
                   Enviar
                 </Text>
               </Pressable>
