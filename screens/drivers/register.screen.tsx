@@ -103,7 +103,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     resolver: zodResolver(RegisterDriverSchema),
     defaultValues: {
       ...passenger,
-      id: undefined
+      id: undefined,
+      photo_url: undefined
     }
   })
 
@@ -229,27 +230,24 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
               />
             </View>
 
-            {(passenger?.photo_url === undefined ||
-              passenger.photo_url === null) && (
-              <View>
-                <PhotoPicker
-                  label="Foto de perfil"
-                  mode="take"
-                  disabled={isDisabled}
-                  onSelect={onSelectProfilePhoto}
-                />
+            <View>
+              <PhotoPicker
+                label="Foto de perfil"
+                mode="take"
+                disabled={isDisabled}
+                onSelect={onSelectProfilePhoto}
+              />
 
-                {watch('photo_url') !== null && (
-                  <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                    Foto cargada
-                  </Text>
-                )}
+              {watch('photo_url') !== null && (
+                <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  Foto cargada
+                </Text>
+              )}
 
-                {errors.photo_url !== undefined && (
-                  <FieldError message={errors.photo_url.message} />
-                )}
-              </View>
-            )}
+              {errors.photo_url !== undefined && (
+                <FieldError message={errors.photo_url.message} />
+              )}
+            </View>
 
             <Text className="font-medium text-base text-center text-gray-900 dark:text-gray-200">
               Documentos
