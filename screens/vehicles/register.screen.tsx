@@ -140,7 +140,7 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
   const { mutate, isLoading, error } = useMutation(registerVehicle, {
     onSuccess: () => {
       void queryClient.invalidateQueries(['vehicle', driver?.id])
-      navigation.navigate('DriverDetails')
+      navigation.replace('DriverNavigation')
     }
   })
 
