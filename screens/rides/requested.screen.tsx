@@ -3,6 +3,7 @@ import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtim
 import useRealtimeRequestedRides from '@base/rides/hooks/realtime/use-realtime-requested-rides'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
+import { useConfig } from '@base/shared/configuration'
 import { supabase } from '@base/supabase'
 import { MaterialIcons } from '@expo/vector-icons'
 import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
@@ -183,7 +184,14 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const isDriverEmpty = driver === undefined || driver === null
   const isDriverVerified =
     !isDriverEmpty && driver.status === DriverStatus.accepted
-  const isDriveHasEnoughBalance = !isDriverEmpty && driver.balance >= 0
+
+  const { config } = useConfig('CHECK_DRIVER_BALANCE')
+
+  const isValidConfig = config !== undefined && config !== null
+  const isDriveHasEnoughBalance =
+    !isDriverEmpty &&
+    isValidConfig &&
+    (config.value === 'true' ? driver.balance >= 0 : true)
 
   return (
     <>
