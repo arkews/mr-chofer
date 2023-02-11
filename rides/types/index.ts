@@ -32,7 +32,7 @@ type RideDriver = {
   photo_url: string
   rating: number
 
-  vehicles?: RideDriverVehicle[]
+  vehicles?: RideDriverVehicle
 }
 
 export type Ride = RegisterRideRequest & {

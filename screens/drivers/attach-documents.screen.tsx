@@ -1,16 +1,16 @@
-import { FC, useCallback } from 'react'
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { RootStackScreenProps } from '@navigation/types'
+import { useAuth } from '@base/auth/context'
+import { Document } from '@base/shared/types'
+import { supabase } from '@base/supabase'
+import { uploadDocumentPhoto } from '@base/supabase/storage'
+import DocumentPickerInput from '@components/form/document-picker'
 import SafeAreaInsetsView from '@components/view/safe-area-insets.view'
 import useDriver from '@hooks/drivers/use-driver'
-import DocumentPickerInput from '@components/form/document-picker'
-import { Document } from '@base/shared/types'
-import { uploadDocumentPhoto } from '@base/supabase/storage'
-import { supabase } from '@base/supabase'
-import * as Sentry from 'sentry-expo'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '@base/auth/context'
+import { RootStackScreenProps } from '@navigation/types'
 import { useFocusEffect } from '@react-navigation/native'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FC, useCallback } from 'react'
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
+import * as Sentry from 'sentry-expo'
 
 type Props = RootStackScreenProps<'AttachDriverDocuments'>
 
@@ -33,7 +33,10 @@ const AttachDriverDocumentsScreen: FC<Props> = ({ navigation }) => {
       return
     }
 
-    const documentUrl = await uploadDocumentPhoto(`${driver.id}-${type}`, document)
+    const documentUrl = await uploadDocumentPhoto(
+      `${driver.id}-${type}`,
+      document
+    )
     if (documentUrl === undefined) {
       Alert.alert('Error', 'No se pudo subir el documento')
       return
@@ -45,12 +48,14 @@ const AttachDriverDocumentsScreen: FC<Props> = ({ navigation }) => {
       .eq('id', driver.id)
 
     if (error !== null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          driver
+          driver,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 
@@ -74,19 +79,18 @@ const AttachDriverDocumentsScreen: FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaInsetsView>
-      <ScrollView className="min-h-screen px-2 py-3"
-                  contentContainerStyle={styles.container}>
+      <ScrollView
+        className="min-h-screen px-2 py-3"
+        contentContainerStyle={styles.container}
+      >
         <View>
-          <View
-            className="flex flex-grow w-full justify-center mx-auto space-y-5">
+          <View className="flex flex-grow w-full justify-center mx-auto space-y-5">
             <View>
-              <Text
-                className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
+              <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
                 Anexar documentos adicinales
               </Text>
 
-              <Text
-                className="text-base text-center my-auto text-gray-500 dark:text-gray-400">
+              <Text className="text-base text-center my-auto text-gray-500 dark:text-gray-400">
                 <Text className="font-bold">{driver?.name}</Text>
                 <Text>
                   , por favor anexa los documentos adicionales para poder
@@ -97,39 +101,35 @@ const AttachDriverDocumentsScreen: FC<Props> = ({ navigation }) => {
 
             <View className="pt-7">
               <View className="flex flex-col space-y-3 justify-center">
-                {
-                  driver?.contract_url === null && (
-                    <View>
-                      <DocumentPickerInput
-                        label="Subir contrato"
-                        disabled={disabled}
-                        onSelect={uploadContract}/>
-                    </View>
-                  )
-                }
+                {driver?.contract_url === null && (
+                  <View>
+                    <DocumentPickerInput
+                      label="Subir contrato"
+                      disabled={disabled}
+                      onSelect={uploadContract}
+                    />
+                  </View>
+                )}
 
-                {
-                  driver?.notary_power_url === null && (
-                    <View>
-                      <DocumentPickerInput
-                        label="Subir poder notarial"
-                        disabled={disabled}
-                        onSelect={uploadNotaryPower}/>
-                    </View>
-                  )
-                }
+                {driver?.notary_power_url === null && (
+                  <View>
+                    <DocumentPickerInput
+                      label="Subir poder notarial"
+                      disabled={disabled}
+                      onSelect={uploadNotaryPower}
+                    />
+                  </View>
+                )}
               </View>
             </View>
 
-            {
-              error !== null && (
-                <View className="flex flex-col space-y-3 justify-center">
-                  <Text className="text-red-500 text-center">
-                    Ha ocurrido un error al subir el documento
-                  </Text>
-                </View>
-              )
-            }
+            {error !== null && (
+              <View className="flex flex-col space-y-3 justify-center">
+                <Text className="text-red-500 text-center">
+                  Ha ocurrido un error al subir el documento
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>

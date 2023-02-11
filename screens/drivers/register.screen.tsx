@@ -1,6 +1,17 @@
-import { FC, useEffect, useState } from 'react'
-import { RootStackScreenProps } from '@navigation/types'
 import { useAuth } from '@base/auth/context'
+import { supabase } from '@base/supabase'
+import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
+import FieldError from '@components/form/feedback/field/field.error'
+import Input from '@components/form/input'
+import PhotoPicker from '@components/form/photo-picker'
+import { zodResolver } from '@hookform/resolvers/zod'
+import usePassenger from '@hooks/passengers/use-passenger'
+import { RootStackScreenProps } from '@navigation/types'
+import { Photo } from '@shared/types'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import cn from 'classnames'
+import { FC, useEffect, useState } from 'react'
+import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import {
   Alert,
   KeyboardAvoidingView,
@@ -9,24 +20,14 @@ import {
   Text,
   View
 } from 'react-native'
-import { z } from 'zod'
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { supabase } from '@base/supabase'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import cn from 'classnames'
-import PhotoPicker from '@components/form/photo-picker'
-import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
-import { Photo } from '@shared/types'
-import usePassenger from '@hooks/passengers/use-passenger'
-import Input from '@components/form/input'
-import FieldError from '@components/form/feedback/field/field.error'
 import * as Sentry from 'sentry-expo'
+import { z } from 'zod'
 
 const RegisterDriverSchema = z.object({
-  id: z.string({ required_error: 'Identificación requerida' })
+  id: z
+    .string({ required_error: 'Identificación requerida' })
     .min(1, 'Identificación requerida')
-    .refine(async id => {
+    .refine(async (id) => {
       const { data: driver, error: driverError } = await supabase
         .from('drivers')
         .select('id')
@@ -40,28 +41,38 @@ const RegisterDriverSchema = z.object({
 
       return driver === null || driver === undefined || driver.id === ''
     }, 'La identificación ya está registrada'),
-  name: z.string({ required_error: 'Nombre requerido' })
+  name: z
+    .string({ required_error: 'Nombre requerido' })
     .min(1, 'Nombre requerido'),
-  city: z.string({ required_error: 'Ciudad requerida' })
+  city: z
+    .string({ required_error: 'Ciudad requerida' })
     .min(1, 'Ciudad requerida'),
-  phone: z.string({ required_error: 'Número de teléfono requerido' })
+  phone: z
+    .string({ required_error: 'Número de teléfono requerido' })
     .min(1, 'Número de teléfono requerido'),
-  gender: z.string({ required_error: 'Debe seleccionar un sexo' })
+  gender: z
+    .string({ required_error: 'Debe seleccionar un sexo' })
     .min(1, 'Debe seleccionar un sexo'),
-  photo_url: z.string({
-    required_error: 'Debe seleccionar una foto',
-    invalid_type_error: 'Debe seleccionar una foto'
-  })
+  photo_url: z
+    .string({
+      required_error: 'Debe seleccionar una foto',
+      invalid_type_error: 'Debe seleccionar una foto'
+    })
     .min(1, 'Debe seleccionar una foto'),
-  id_photo_url_front: z.string({ required_error: 'Debe subir este documento' })
+  id_photo_url_front: z
+    .string({ required_error: 'Debe subir este documento' })
     .min(1, 'Debe subir este documento'),
-  license_photo_url_front: z.string({ required_error: 'Debe subir este documento' })
+  license_photo_url_front: z
+    .string({ required_error: 'Debe subir este documento' })
     .min(1, 'Debe subir este documento'),
-  id_photo_url_back: z.string({ required_error: 'Debe subir este documento' })
+  id_photo_url_back: z
+    .string({ required_error: 'Debe subir este documento' })
     .min(1, 'Debe subir este documento'),
-  license_photo_url_back: z.string({ required_error: 'Debe subir este documento' })
+  license_photo_url_back: z
+    .string({ required_error: 'Debe subir este documento' })
     .min(1, 'Debe subir este documento'),
-  user_id: z.string({ required_error: 'Debe seleccionar un usuario' })
+  user_id: z
+    .string({ required_error: 'Debe seleccionar un usuario' })
     .min(1, 'Debe seleccionar un usuario')
 })
 
@@ -71,7 +82,7 @@ type DriverMutationData = Omit<DriverData, 'phoneConfirmation'>
 type Props = RootStackScreenProps<'RegisterDriver'>
 
 type DocumentPhotoField =
-  'id_photo_url_front'
+  | 'id_photo_url_front'
   | 'id_photo_url_back'
   | 'license_photo_url_front'
   | 'license_photo_url_back'
@@ -103,8 +114,13 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     formState: { errors, isSubmitting }
   } = form
 
-  const [documentPhotos, setDocumentPhotos] = useState<DocumentPhotos>(new Map())
-  const handleDocumentPhotoChange = (field: DocumentPhotoField, photo: Photo) => {
+  const [documentPhotos, setDocumentPhotos] = useState<DocumentPhotos>(
+    new Map()
+  )
+  const handleDocumentPhotoChange = (
+    field: DocumentPhotoField,
+    photo: Photo
+  ) => {
     setDocumentPhotos(new Map(documentPhotos.set(field, photo)))
     setValue(field, photo.uri)
   }
@@ -120,12 +136,14 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     const { error } = await supabase.from('drivers').insert(data)
 
     if (error != null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          data
+          data,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 
@@ -137,7 +155,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
   })
 
-  const onSubmit: SubmitHandler<DriverData> = async data => {
+  const onSubmit: SubmitHandler<DriverData> = async (data) => {
     if (profilePhoto !== null) {
       const photoUrl = await uploadAvatar(data.user_id, profilePhoto)
       if (photoUrl === undefined) {
@@ -149,9 +167,14 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     }
 
     for (const [field, photo] of documentPhotos) {
-      const documentUrl = await uploadDocumentPhoto(`${data.user_id}-${field}`, photo)
+      const documentUrl = await uploadDocumentPhoto(
+        `${data.user_id}-${field}`,
+        photo
+      )
       if (documentUrl === undefined) {
-        Alert.alert('Tuvimos un problema al subir tus documentos, intenta de nuevo')
+        Alert.alert(
+          'Tuvimos un problema al subir tus documentos, intenta de nuevo'
+        )
         return
       }
 
@@ -172,7 +195,9 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     const authError = error as Error
 
     if (authError.message.includes('already registered')) {
-      setErrorText('Ya existe un conductor registrado con los datos ingresados')
+      setErrorText(
+        'Ya existe un conductor registrado con los datos ingresados'
+      )
       return
     }
 
@@ -183,14 +208,12 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     <FormProvider {...form}>
       <KeyboardAvoidingView>
         <View className="py-24 pb-0">
-          <ScrollView
-            className="flex flex-grow w-full px-1.5 mx-auto space-y-5">
+          <ScrollView className="flex flex-grow w-full px-1.5 mx-auto space-y-5">
             <View className="mb-7">
               <Text className="text-xl text-center font-bold dark:text-white">
                 ¿Quieres ser conductor?
               </Text>
-              <Text
-                className="text-gray-500 text-base text-sm mt-3 dark:text-gray-400">
+              <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
                 Ya tenemos tu información básica, ahora necesitamos que nos
                 proporciones algunos datos para poder crear tu perfil de
                 conductor.
@@ -202,153 +225,158 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                 name="id"
                 label="Identificación"
                 keyboardType="numeric"
-                disabled={isDisabled}/>
+                disabled={isDisabled}
+              />
             </View>
 
-            {
-              (passenger?.photo_url === undefined || passenger.photo_url === null) &&
+            {(passenger?.photo_url === undefined ||
+              passenger.photo_url === null) && (
               <View>
-                <PhotoPicker label="Foto de perfil"
-                             mode="take"
-                             disabled={isDisabled}
-                             onSelect={onSelectProfilePhoto}/>
+                <PhotoPicker
+                  label="Foto de perfil"
+                  mode="take"
+                  disabled={isDisabled}
+                  onSelect={onSelectProfilePhoto}
+                />
 
-                {
-                  watch('photo_url') !== null &&
-                  <Text
-                    className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                {watch('photo_url') !== null && (
+                  <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                     Foto cargada
                   </Text>
-                }
+                )}
 
-                {(errors.photo_url !== undefined) &&
-                  <FieldError message={errors.photo_url.message}/>
-                }
+                {errors.photo_url !== undefined && (
+                  <FieldError message={errors.photo_url.message} />
+                )}
               </View>
-            }
+            )}
 
-            <Text
-              className="font-medium text-base text-center text-gray-900 dark:text-gray-200">
+            <Text className="font-medium text-base text-center text-gray-900 dark:text-gray-200">
               Documentos
             </Text>
 
             <View>
               <View>
-                <Text
-                  className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Documento de identidad
                 </Text>
               </View>
               <View className="flex flex-row justify-between space-x-1">
                 <View className="basis-1/2">
-                  <PhotoPicker label="Parte frontal" mode="take"
-                               disabled={isDisabled}
-                               onSelect={(photo) => {
-                                 handleDocumentPhotoChange('id_photo_url_front', photo)
-                               }}/>
+                  <PhotoPicker
+                    label="Parte frontal"
+                    mode="take"
+                    disabled={isDisabled}
+                    onSelect={(photo) => {
+                      handleDocumentPhotoChange('id_photo_url_front', photo)
+                    }}
+                  />
 
-                  {
-                    watch('id_photo_url_front') !== undefined &&
-                    <Text
-                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  {watch('id_photo_url_front') !== undefined && (
+                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
-                  }
+                  )}
 
-                  {(errors.id_photo_url_front !== undefined) &&
-                    <FieldError message={errors.id_photo_url_front.message}/>
-                  }
+                  {errors.id_photo_url_front !== undefined && (
+                    <FieldError message={errors.id_photo_url_front.message} />
+                  )}
                 </View>
                 <View className="basis-1/2">
-                  <PhotoPicker label="Parte trasera" mode="take"
-                               disabled={isDisabled}
-                               onSelect={(photo) => {
-                                 handleDocumentPhotoChange('id_photo_url_back', photo)
-                               }}/>
+                  <PhotoPicker
+                    label="Parte trasera"
+                    mode="take"
+                    disabled={isDisabled}
+                    onSelect={(photo) => {
+                      handleDocumentPhotoChange('id_photo_url_back', photo)
+                    }}
+                  />
 
-                  {
-                    watch('id_photo_url_back') !== undefined &&
-                    <Text
-                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  {watch('id_photo_url_back') !== undefined && (
+                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
-                  }
+                  )}
 
-                  {(errors.id_photo_url_back !== undefined) &&
-                    <FieldError message={errors.id_photo_url_back.message}/>
-                  }
+                  {errors.id_photo_url_back !== undefined && (
+                    <FieldError message={errors.id_photo_url_back.message} />
+                  )}
                 </View>
               </View>
             </View>
 
             <View>
-              <Text
-                className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Licencia de conducir
               </Text>
               <View className="flex flex-row space-x-1">
                 <View className="basis-1/2">
-                  <PhotoPicker label="Parte frontal" mode="take"
-                               disabled={isSubmitting || isLoading}
-                               onSelect={(photo) => {
-                                 handleDocumentPhotoChange('license_photo_url_front', photo)
-                               }}/>
+                  <PhotoPicker
+                    label="Parte frontal"
+                    mode="take"
+                    disabled={isSubmitting || isLoading}
+                    onSelect={(photo) => {
+                      handleDocumentPhotoChange(
+                        'license_photo_url_front',
+                        photo
+                      )
+                    }}
+                  />
 
-                  {
-                    watch('license_photo_url_front') !== undefined &&
-                    <Text
-                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  {watch('license_photo_url_front') !== undefined && (
+                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
-                  }
+                  )}
 
-                  {(errors.license_photo_url_front !== undefined) &&
+                  {errors.license_photo_url_front !== undefined && (
                     <FieldError
-                      message={errors.license_photo_url_front.message}/>
-                  }
+                      message={errors.license_photo_url_front.message}
+                    />
+                  )}
                 </View>
                 <View className="basis-1/2">
-                  <PhotoPicker label="Parte trasera" mode="take"
-                               disabled={isDisabled}
-                               onSelect={(photo) => {
-                                 handleDocumentPhotoChange('license_photo_url_back', photo)
-                               }}/>
+                  <PhotoPicker
+                    label="Parte trasera"
+                    mode="take"
+                    disabled={isDisabled}
+                    onSelect={(photo) => {
+                      handleDocumentPhotoChange(
+                        'license_photo_url_back',
+                        photo
+                      )
+                    }}
+                  />
 
-                  {
-                    watch('license_photo_url_back') !== undefined &&
-                    <Text
-                      className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                  {watch('license_photo_url_back') !== undefined && (
+                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                       Foto cargada
                     </Text>
-                  }
+                  )}
 
-                  {(errors.license_photo_url_back !== undefined) &&
+                  {errors.license_photo_url_back !== undefined && (
                     <FieldError
-                      message={errors.license_photo_url_back.message}/>
-                  }
+                      message={errors.license_photo_url_back.message}
+                    />
+                  )}
                 </View>
               </View>
             </View>
 
-            {
-              error !== null &&
-              <FieldError
-                message={errorText}/>
-            }
+            {error !== null && <FieldError message={errorText} />}
 
             <View>
               <Pressable
                 onPress={handleSubmit(onSubmit)}
                 disabled={isDisabled}
-                className={
-                  cn('text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
-                    'active:bg-blue-800',
-                    (isDisabled) && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
-                }
+                className={cn(
+                  'text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
+                  'active:bg-blue-800',
+                  isDisabled && 'bg-gray-300 text-gray-700 cursor-not-allowed',
+                  isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                )}
               >
-                <Text
-                  className="text-base text-white font-medium text-center text-white">
+                <Text className="text-base font-medium text-center text-white">
                   Enviar
                 </Text>
               </Pressable>

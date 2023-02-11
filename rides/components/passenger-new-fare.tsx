@@ -1,10 +1,9 @@
-import { FC, useEffect, useState } from 'react'
-import { Pressable, Text, View } from 'react-native'
-import useCurrentPassengerRide
-  from '@base/rides/hooks/use-current-passenger-ride'
-import cn from 'classnames'
+import useCurrentPassengerRide from '@base/rides/hooks/use-current-passenger-ride'
 import { supabase } from '@base/supabase'
 import { useMutation } from '@tanstack/react-query'
+import cn from 'classnames'
+import { FC, useEffect, useState } from 'react'
+import { Pressable, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
 
 const PassengerNewFare: FC = () => {
@@ -43,25 +42,30 @@ const PassengerNewFare: FC = () => {
       return
     }
 
-    setFare(prevState => prevState - fareIncrementDecrement)
+    setFare((prevState) => prevState - fareIncrementDecrement)
   }
 
   const incrementFare = (): void => {
-    setFare(prevState => prevState + fareIncrementDecrement)
+    setFare((prevState) => prevState + fareIncrementDecrement)
   }
 
   const performNewOffer = async () => {
-    const { error } = await supabase.from('rides').update({
-      offered_price: fare
-    }).eq('id', ride?.id)
+    const { error } = await supabase
+      .from('rides')
+      .update({
+        offered_price: fare
+      })
+      .eq('id', ride?.id)
 
     if (error !== null) {
-      Sentry.Native.captureException(error, {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError, {
         contexts: {
-          ride
+          ride,
+          error
         }
       })
-      throw Error(error.message)
+      throw rawError
     }
   }
 
@@ -79,12 +83,10 @@ const PassengerNewFare: FC = () => {
     <View className="absolute bottom-20 w-full">
       <View>
         <View className="flex items-center justify-center px-3 pb-2">
-          <View
-            className="w-full p-4 px-1 pb-1 bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-700">
+          <View className="w-full p-4 px-1 pb-1 bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-700">
             <View className="flex flex-col space-y-2">
               <View className="justify-center">
-                <Text
-                  className="text-xs text-center text-gray-400 dark:text-gray-300">
+                <Text className="text-xs text-center text-gray-400 dark:text-gray-300">
                   Tarifa actual
                 </Text>
               </View>
@@ -95,31 +97,34 @@ const PassengerNewFare: FC = () => {
                     <Pressable
                       onPress={decrementFare}
                       disabled={isDisableDecrement}
-                      className={
-                        cn('px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
-                          (isDisableDecrement) && 'bg-gray-200 text-gray-700 cursor-not-allowed',
-                          (isDisableDecrement) && 'dark:bg-gray-800 dark:text-gray-400')
-                      }>
+                      className={cn(
+                        'px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
+                        isDisableDecrement &&
+                          'bg-gray-200 text-gray-700 cursor-not-allowed',
+                        isDisableDecrement &&
+                          'dark:bg-gray-800 dark:text-gray-400'
+                      )}
+                    >
                       <Text
-                        className={
-                          cn('text-base text-green-900 text-center font-medium',
-                            (isDisableDecrement) && 'text-gray-500 dark:text-gray-400')
-                        }>
+                        className={cn(
+                          'text-base text-green-900 text-center font-medium',
+                          isDisableDecrement &&
+                            'text-gray-500 dark:text-gray-400'
+                        )}
+                      >
                         -500
                       </Text>
                     </Pressable>
                   </View>
 
                   <View className="justify-center">
-                    <Text
-                      className="text-xl font-medium text-gray-400 dark:text-gray-300">
+                    <Text className="text-xl font-medium text-gray-400 dark:text-gray-300">
                       {isLoading
                         ? 'Cargando...'
                         : Intl.NumberFormat('es', {
                           style: 'currency',
                           currency: 'COP'
-                        }).format(fare)
-                      }
+                        }).format(fare)}
                     </Text>
                   </View>
 
@@ -127,16 +132,19 @@ const PassengerNewFare: FC = () => {
                     <Pressable
                       onPress={incrementFare}
                       disabled={isDisabled}
-                      className={
-                        cn('px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
-                          (isDisabled) && 'bg-gray-200 text-gray-700 cursor-not-allowed',
-                          (isDisabled) && 'dark:bg-gray-800 dark:text-gray-400')
-                      }>
+                      className={cn(
+                        'px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
+                        isDisabled &&
+                          'bg-gray-200 text-gray-700 cursor-not-allowed',
+                        isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                      )}
+                    >
                       <Text
-                        className={
-                          cn('text-base text-green-900 text-center font-medium',
-                            (isDisabled) && 'text-gray-500 dark:text-gray-400')
-                        }>
+                        className={cn(
+                          'text-base text-green-900 text-center font-medium',
+                          isDisabled && 'text-gray-500 dark:text-gray-400'
+                        )}
+                      >
                         +500
                       </Text>
                     </Pressable>
@@ -148,16 +156,19 @@ const PassengerNewFare: FC = () => {
                 <Pressable
                   onPress={makeNewOffer}
                   disabled={isDisableRaiseOffer}
-                  className={
-                    cn('px-5 py-3 bg-green-700 rounded-lg active:bg-green-800 shadow-none',
-                      (isDisableRaiseOffer) && 'bg-gray-200 text-gray-700 cursor-not-allowed',
-                      (isDisableRaiseOffer) && 'dark:bg-gray-800 dark:text-gray-400')
-                  }>
+                  className={cn(
+                    'px-5 py-3 bg-green-700 rounded-lg active:bg-green-800 shadow-none',
+                    isDisableRaiseOffer &&
+                      'bg-gray-200 text-gray-700 cursor-not-allowed',
+                    isDisableRaiseOffer && 'dark:bg-gray-800 dark:text-gray-400'
+                  )}
+                >
                   <Text
-                    className={
-                      cn('text-base text-white text-center font-medium',
-                        (isDisableRaiseOffer) && 'text-gray-500 dark:text-gray-400')
-                    }>
+                    className={cn(
+                      'text-base text-white text-center font-medium',
+                      isDisableRaiseOffer && 'text-gray-500 dark:text-gray-400'
+                    )}
+                  >
                     Lanzar oferta
                   </Text>
                 </Pressable>

@@ -3,6 +3,7 @@ import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtim
 import useRealtimeRequestedRides from '@base/rides/hooks/realtime/use-realtime-requested-rides'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import useRequestedRides from '@base/rides/hooks/use-requested-rides'
+import { useConfig } from '@base/shared/configuration'
 import { supabase } from '@base/supabase'
 import { MaterialIcons } from '@expo/vector-icons'
 import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
@@ -91,7 +92,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
                   gender: driver.gender,
                   photo_url: driver.photo_url,
                   rating: driver.rating,
-                  vehicles: [vehicle]
+                  vehicles: vehicle
                 }
               }
             })
@@ -176,9 +177,21 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     })
   }, [navigation, driver?.balance])
 
-  const goToAttachDriverDocuments = (): void => {
+  const goToAttachDriverDocuments = () => {
     navigation.navigate('AttachDriverDocuments')
   }
+
+  const isDriverEmpty = driver === undefined || driver === null
+  const isDriverVerified =
+    !isDriverEmpty && driver.status === DriverStatus.accepted
+
+  const { config } = useConfig('CHECK_DRIVER_BALANCE')
+
+  const isValidConfig = config !== undefined && config !== null
+  const isDriveHasEnoughBalance =
+    !isDriverEmpty &&
+    isValidConfig &&
+    (config.value === 'true' ? driver.balance >= 0 : true)
 
   return (
     <>
@@ -199,44 +212,42 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
           </View>
         )}
 
-        {driver !== undefined &&
-          driver !== null &&
-          driver.status !== DriverStatus.accepted && (
-            <View className="flex flex-col space-y-3 flex-grow w-full px-5 justify-center mx-auto">
-              <View>
-                <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
-                  Estamos procesando tu solicitud
-                </Text>
-              </View>
-
-              {(driver.contract_url === null ||
-                driver.notary_power_url === null) && (
-                <View className="pt-4">
-                  <View>
-                    <Text className="text-xl font-bold text-center text-gray-700 dark:text-gray-300">
-                      ¿Tienes documentos adicionales?
-                    </Text>
-                    <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
-                      Si tienes documentos adicionales puedes subirlos aquí.
-                    </Text>
-                  </View>
-
-                  <View className="flex flex-row space-x-2 justify-center mt-7">
-                    <Pressable
-                      onPress={goToAttachDriverDocuments}
-                      className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 rounded-md bg-blue-700 active:bg-blue-800"
-                    >
-                      <Text className="text-white text-base font-bold">
-                        Anexar documentos
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-              )}
+        {!isDriverVerified && (
+          <View className="flex flex-col space-y-3 flex-grow w-full px-5 justify-center mx-auto">
+            <View>
+              <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
+                Estamos procesando tu solicitud
+              </Text>
             </View>
+
+            {(driver?.contract_url === null ||
+              driver?.notary_power_url === null) && (
+              <View className="pt-4">
+                <View>
+                  <Text className="text-xl font-bold text-center text-gray-700 dark:text-gray-300">
+                    ¿Tienes documentos adicionales?
+                  </Text>
+                  <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
+                    Si tienes documentos adicionales puedes subirlos aquí.
+                  </Text>
+                </View>
+
+                <View className="flex flex-row space-x-2 justify-center mt-7">
+                  <Pressable
+                    onPress={goToAttachDriverDocuments}
+                    className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 rounded-md bg-blue-700 active:bg-blue-800"
+                  >
+                    <Text className="text-white text-base font-bold">
+                      Anexar documentos
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
+          </View>
         )}
 
-        {driver !== undefined && driver !== null && driver.balance <= 0 && (
+        {isDriverVerified && !isDriveHasEnoughBalance && (
           <View className="flex flex-grow w-full px-5 justify-center mx-auto">
             <Text className="text-2xl font-bold text-center my-auto dark:text-white">
               Tu saldo es insuficiente para aceptar solicitudes
@@ -246,8 +257,8 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
         {!isAcceptingRequest &&
           !isLoadingVehicle &&
-          driver?.status === DriverStatus.accepted &&
-          driver.balance > 0 && (
+          isDriverVerified &&
+          isDriveHasEnoughBalance && (
             <View className="flex py-2 px-3 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">

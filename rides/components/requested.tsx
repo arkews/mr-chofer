@@ -1,11 +1,11 @@
+import OfferForm from '@base/rides/components/offer.form'
+import { Ride } from '@base/rides/types'
+import { getAvatarUrl } from '@base/supabase/storage'
+import { genders } from '@constants/genders'
+import { MaterialIcons } from '@expo/vector-icons'
+import { styled } from 'nativewind'
 import { FC, useEffect, useState } from 'react'
 import { Image, Modal, Pressable, Text, View } from 'react-native'
-import { Ride } from '@base/rides/types'
-import { genders } from '@constants/genders'
-import { getAvatarUrl } from '@base/supabase/storage'
-import { styled } from 'nativewind'
-import { MaterialIcons } from '@expo/vector-icons'
-import OfferForm from '@base/rides/components/offer.form'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -96,7 +96,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
 
                 <View className="flex flex-col justify-between my-1">
                   <Text
-                    className="text-base dark:text-white text-pink-800 font-medium dark:text-pink-300">
+                    className="text-base text-pink-800 font-medium dark:text-pink-300">
                     Origen: {ride.pickup_location}
                   </Text>
 
