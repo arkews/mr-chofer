@@ -1,8 +1,9 @@
-import { supabase } from '@base/supabase'
-import { useQuery } from '@tanstack/react-query'
 import { Ride } from '@base/rides/types'
+import { useConfig } from '@base/shared/configuration'
+import { supabase } from '@base/supabase'
+import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
 import useVehicle from '@hooks/vehicles/use-vehicle'
-import useDriver from '@hooks/drivers/use-driver'
+import { useQuery } from '@tanstack/react-query'
 
 type UseRequestedRides = {
   rides?: Ride[]
@@ -28,15 +29,22 @@ const useRequestedRides = (): UseRequestedRides => {
 
   const { vehicle } = useVehicle()
   const { driver } = useDriver()
-  const { data, isLoading, error } = useQuery(
-    ['requested-rides'],
-    fetchRides,
-    {
-      retry: false,
-      enabled: vehicle !== null && vehicle !== undefined &&
-        driver !== null && driver !== undefined &&
-        driver.status === 'accepted' && driver.balance > 0
-    })
+  const { config } = useConfig('CHECK_DRIVER_BALANCE')
+
+  const isDriverEmpty = driver === undefined || driver === null
+  const isDriverVerified =
+    !isDriverEmpty && driver.status === DriverStatus.accepted
+  const isVehicleEmpty = vehicle === undefined || vehicle === null
+  const isValidConfig = config !== undefined && config !== null
+  const isDriveHasEnoughBalance =
+    !isDriverEmpty &&
+    isValidConfig &&
+    (config.value === 'true' ? driver.balance >= 0 : true)
+
+  const { data, isLoading, error } = useQuery(['requested-rides'], fetchRides, {
+    retry: false,
+    enabled: isDriverVerified && !isVehicleEmpty && isDriveHasEnoughBalance
+  })
 
   return {
     rides: data,
