@@ -1,5 +1,6 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { NavigationProp } from '@react-navigation/native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 export type RootStackParamList = {
   Home: undefined
@@ -23,12 +24,17 @@ export type RootStackParamList = {
   PassengerRideDetails: undefined
   DriverRideDetails: undefined
 
-  RegisterRating: { type: 'passenger' | 'driver', passengerId: string, driverId: string }
+  RegisterRating: {
+    type: 'passenger' | 'driver'
+    passengerId: string
+    driverId: string
+  }
+
+  MainDrawer: undefined
 }
 
-export type RootStackScreenProps<Screen extends keyof RootStackParamList> = NativeStackScreenProps<
-RootStackParamList,
-Screen
->
+export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
+  NativeStackScreenProps<RootStackParamList, Screen>
 
 export type StackNavigation = NavigationProp<RootStackParamList>
+export type DrawerNavigation = DrawerNavigationProp<RootStackParamList>

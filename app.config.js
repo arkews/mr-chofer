@@ -15,13 +15,16 @@ export default {
       backgroundColor: '#ffffff'
     },
     updates: {
-      url: 'https://u.expo.dev/3a993f1e-cdb7-47d1-80d9-fc623bc77d08'
+      fallbackToCacheTimeout: 0
     },
     assetBundlePatterns: [
       '**/*'
     ],
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
+      runtimeVersion: {
+        policy: 'appVersion'
+      }
     },
     android: {
       runtimeVersion: '1.0.0',

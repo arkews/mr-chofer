@@ -27,6 +27,3 @@ jobs:
 
       - name: 📦 Install dependencies
         run: yarn install
-
-      - name: 🚀 Build app
-        run: eas build --profile preview --platform android --non-interactive
