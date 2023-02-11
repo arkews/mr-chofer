@@ -1,16 +1,16 @@
+import { signOut } from '@base/auth'
+import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
+import { getAvatarUrl } from '@base/supabase/storage'
+import RatingView from '@components/rating.view'
+import { MaterialIcons } from '@expo/vector-icons'
+import useDriver from '@hooks/drivers/use-driver'
+import useVehicle from '@hooks/vehicles/use-vehicle'
+import { RootStackScreenProps } from '@navigation/types'
+import { useMutation } from '@tanstack/react-query'
+import cn from 'classnames'
+import { styled } from 'nativewind'
 import { FC, useEffect, useState } from 'react'
 import { Image, Pressable, Text, View } from 'react-native'
-import useDriver from '@hooks/drivers/use-driver'
-import { RootStackScreenProps } from '@navigation/types'
-import { getAvatarUrl } from '@base/supabase/storage'
-import { useMutation } from '@tanstack/react-query'
-import { signOut } from '@base/auth'
-import cn from 'classnames'
-import useVehicle from '@hooks/vehicles/use-vehicle'
-import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
-import { styled } from 'nativewind'
-import { MaterialIcons } from '@expo/vector-icons'
-import RatingView from '@components/rating.view'
 
 type Props = RootStackScreenProps<'DriverDetails'>
 
@@ -185,7 +185,7 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
                       }
                     >
                       <Text
-                        className="text-base text-white font-medium text-center text-pink-900">
+                        className="text-base font-medium text-center text-pink-900">
                         Debes registrar un vehículo
                       </Text>
                     </Pressable>
