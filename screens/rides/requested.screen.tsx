@@ -1,4 +1,3 @@
-import { signOut } from '@base/auth'
 import RequestedRideCard from '@base/rides/components/requested'
 import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
 import useRealtimeRequestedRides from '@base/rides/hooks/realtime/use-realtime-requested-rides'
@@ -9,10 +8,8 @@ import { MaterialIcons } from '@expo/vector-icons'
 import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
 import useVehicle from '@hooks/vehicles/use-vehicle'
 import { RootStackScreenProps } from '@navigation/types'
-import { useFocusEffect } from '@react-navigation/native'
-import {
-  REALTIME_LISTEN_TYPES
-} from '@supabase/realtime-js/src/RealtimeChannel'
+import { DrawerActions, useFocusEffect } from '@react-navigation/native'
+import { REALTIME_LISTEN_TYPES } from '@supabase/realtime-js/src/RealtimeChannel'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
 import { styled } from 'nativewind'
@@ -67,56 +64,53 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     }
   }, [ride, isLoadingCurrentRide])
 
-  const performAcceptRideRequest = async (data: { rideId: number, price?: number }) => {
+  const performAcceptRideRequest = async (data: {
+    rideId: number
+    price?: number
+  }) => {
     if (driver !== undefined && driver !== null && rides !== undefined) {
       const ride = rides.find((ride) => ride.id === data.rideId)
 
-      const channel = supabase.channel('rides-changes').subscribe(
-        async (status) => {
+      const channel = supabase
+        .channel('rides-changes')
+        .subscribe(async (status) => {
           if (status === 'SUBSCRIBED') {
-            const result = await channel
-              .send({
-                type: REALTIME_LISTEN_TYPES.BROADCAST,
-                event: `accept-ride-request-${data.rideId}`,
-                payload: {
-                  ...ride,
-                  ...(data.price !== undefined && data.price !== null) && {
-                    offered_price: data.price
-                  },
-                  driver_id: driver.id,
-                  drivers: {
-                    name: driver.name,
-                    phone: driver.phone,
-                    gender: driver.gender,
-                    photo_url: driver.photo_url,
-                    rating: driver.rating,
-                    vehicles: [vehicle]
-                  }
+            const result = await channel.send({
+              type: REALTIME_LISTEN_TYPES.BROADCAST,
+              event: `accept-ride-request-${data.rideId}`,
+              payload: {
+                ...ride,
+                ...(data.price !== undefined &&
+                  data.price !== null && {
+                  offered_price: data.price
+                }),
+                driver_id: driver.id,
+                drivers: {
+                  name: driver.name,
+                  phone: driver.phone,
+                  gender: driver.gender,
+                  photo_url: driver.photo_url,
+                  rating: driver.rating,
+                  vehicles: [vehicle]
                 }
-              })
+              }
+            })
 
             if (result !== 'ok') {
               throw Error('No se pudo aceptar la solicitud')
             }
           }
-        }
-      )
+        })
     }
   }
 
-  const {
-    mutate,
-    isLoading: isAcceptingRequest
-  } = useMutation(performAcceptRideRequest)
+  const { mutate, isLoading: isAcceptingRequest } = useMutation(
+    performAcceptRideRequest
+  )
 
   const handleAcceptRideRequest = (rideId: number, price?: number) => {
     mutate({ rideId, price })
   }
-
-  const {
-    mutate: mutateSignOut,
-    isLoading: isLoadingSignOut
-  } = useMutation(signOut)
 
   const goToPassengerProfile = (): void => {
     navigation.navigate('PassengerDetails')
@@ -126,30 +120,36 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     navigation.setOptions({
       headerShown: true,
       headerRight: () => (
-        <Pressable
-          disabled={isLoadingSignOut}
-          onPress={goToPassengerProfile}>
-          <StyledIcon name="person"
-                      className="text-4xl text-blue-700 dark:text-blue-400"/>
+        <Pressable onPress={goToPassengerProfile}>
+          <StyledIcon
+            name="person"
+            className="text-4xl text-blue-700 dark:text-blue-400"
+          />
         </Pressable>
       ),
       headerLeft: () => (
         <Pressable
-          disabled={isLoadingSignOut}
           onPress={() => {
-            mutateSignOut()
-          }}>
-          <StyledIcon name="logout"
-                      className="text-2xl text-red-700 dark:text-red-400"/>
+            navigation.dispatch(DrawerActions.openDrawer)
+          }}
+        >
+          <StyledIcon
+            name="menu"
+            className="text-2xl text-gray-900 dark:text-gray-400"
+          />
         </Pressable>
       ),
       headerTitle: () => (
         <Text
-          className={
-            cn('text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400',
-              driver?.balance !== undefined && driver?.balance < 0 && 'text-red-700 dark:text-red-600')
-          }>
-          Saldo {Intl.NumberFormat('es', {
+          className={cn(
+            'text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400',
+            driver?.balance !== undefined &&
+              driver?.balance < 0 &&
+              'text-red-700 dark:text-red-600'
+          )}
+        >
+          Saldo{' '}
+          {Intl.NumberFormat('es', {
             style: 'currency',
             currency: 'COP'
           }).format(driver?.balance ?? 0)}
@@ -160,22 +160,21 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         const HeaderLeft = props.options.headerLeft as FC
         const HeaderTitle = props.options.headerTitle as FC
         return (
-          <View
-            className="flex flex-row px-3 py-12 pb-2 justify-between items-center border border-b-neutral-300 dark:border-b-neutral-600">
+          <View className="flex flex-row px-3 py-12 pb-2 justify-between items-center border border-b-neutral-300 dark:border-b-neutral-600">
             <View className="justify-center">
-              <HeaderLeft key={props.route.key}/>
+              <HeaderLeft key={props.route.key} />
             </View>
             <View className="justify-center">
-              <HeaderTitle key={props.route.key}/>
+              <HeaderTitle key={props.route.key} />
             </View>
             <View className="justify-center">
-              <HeaderRight key={props.route.key}/>
+              <HeaderRight key={props.route.key} />
             </View>
           </View>
         )
       }
     })
-  }, [navigation, isLoadingSignOut, driver?.balance])
+  }, [navigation, driver?.balance])
 
   const goToAttachDriverDocuments = (): void => {
     navigation.navigate('AttachDriverDocuments')
@@ -186,79 +185,69 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
       <View className="flex h-full pb-10">
         {isAcceptingRequest && (
           <View className="flex flex-grow w-full px-5 justify-center mx-auto">
-            <Text
-              className="text-2xl font-bold text-center my-auto dark:text-white">
+            <Text className="text-2xl font-bold text-center my-auto dark:text-white">
               Procesando solicitud...
             </Text>
           </View>
         )}
 
-        {
-          isLoadingVehicle && (
-            <View className="flex flex-grow w-full px-5 justify-center mx-auto">
-              <Text
-                className="text-2xl font-bold text-center my-auto dark:text-white">
-                Verificando información...
-              </Text>
-            </View>
-          )
-        }
+        {isLoadingVehicle && (
+          <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+            <Text className="text-2xl font-bold text-center my-auto dark:text-white">
+              Verificando información...
+            </Text>
+          </View>
+        )}
 
-        {
-          driver !== undefined && driver !== null && driver.status !== DriverStatus.accepted && (
-            <View
-              className="flex flex-col space-y-3 flex-grow w-full px-5 justify-center mx-auto">
+        {driver !== undefined &&
+          driver !== null &&
+          driver.status !== DriverStatus.accepted && (
+            <View className="flex flex-col space-y-3 flex-grow w-full px-5 justify-center mx-auto">
               <View>
-                <Text
-                  className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
+                <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
                   Estamos procesando tu solicitud
                 </Text>
               </View>
 
-              {
-                (driver.contract_url === null || driver.notary_power_url === null) && (
-                  <View className="pt-4">
-                    <View>
-                      <Text
-                        className="text-xl font-bold text-center text-gray-700 dark:text-gray-300">
-                        ¿Tienes documentos adicionales?
-                      </Text>
-                      <Text
-                        className="text-gray-500 text-sm mt-3 dark:text-gray-400">
-                        Si tienes documentos adicionales puedes subirlos aquí.
-                      </Text>
-                    </View>
-
-                    <View className="flex flex-row space-x-2 justify-center mt-7">
-                      <Pressable
-                        onPress={goToAttachDriverDocuments}
-                        className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 rounded-md bg-blue-700 active:bg-blue-800">
-                        <Text
-                          className="text-white text-base font-bold">
-                          Anexar documentos
-                        </Text>
-                      </Pressable>
-                    </View>
+              {(driver.contract_url === null ||
+                driver.notary_power_url === null) && (
+                <View className="pt-4">
+                  <View>
+                    <Text className="text-xl font-bold text-center text-gray-700 dark:text-gray-300">
+                      ¿Tienes documentos adicionales?
+                    </Text>
+                    <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
+                      Si tienes documentos adicionales puedes subirlos aquí.
+                    </Text>
                   </View>
-                )
-              }
-            </View>
-          )
-        }
 
-        {
-          driver !== undefined && driver !== null && driver.balance <= 0 && (
-            <View className="flex flex-grow w-full px-5 justify-center mx-auto">
-              <Text
-                className="text-2xl font-bold text-center my-auto dark:text-white">
-                Tu saldo es insuficiente para aceptar solicitudes
-              </Text>
+                  <View className="flex flex-row space-x-2 justify-center mt-7">
+                    <Pressable
+                      onPress={goToAttachDriverDocuments}
+                      className="flex flex-row justify-center items-center space-x-2 px-5 py-3.5 rounded-md bg-blue-700 active:bg-blue-800"
+                    >
+                      <Text className="text-white text-base font-bold">
+                        Anexar documentos
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              )}
             </View>
-          )
-        }
+        )}
 
-        {
-          !isAcceptingRequest && !isLoadingVehicle && driver?.status === DriverStatus.accepted && driver.balance > 0 && (
+        {driver !== undefined && driver !== null && driver.balance <= 0 && (
+          <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+            <Text className="text-2xl font-bold text-center my-auto dark:text-white">
+              Tu saldo es insuficiente para aceptar solicitudes
+            </Text>
+          </View>
+        )}
+
+        {!isAcceptingRequest &&
+          !isLoadingVehicle &&
+          driver?.status === DriverStatus.accepted &&
+          driver.balance > 0 && (
             <View className="flex py-2 px-3 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
@@ -266,18 +255,17 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
                 </Text>
               </View>
 
-              {isLoading &&
+              {isLoading && (
                 <View>
-                  <Text
-                    className="text-base text-center my-auto dark:text-white">
+                  <Text className="text-base text-center my-auto dark:text-white">
                     Cargando solicitudes...
                   </Text>
-                </View>}
+                </View>
+              )}
 
               {!isLoading && rides?.length === 0 && (
                 <View>
-                  <Text
-                    className="text-base text-center my-auto text-gray-500 dark:text-gray-400">
+                  <Text className="text-base text-center my-auto text-gray-500 dark:text-gray-400">
                     No tienes solicitudes de viaje
                   </Text>
                 </View>
@@ -286,14 +274,16 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
               {rides !== undefined && (
                 <ScrollView>
                   {rides.map((ride) => (
-                    <RequestedRideCard key={ride.id} ride={ride}
-                                       onAccept={handleAcceptRideRequest}/>
+                    <RequestedRideCard
+                      key={ride.id}
+                      ride={ride}
+                      onAccept={handleAcceptRideRequest}
+                    />
                   ))}
                 </ScrollView>
               )}
             </View>
-          )
-        }
+        )}
       </View>
     </>
   )
