@@ -1,3 +1,4 @@
+import { schedulePushNotification } from '@base/notifications'
 import DriverArriveNotificationModal from '@base/rides/components/driver-arrive-notification.modal'
 import PassengerNewFare from '@base/rides/components/passenger-new-fare'
 import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
@@ -138,6 +139,13 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     }
 
     if (ride.status === RideStatus.waiting) {
+      schedulePushNotification(
+        {
+          title: 'Tu conductor ha llegado!',
+          body: 'Tu conductor te está esperando'
+        },
+        null
+      ).then(() => {})
       openDriverArriveNotificationModal()
     }
   }, [ride])
