@@ -1,4 +1,5 @@
 import { useAuth } from '@base/auth/context'
+import SafeAreaInsetsView from '@base/components/view/safe-area-insets.view'
 import { supabase } from '@base/supabase'
 import { uploadAvatar, uploadDocumentPhoto } from '@base/supabase/storage'
 import FieldError from '@components/form/feedback/field/field.error'
@@ -14,9 +15,9 @@ import { FC, useEffect, useState } from 'react'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import {
   Alert,
-  KeyboardAvoidingView,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   View
 } from 'react-native'
@@ -103,7 +104,8 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
     resolver: zodResolver(RegisterDriverSchema),
     defaultValues: {
       ...passenger,
-      id: undefined
+      id: undefined,
+      photo_url: undefined
     }
   })
 
@@ -205,32 +207,34 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   }, [error])
 
   return (
-    <FormProvider {...form}>
-      <KeyboardAvoidingView>
-        <View className="py-24 pb-0">
-          <ScrollView className="flex flex-grow w-full px-1.5 mx-auto space-y-5">
-            <View className="mb-7">
-              <Text className="text-xl text-center font-bold dark:text-white">
-                ¿Quieres ser conductor?
-              </Text>
-              <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
-                Ya tenemos tu información básica, ahora necesitamos que nos
-                proporciones algunos datos para poder crear tu perfil de
-                conductor.
-              </Text>
-            </View>
+    <SafeAreaInsetsView>
+      <FormProvider {...form}>
+        <ScrollView
+          className="min-h-screen px-1 py-3"
+          contentContainerStyle={styles.container}
+        >
+          <View>
+            <View className="flex flex-grow w-full px-1.5 justify-center mx-auto space-y-5">
+              <View className="mb-3">
+                <Text className="text-xl text-center font-bold dark:text-white">
+                  ¿Quieres ser conductor?
+                </Text>
+                <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
+                  Ya tenemos tu información básica, ahora necesitamos que nos
+                  proporciones algunos datos para poder crear tu perfil de
+                  conductor.
+                </Text>
+              </View>
 
-            <View>
-              <Input
-                name="id"
-                label="Identificación"
-                keyboardType="numeric"
-                disabled={isDisabled}
-              />
-            </View>
+              <View>
+                <Input
+                  name="id"
+                  label="Identificación"
+                  keyboardType="numeric"
+                  disabled={isDisabled}
+                />
+              </View>
 
-            {(passenger?.photo_url === undefined ||
-              passenger.photo_url === null) && (
               <View>
                 <PhotoPicker
                   label="Foto de perfil"
@@ -239,7 +243,7 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                   onSelect={onSelectProfilePhoto}
                 />
 
-                {watch('photo_url') !== null && (
+                {watch('photo_url') !== undefined && (
                   <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
                     Foto cargada
                   </Text>
@@ -249,143 +253,152 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                   <FieldError message={errors.photo_url.message} />
                 )}
               </View>
-            )}
 
-            <Text className="font-medium text-base text-center text-gray-900 dark:text-gray-200">
-              Documentos
-            </Text>
+              <Text className="font-medium text-base text-center text-gray-900 dark:text-gray-200">
+                Documentos
+              </Text>
 
-            <View>
+              <View>
+                <View>
+                  <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Documento de identidad
+                  </Text>
+                </View>
+                <View className="flex flex-row justify-center space-x-1">
+                  <View className="basis-1/2">
+                    <PhotoPicker
+                      label="Parte frontal"
+                      mode="take"
+                      disabled={isDisabled}
+                      onSelect={(photo) => {
+                        handleDocumentPhotoChange('id_photo_url_front', photo)
+                      }}
+                    />
+
+                    {watch('id_photo_url_front') !== undefined && (
+                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                        Foto cargada
+                      </Text>
+                    )}
+
+                    {errors.id_photo_url_front !== undefined && (
+                      <FieldError message={errors.id_photo_url_front.message} />
+                    )}
+                  </View>
+                  <View className="basis-1/2">
+                    <PhotoPicker
+                      label="Parte trasera"
+                      mode="take"
+                      disabled={isDisabled}
+                      onSelect={(photo) => {
+                        handleDocumentPhotoChange('id_photo_url_back', photo)
+                      }}
+                    />
+
+                    {watch('id_photo_url_back') !== undefined && (
+                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                        Foto cargada
+                      </Text>
+                    )}
+
+                    {errors.id_photo_url_back !== undefined && (
+                      <FieldError message={errors.id_photo_url_back.message} />
+                    )}
+                  </View>
+                </View>
+              </View>
+
               <View>
                 <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Documento de identidad
+                  Licencia de conducir
                 </Text>
-              </View>
-              <View className="flex flex-row justify-between space-x-1">
-                <View className="basis-1/2">
-                  <PhotoPicker
-                    label="Parte frontal"
-                    mode="take"
-                    disabled={isDisabled}
-                    onSelect={(photo) => {
-                      handleDocumentPhotoChange('id_photo_url_front', photo)
-                    }}
-                  />
-
-                  {watch('id_photo_url_front') !== undefined && (
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                      Foto cargada
-                    </Text>
-                  )}
-
-                  {errors.id_photo_url_front !== undefined && (
-                    <FieldError message={errors.id_photo_url_front.message} />
-                  )}
-                </View>
-                <View className="basis-1/2">
-                  <PhotoPicker
-                    label="Parte trasera"
-                    mode="take"
-                    disabled={isDisabled}
-                    onSelect={(photo) => {
-                      handleDocumentPhotoChange('id_photo_url_back', photo)
-                    }}
-                  />
-
-                  {watch('id_photo_url_back') !== undefined && (
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                      Foto cargada
-                    </Text>
-                  )}
-
-                  {errors.id_photo_url_back !== undefined && (
-                    <FieldError message={errors.id_photo_url_back.message} />
-                  )}
-                </View>
-              </View>
-            </View>
-
-            <View>
-              <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Licencia de conducir
-              </Text>
-              <View className="flex flex-row space-x-1">
-                <View className="basis-1/2">
-                  <PhotoPicker
-                    label="Parte frontal"
-                    mode="take"
-                    disabled={isSubmitting || isLoading}
-                    onSelect={(photo) => {
-                      handleDocumentPhotoChange(
-                        'license_photo_url_front',
-                        photo
-                      )
-                    }}
-                  />
-
-                  {watch('license_photo_url_front') !== undefined && (
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                      Foto cargada
-                    </Text>
-                  )}
-
-                  {errors.license_photo_url_front !== undefined && (
-                    <FieldError
-                      message={errors.license_photo_url_front.message}
+                <View className="flex flex-row justify-center space-x-1">
+                  <View className="basis-1/2">
+                    <PhotoPicker
+                      label="Parte frontal"
+                      mode="take"
+                      disabled={isSubmitting || isLoading}
+                      onSelect={(photo) => {
+                        handleDocumentPhotoChange(
+                          'license_photo_url_front',
+                          photo
+                        )
+                      }}
                     />
-                  )}
-                </View>
-                <View className="basis-1/2">
-                  <PhotoPicker
-                    label="Parte trasera"
-                    mode="take"
-                    disabled={isDisabled}
-                    onSelect={(photo) => {
-                      handleDocumentPhotoChange(
-                        'license_photo_url_back',
-                        photo
-                      )
-                    }}
-                  />
 
-                  {watch('license_photo_url_back') !== undefined && (
-                    <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                      Foto cargada
-                    </Text>
-                  )}
+                    {watch('license_photo_url_front') !== undefined && (
+                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                        Foto cargada
+                      </Text>
+                    )}
 
-                  {errors.license_photo_url_back !== undefined && (
-                    <FieldError
-                      message={errors.license_photo_url_back.message}
+                    {errors.license_photo_url_front !== undefined && (
+                      <FieldError
+                        message={errors.license_photo_url_front.message}
+                      />
+                    )}
+                  </View>
+                  <View className="basis-1/2">
+                    <PhotoPicker
+                      label="Parte trasera"
+                      mode="take"
+                      disabled={isDisabled}
+                      onSelect={(photo) => {
+                        handleDocumentPhotoChange(
+                          'license_photo_url_back',
+                          photo
+                        )
+                      }}
                     />
-                  )}
+
+                    {watch('license_photo_url_back') !== undefined && (
+                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                        Foto cargada
+                      </Text>
+                    )}
+
+                    {errors.license_photo_url_back !== undefined && (
+                      <FieldError
+                        message={errors.license_photo_url_back.message}
+                      />
+                    )}
+                  </View>
                 </View>
               </View>
-            </View>
 
-            {error !== null && <FieldError message={errorText} />}
+              {error !== null && <FieldError message={errorText} />}
 
-            <View>
-              <Pressable
-                onPress={handleSubmit(onSubmit)}
-                disabled={isDisabled}
-                className={cn(
-                  'text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
-                  'active:bg-blue-800',
-                  isDisabled && 'bg-gray-300 text-gray-700 cursor-not-allowed',
-                  isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
-                )}
-              >
-                <Text className="text-base font-medium text-center text-white">
-                  Enviar
-                </Text>
-              </Pressable>
+              <View>
+                <Pressable
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={isDisabled}
+                  className={cn(
+                    'text-base px-6 py-3.5 bg-blue-700 mt-6 rounded-lg border border-transparent',
+                    'active:bg-blue-800',
+                    isDisabled &&
+                      'bg-gray-300 text-gray-700 cursor-not-allowed',
+                    isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                  )}
+                >
+                  <Text className="text-base font-medium text-center text-white">
+                    Enviar
+                  </Text>
+                </Pressable>
+              </View>
             </View>
-          </ScrollView>
-        </View>
-      </KeyboardAvoidingView>
-    </FormProvider>
+          </View>
+        </ScrollView>
+      </FormProvider>
+    </SafeAreaInsetsView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})
 
 export default RegisterDriverScreen
