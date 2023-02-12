@@ -1,22 +1,23 @@
-import 'react-native-url-polyfill/auto'
 import 'intl'
 import 'intl/locale-data/jsonp/en'
 import 'intl/locale-data/jsonp/es'
+import 'react-native-url-polyfill/auto'
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Buffer } from 'buffer'
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from 'react-native-toast-notifications'
 
+import RideToast from '@base/rides/components/toast'
+import Constants from 'expo-constants'
+import { FC } from 'react'
+import * as Sentry from 'sentry-expo'
+import { AuthProvider } from './auth/context'
 import useCachedResources from './hooks/useCachedResources'
 import useColorScheme from './hooks/useColorScheme'
 import Navigation from './navigation'
-import { AuthProvider } from './auth/context'
-import { FC } from 'react'
-import RideToast from '@base/rides/components/toast'
-import * as Sentry from 'sentry-expo'
-import Constants from 'expo-constants'
+import useNotifications from './notifications'
 
 global.Buffer = Buffer
 
@@ -32,6 +33,8 @@ Sentry.init({
 const App: FC = () => {
   const isLoadingComplete = useCachedResources()
   const colorScheme = useColorScheme()
+
+  useNotifications()
 
   if (!isLoadingComplete) {
     return null

@@ -13,14 +13,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import cn from 'classnames'
 import { FC, useEffect, useState } from 'react'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native'
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
 import { z } from 'zod'
 
@@ -209,12 +202,9 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaInsetsView>
       <FormProvider {...form}>
-        <ScrollView
-          className="min-h-screen px-1 py-3"
-          contentContainerStyle={styles.container}
-        >
+        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
           <View>
-            <View className="flex flex-grow w-full px-1.5 justify-center mx-auto space-y-5">
+            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
               <View className="mb-3">
                 <Text className="text-xl text-center font-bold dark:text-white">
                   ¿Quieres ser conductor?
@@ -385,20 +375,12 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                   </Text>
                 </Pressable>
               </View>
-            </View>
+            </ScrollView>
           </View>
-        </ScrollView>
+        </View>
       </FormProvider>
     </SafeAreaInsetsView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
 
 export default RegisterDriverScreen

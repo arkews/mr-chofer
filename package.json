@@ -35,6 +35,7 @@
     "expo-device": "~5.0.0",
     "expo-font": "~11.0.1",
     "expo-linking": "~3.3.0",
+    "expo-notifications": "~0.17.0",
     "expo-random": "~13.0.0",
     "expo-splash-screen": "~0.17.5",
     "expo-status-bar": "~1.4.2",
