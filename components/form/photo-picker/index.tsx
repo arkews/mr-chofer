@@ -1,11 +1,14 @@
+import ImageResizer from '@bam.tech/react-native-image-resizer'
+import { MaterialIcons } from '@expo/vector-icons'
+import { Photo } from '@shared/types'
+import { styled } from 'nativewind'
 import React, { FC, useCallback } from 'react'
 import { Pressable, Text } from 'react-native'
 import DocumentPicker, { types } from 'react-native-document-picker'
-import { Photo } from '@shared/types'
 import { launchCamera } from 'react-native-image-picker'
-import ImageResizer from '@bam.tech/react-native-image-resizer'
 
 type Mode = 'take' | 'pick'
+const StyledIcon = styled(MaterialIcons)
 
 type Props = {
   disabled?: boolean
@@ -90,7 +93,12 @@ const PhotoPicker: FC<Props> = ({ disabled, label, mode, onSelect }) => {
     <Pressable
       disabled={disabled}
       onPress={finalMode === 'take' ? handleTakePhoto : handlePickPhoto}
-      className="text-base px-6 py-3.5 border-blue-500 rounded-lg border dark:border-blue-300">
+      className="flex flex-row justify-center items-center space-x-2 px-3 py-3 border-blue-500 rounded-lg border dark:border-blue-300"
+    >
+      <StyledIcon
+        name={finalMode === 'take' ? 'camera-alt' : 'file-upload'}
+        className="text-base p-0 m-0 text-blue-500 dark:text-blue-300"
+      />
       <Text className="text-blue-500 text-center font-medium dark:text-blue-300">
         {label ?? 'Seleccionar foto'}
       </Text>
