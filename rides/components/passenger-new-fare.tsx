@@ -86,7 +86,7 @@ const PassengerNewFare: FC = () => {
           <View className="w-full p-4 px-1 pb-1 bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-700">
             <View className="flex flex-col space-y-2">
               <View className="justify-center">
-                <Text className="text-xs text-center text-gray-400 dark:text-gray-300">
+                <Text className="text-xs text-center text-neutral-400 dark:text-neutral-300">
                   Tarifa actual
                 </Text>
               </View>
@@ -100,16 +100,16 @@ const PassengerNewFare: FC = () => {
                       className={cn(
                         'px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
                         isDisableDecrement &&
-                          'bg-gray-200 text-gray-700 cursor-not-allowed',
+                          'bg-neutral-200 text-neutral-700 cursor-not-allowed',
                         isDisableDecrement &&
-                          'dark:bg-gray-800 dark:text-gray-400'
+                          'dark:bg-neutral-600 dark:text-neutral-400'
                       )}
                     >
                       <Text
                         className={cn(
                           'text-base text-green-900 text-center font-medium',
                           isDisableDecrement &&
-                            'text-gray-500 dark:text-gray-400'
+                            'text-neutral-500 dark:text-neutral-400'
                         )}
                       >
                         -500
@@ -118,7 +118,7 @@ const PassengerNewFare: FC = () => {
                   </View>
 
                   <View className="justify-center">
-                    <Text className="text-xl font-medium text-gray-400 dark:text-gray-300">
+                    <Text className="text-xl font-medium text-neutral-400 dark:text-neutral-300">
                       {isLoading
                         ? 'Cargando...'
                         : Intl.NumberFormat('es', {
@@ -135,14 +135,14 @@ const PassengerNewFare: FC = () => {
                       className={cn(
                         'px-5 py-3 bg-green-100 rounded-lg active:bg-green-200 shadow-none',
                         isDisabled &&
-                          'bg-gray-200 text-gray-700 cursor-not-allowed',
-                        isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                          'bg-neurtal-200 text-neutral-700 cursor-not-allowed',
+                        isDisabled && 'dark:bg-neutral-600 dark:text-neutral-400'
                       )}
                     >
                       <Text
                         className={cn(
                           'text-base text-green-900 text-center font-medium',
-                          isDisabled && 'text-gray-500 dark:text-gray-400'
+                          isDisabled && 'text-neutral-500 dark:text-neutral-400'
                         )}
                       >
                         +500
@@ -159,14 +159,16 @@ const PassengerNewFare: FC = () => {
                   className={cn(
                     'px-5 py-3 bg-green-700 rounded-lg active:bg-green-800 shadow-none',
                     isDisableRaiseOffer &&
-                      'bg-gray-200 text-gray-700 cursor-not-allowed',
-                    isDisableRaiseOffer && 'dark:bg-gray-800 dark:text-gray-400'
+                      'bg-neutral-200 text-neutral-700 cursor-not-allowed',
+                    isDisableRaiseOffer &&
+                      'dark:bg-neutral-600 dark:text-neutral-400'
                   )}
                 >
                   <Text
                     className={cn(
                       'text-base text-white text-center font-medium',
-                      isDisableRaiseOffer && 'text-gray-500 dark:text-gray-400'
+                      isDisableRaiseOffer &&
+                        'text-neutral-500 dark:text-neutral-400'
                     )}
                   >
                     Lanzar oferta
