@@ -21,14 +21,7 @@ import {
   SubmitHandler,
   useForm
 } from 'react-hook-form'
-import {
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native'
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
 import { z } from 'zod'
 
@@ -194,12 +187,9 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaInsetsView>
       <FormProvider {...form}>
-        <ScrollView
-          className="min-h-screen px-1 py-3"
-          contentContainerStyle={styles.container}
-        >
+        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
           <View>
-            <View className="flex flex-grow w-full px-1.5 justify-center mx-auto space-y-3">
+            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
               <View>
                 <Text className="text-xl font-medium text-center text-gray-900 dark:text-gray-200">
                   Ya solo nos faltan los datos de tu vehículo
@@ -355,20 +345,12 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
                   </Text>
                 </Pressable>
               </View>
-            </View>
+            </ScrollView>
           </View>
-        </ScrollView>
+        </View>
       </FormProvider>
     </SafeAreaInsetsView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  }
-})
 
 export default RegisterVehicleScreen
