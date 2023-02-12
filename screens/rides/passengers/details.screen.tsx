@@ -1,5 +1,6 @@
 import DriverArriveNotificationModal from '@base/rides/components/driver-arrive-notification.modal'
 import PassengerNewFare from '@base/rides/components/passenger-new-fare'
+import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
 import useRealtimeCurrentPassengerRide from '@base/rides/hooks/realtime/use-realtime-current-passenger-ride'
 import useRealtimePassengerRideBroadcast from '@base/rides/hooks/realtime/use-realtime-passenger-ride-broadcast'
 import useCurrentPassengerRide from '@base/rides/hooks/use-current-passenger-ride'
@@ -26,6 +27,8 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
 
   useRealtimeCurrentPassengerRide()
   useRealtimePassengerRideBroadcast()
+
+  const { count: availableDrivers } = useRealtimeActiveDrivers('passenger')
 
   useEffect(() => {
     if (isLoading) {
@@ -198,7 +201,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
         {ride !== undefined && (
           <View className="flex flex-col space-y-5">
             <View className="mb-3">
-              <Text className="text-xl font-bold text-center dark:text-white">
+              <Text className="text-xl font-bold text-center dark:text-white leading-6">
                 {ride.status === 'requested' &&
                   'Su solicitud ha sido enviada a los conductores disponibles'}
                 {ride.status === 'accepted' &&
@@ -208,6 +211,16 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                 {ride.status === 'completed' && 'Su recorrido ha finalizado'}
                 {ride.status === 'canceled' && 'Su recorrido ha sido cancelado'}
               </Text>
+
+              {ride.status === RideStatus.requested && (
+                <View className="mt-2">
+                  <Text className="text-sm text-center text-gray-500 dark:text-gray-400">
+                    Actualmente hay {availableDrivers}{' '}
+                    {availableDrivers === 1 ? 'conductor' : 'conductores'}{' '}
+                    disponibles
+                  </Text>
+                </View>
+              )}
             </View>
 
             {ride.status === 'requested' && (

@@ -1,4 +1,5 @@
 import RequestedRideCard from '@base/rides/components/requested'
+import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
 import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
 import useRealtimeRequestedRides from '@base/rides/hooks/realtime/use-realtime-requested-rides'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
@@ -53,6 +54,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
 
   useRealtimeRequestedRides()
   useRealtimeCurrentDriverRide()
+  useRealtimeActiveDrivers('driver')
 
   const { ride, isLoading: isLoadingCurrentRide } = useCurrentDriverRide()
   useEffect(() => {
