@@ -11,12 +11,13 @@ import { useToast } from 'react-native-toast-notifications'
 import * as Sentry from 'sentry-expo'
 
 type Props = {
+  id: string
   ride: Ride
 
   onPress: () => void
 }
 
-const RideToast: FC<Props> = ({ ride, onPress }) => {
+const RideToast: FC<Props> = ({ id, ride, onPress }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
@@ -31,6 +32,17 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
   }, [ride])
 
   const performAcceptRideRequest = async () => {
+    const { data: driver } = await supabase
+      .from('rides')
+      .select('driver_id')
+      .eq('status', RideStatus.accepted)
+      .eq('driver_id', ride.driver_id)
+      .single()
+
+    if (driver !== null) {
+      return 'driver_not_available'
+    }
+
     const { error } = await supabase
       .from('rides')
       .update({
@@ -54,7 +66,15 @@ const RideToast: FC<Props> = ({ ride, onPress }) => {
 
   const toast = useToast()
   const { mutate: acceptRideRequest } = useMutation(performAcceptRideRequest, {
-    onSuccess: () => {
+    onSuccess: (result) => {
+      if (result === 'driver_not_available') {
+        toast.hide(id)
+        toast.show('El conductor ya está ocupado', {
+          type: 'error'
+        })
+        return
+      }
+
       toast.hideAll()
       onPress()
     }
