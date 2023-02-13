@@ -3,6 +3,7 @@ import {
   RegisterRideRequest,
   RegisterRideRequestSchema
 } from '@base/rides/schema'
+import { useConfig } from '@base/shared/configuration'
 import { supabase } from '@base/supabase'
 import Input from '@components/form/input'
 import RadioGroup from '@components/form/radio-group'
@@ -96,6 +97,8 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
 
   const isDisabled = isSubmitting || isLoading
 
+  const { config: isMalePassengerActiveConfig } = useConfig('IS_MALE_PASSENGER_ACTIVE')
+
   return (
     <FormProvider {...form}>
       <View className="flex flex-grow w-full justify-center mx-auto space-y-2">
@@ -139,7 +142,16 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
                   onSelect={onChange}
                 />
 
-                {errors.gender != null && (
+                {value === 'Male' &&
+                  isMalePassengerActiveConfig !== undefined &&
+                  isMalePassengerActiveConfig !== null &&
+                  isMalePassengerActiveConfig.value === 'true' && (
+                    <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Nota: Parrillero hombre está vigente.
+                    </Text>
+                )}
+
+                {errors.gender !== undefined && (
                   <Text className="text-red-500">{errors.gender.message}</Text>
                 )}
               </View>

@@ -5,6 +5,7 @@ import * as Sentry from 'sentry-expo'
 
 export type ConfigurationKey = {
   CHECK_DRIVER_BALANCE: 'CHECK_DRIVER_BALANCE'
+  IS_MALE_PASSENGER_ACTIVE: 'IS_MALE_PASSENGER_ACTIVE'
 }
 
 export type Configuration = {
