@@ -22,6 +22,7 @@ import {
   useForm
 } from 'react-hook-form'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import * as Sentry from 'sentry-expo'
 import { z } from 'zod'
 
@@ -186,173 +187,175 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaInsetsView>
-      <FormProvider {...form}>
-        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
-          <View>
-            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
-              <View>
-                <Text className="text-xl font-medium text-center text-gray-900 dark:text-gray-200">
-                  Ya solo nos faltan los datos de tu vehículo
-                </Text>
-              </View>
-
-              <View className="flex flex-row space-x-2">
-                <View className="basis-1/2">
-                  <Input
-                    name="license_plate"
-                    label="Placa"
-                    disabled={isDisabled}
-                  />
+      <KeyboardAwareScrollView>
+        <FormProvider {...form}>
+          <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
+            <View>
+              <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
+                <View>
+                  <Text className="text-xl font-medium text-center text-gray-900 dark:text-gray-200">
+                    Ya solo nos faltan los datos de tu vehículo
+                  </Text>
                 </View>
-                <View className="basis-1/2">
+
+                <View className="flex flex-row space-x-2">
+                  <View className="basis-1/2">
+                    <Input
+                      name="license_plate"
+                      label="Placa"
+                      disabled={isDisabled}
+                    />
+                  </View>
+                  <View className="basis-1/2">
+                    <Input
+                      name="engine_displacement"
+                      label="Cilindraje (CC)"
+                      keyboardType="numeric"
+                      disabled={isDisabled}
+                    />
+                  </View>
+                </View>
+
+                <View className="flex flex-row space-x-2">
+                  <View className="basis-1/2">
+                    <Input name="brand" label="Marca" disabled={isDisabled} />
+                  </View>
+
+                  <View className="basis-1/2">
+                    <Input
+                      name="line"
+                      label="Línea/Referencia"
+                      disabled={isDisabled}
+                    />
+                  </View>
+                </View>
+
+                <View className="flex flex-row space-x-2">
+                  <View className="basis-1/2">
+                    <Input name="model" label="Modelo" disabled={isDisabled} />
+                  </View>
+
+                  <View className="basis-1/2">
+                    <Input name="color" label="Color" disabled={isDisabled} />
+                  </View>
+                </View>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-2">
+                      <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Tipo
+                      </Text>
+                      <RadioGroup
+                        values={vehicleTypes}
+                        selected={value}
+                        onSelect={onChange}
+                      />
+
+                      {errors.type != null && (
+                        <FieldError message={errors.type.message} />
+                      )}
+                    </View>
+                  )}
+                  name="type"
+                />
+
+                <View>
                   <Input
-                    name="engine_displacement"
-                    label="Cilindraje (CC)"
+                    name="owner_id"
+                    label="N° de cédula"
                     keyboardType="numeric"
                     disabled={isDisabled}
                   />
-                </View>
-              </View>
 
-              <View className="flex flex-row space-x-2">
-                <View className="basis-1/2">
-                  <Input name="brand" label="Marca" disabled={isDisabled} />
-                </View>
-
-                <View className="basis-1/2">
-                  <Input
-                    name="line"
-                    label="Línea/Referencia"
-                    disabled={isDisabled}
-                  />
-                </View>
-              </View>
-
-              <View className="flex flex-row space-x-2">
-                <View className="basis-1/2">
-                  <Input name="model" label="Modelo" disabled={isDisabled} />
-                </View>
-
-                <View className="basis-1/2">
-                  <Input name="color" label="Color" disabled={isDisabled} />
-                </View>
-              </View>
-
-              <Controller
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-2">
-                    <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Tipo
-                    </Text>
-                    <RadioGroup
-                      values={vehicleTypes}
-                      selected={value}
-                      onSelect={onChange}
-                    />
-
-                    {errors.type != null && (
-                      <FieldError message={errors.type.message} />
-                    )}
-                  </View>
-                )}
-                name="type"
-              />
-
-              <View>
-                <Input
-                  name="owner_id"
-                  label="N° de cédula"
-                  keyboardType="numeric"
-                  disabled={isDisabled}
-                />
-
-                <Text className='text-xs text-gray-500 dark:text-gray-400'>
-                  Número de cédula registrada en la tarjeta de propiedad
-                </Text>
-              </View>
-
-              <View>
-                <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Tarjeta de propiedad
-                </Text>
-                <View className="flex flex-row justify-center space-x-2">
-                  <View className="basis-1/2">
-                    <PhotoPicker
-                      label="Parte frontal"
-                      mode="take"
-                      disabled={isDisabled}
-                      onSelect={(photo) => {
-                        handleDocumentPhoto(
-                          'property_card_photo_url_front',
-                          photo
-                        )
-                      }}
-                    />
-
-                    {watch('property_card_photo_url_front') !== undefined && (
-                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                        Foto cargada
-                      </Text>
-                    )}
-
-                    {errors.property_card_photo_url_front !== undefined && (
-                      <FieldError
-                        message={errors.property_card_photo_url_front.message}
-                      />
-                    )}
-                  </View>
-                  <View className="basis-1/2">
-                    <PhotoPicker
-                      label="Parte trasera"
-                      mode="take"
-                      disabled={isDisabled}
-                      onSelect={(photo) => {
-                        handleDocumentPhoto(
-                          'property_card_photo_url_back',
-                          photo
-                        )
-                      }}
-                    />
-
-                    {watch('property_card_photo_url_back') !== undefined && (
-                      <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
-                        Foto cargada
-                      </Text>
-                    )}
-
-                    {errors.property_card_photo_url_back !== undefined && (
-                      <FieldError
-                        message={errors.property_card_photo_url_back.message}
-                      />
-                    )}
-                  </View>
-                </View>
-              </View>
-
-              {error !== null && <FieldError message={errorText} />}
-
-              <View className="pt-3">
-                <Pressable
-                  onPress={handleSubmit(onSubmit)}
-                  disabled={isDisabled}
-                  className={cn(
-                    'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                    'active:bg-blue-800',
-                    isDisabled &&
-                      'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
-                  )}
-                >
-                  <Text className="text-base font-medium text-center text-white">
-                    Enviar
+                  <Text className="text-xs text-gray-500 dark:text-gray-400">
+                    Número de cédula registrada en la tarjeta de propiedad
                   </Text>
-                </Pressable>
-              </View>
-            </ScrollView>
+                </View>
+
+                <View>
+                  <Text className="font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Tarjeta de propiedad
+                  </Text>
+                  <View className="flex flex-row justify-center space-x-2">
+                    <View className="basis-1/2">
+                      <PhotoPicker
+                        label="Parte frontal"
+                        mode="take"
+                        disabled={isDisabled}
+                        onSelect={(photo) => {
+                          handleDocumentPhoto(
+                            'property_card_photo_url_front',
+                            photo
+                          )
+                        }}
+                      />
+
+                      {watch('property_card_photo_url_front') !== undefined && (
+                        <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                          Foto cargada
+                        </Text>
+                      )}
+
+                      {errors.property_card_photo_url_front !== undefined && (
+                        <FieldError
+                          message={errors.property_card_photo_url_front.message}
+                        />
+                      )}
+                    </View>
+                    <View className="basis-1/2">
+                      <PhotoPicker
+                        label="Parte trasera"
+                        mode="take"
+                        disabled={isDisabled}
+                        onSelect={(photo) => {
+                          handleDocumentPhoto(
+                            'property_card_photo_url_back',
+                            photo
+                          )
+                        }}
+                      />
+
+                      {watch('property_card_photo_url_back') !== undefined && (
+                        <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
+                          Foto cargada
+                        </Text>
+                      )}
+
+                      {errors.property_card_photo_url_back !== undefined && (
+                        <FieldError
+                          message={errors.property_card_photo_url_back.message}
+                        />
+                      )}
+                    </View>
+                  </View>
+                </View>
+
+                {error !== null && <FieldError message={errorText} />}
+
+                <View className="pt-3">
+                  <Pressable
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isDisabled}
+                    className={cn(
+                      'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                      'active:bg-blue-800',
+                      isDisabled &&
+                        'bg-gray-300 text-gray-700 cursor-not-allowed',
+                      isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                    )}
+                  >
+                    <Text className="text-base font-medium text-center text-white">
+                      Enviar
+                    </Text>
+                  </Pressable>
+                </View>
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </FormProvider>
+        </FormProvider>
+      </KeyboardAwareScrollView>
     </SafeAreaInsetsView>
   )
 }

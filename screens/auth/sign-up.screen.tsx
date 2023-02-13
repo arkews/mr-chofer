@@ -16,6 +16,7 @@ import {
   useForm
 } from 'react-hook-form'
 import { Linking, Pressable, ScrollView, Text, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { z } from 'zod'
 import { signUpWithPassword } from '../../auth'
 
@@ -114,143 +115,145 @@ const SignUpScreen: FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaInsetsView>
-      <FormProvider {...form}>
-        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
-          <View>
-            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
-              <View>
-                <Input
-                  name="email"
-                  label="Email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  enablesReturnKeyAutomatically
-                  disabled={isDisabled}
-                />
-              </View>
+      <KeyboardAwareScrollView>
+        <FormProvider {...form}>
+          <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
+            <View>
+              <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
+                <View>
+                  <Input
+                    name="email"
+                    label="Email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    enablesReturnKeyAutomatically
+                    disabled={isDisabled}
+                  />
+                </View>
 
-              <View>
-                <Input
-                  name="emailConfirmation"
-                  label="Confirmar email"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  enablesReturnKeyAutomatically
-                  disabled={isDisabled}
-                />
-              </View>
+                <View>
+                  <Input
+                    name="emailConfirmation"
+                    label="Confirmar email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    enablesReturnKeyAutomatically
+                    disabled={isDisabled}
+                  />
+                </View>
 
-              <View>
-                <Input
-                  name="password"
-                  label="Contraseña"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  enablesReturnKeyAutomatically
-                  secureTextEntry={!showPassword}
-                  disabled={isDisabled}
-                />
-
-                <View className="flex flex-row mt-2 items-center">
-                  <Checkbox
-                    value={showPassword}
-                    onValueChange={setShowPassword}
-                    disabled={isSubmitting || isLoading}
-                    color={showPassword ? '#2563eb' : undefined}
-                    className={cn(
-                      'rounded-md w-6 h-6 justify-center items-center'
-                    )}
+                <View>
+                  <Input
+                    name="password"
+                    label="Contraseña"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    enablesReturnKeyAutomatically
+                    secureTextEntry={!showPassword}
+                    disabled={isDisabled}
                   />
 
-                  <Text className="block ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Mostrar contraseña
-                  </Text>
+                  <View className="flex flex-row mt-2 items-center">
+                    <Checkbox
+                      value={showPassword}
+                      onValueChange={setShowPassword}
+                      disabled={isSubmitting || isLoading}
+                      color={showPassword ? '#2563eb' : undefined}
+                      className={cn(
+                        'rounded-md w-6 h-6 justify-center items-center'
+                      )}
+                    />
+
+                    <Text className="block ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Mostrar contraseña
+                    </Text>
+                  </View>
                 </View>
-              </View>
 
-              <View>
-                <Input
-                  name="passwordConfirmation"
-                  label="Confirmar contraseña"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  enablesReturnKeyAutomatically
-                  secureTextEntry={!showPassword}
-                  disabled={isDisabled}
-                />
-              </View>
+                <View>
+                  <Input
+                    name="passwordConfirmation"
+                    label="Confirmar contraseña"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    enablesReturnKeyAutomatically
+                    secureTextEntry={!showPassword}
+                    disabled={isDisabled}
+                  />
+                </View>
 
-              <Controller
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <View className="flex flex-row mt-3 items-center">
-                      <Checkbox
-                        value={value}
-                        onValueChange={onChange}
-                        disabled={isSubmitting || isLoading}
-                        color={value ? '#2563eb' : undefined}
-                        className={cn(
-                          'rounded-md w-6 h-6 justify-center items-center'
-                        )}
-                      />
+                <Controller
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <View className="flex flex-row mt-3 items-center">
+                        <Checkbox
+                          value={value}
+                          onValueChange={onChange}
+                          disabled={isSubmitting || isLoading}
+                          color={value ? '#2563eb' : undefined}
+                          className={cn(
+                            'rounded-md w-6 h-6 justify-center items-center'
+                          )}
+                        />
 
-                      <View className="ml-3">
-                        <Pressable onPress={goToTermsAndConditions}>
-                          <Text className="block text-sm font-medium text-blue-700 dark:text-blue-300 underline">
-                            Acepto los términos y condiciones de uso.
-                          </Text>
-                        </Pressable>
+                        <View className="ml-3">
+                          <Pressable onPress={goToTermsAndConditions}>
+                            <Text className="block text-sm font-medium text-blue-700 dark:text-blue-300 underline">
+                              Acepto los términos y condiciones de uso.
+                            </Text>
+                          </Pressable>
+                        </View>
                       </View>
-                    </View>
 
-                    {errors.acceptTerms !== undefined && (
-                      <FieldError message={errors.acceptTerms.message} />
-                    )}
+                      {errors.acceptTerms !== undefined && (
+                        <FieldError message={errors.acceptTerms.message} />
+                      )}
+                    </View>
+                  )}
+                  name="acceptTerms"
+                />
+
+                {error !== null && (
+                  <View className="flex flex-row justify-center">
+                    <FieldError message={errorText} />
                   </View>
                 )}
-                name="acceptTerms"
-              />
 
-              {error !== null && (
-                <View className="flex flex-row justify-center">
-                  <FieldError message={errorText} />
+                <View>
+                  <Pressable
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isSubmitting || isLoading}
+                    className={cn(
+                      'text-base px-6 py-3.5 mt-3 bg-blue-700 rounded-lg border border-transparent',
+                      'active:bg-blue-800',
+                      (isSubmitting || isLoading) &&
+                        'bg-gray-300 text-gray-700 cursor-not-allowed',
+                      (isSubmitting || isLoading) &&
+                        'dark:bg-gray-800 dark:text-gray-400'
+                    )}
+                  >
+                    <Text className="text-base font-medium text-center text-white">
+                      Crear cuenta
+                    </Text>
+                  </Pressable>
                 </View>
-              )}
 
-              <View>
-                <Pressable
-                  onPress={handleSubmit(onSubmit)}
-                  disabled={isSubmitting || isLoading}
-                  className={cn(
-                    'text-base px-6 py-3.5 mt-3 bg-blue-700 rounded-lg border border-transparent',
-                    'active:bg-blue-800',
-                    (isSubmitting || isLoading) &&
-                      'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    (isSubmitting || isLoading) &&
-                      'dark:bg-gray-800 dark:text-gray-400'
-                  )}
-                >
-                  <Text className="text-base font-medium text-center text-white">
-                    Crear cuenta
+                <View>
+                  <Text
+                    className="text-blue-700 mt-3 dark:text-blue-300 text-center"
+                    onPress={goToSignIn}
+                  >
+                    ¿Ya tienes una cuenta? Inicia sesión
                   </Text>
-                </Pressable>
-              </View>
-
-              <View>
-                <Text
-                  className="text-blue-700 mt-3 dark:text-blue-300 text-center"
-                  onPress={goToSignIn}
-                >
-                  ¿Ya tienes una cuenta? Inicia sesión
-                </Text>
-              </View>
-            </ScrollView>
+                </View>
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </FormProvider>
+        </FormProvider>
+      </KeyboardAwareScrollView>
     </SafeAreaInsetsView>
   )
 }
