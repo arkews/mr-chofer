@@ -32,7 +32,8 @@ export default {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff'
       },
-      package: 'com.mrchofer.mrchofer'
+      package: 'com.mrchofer.mrchofer',
+      googleServicesFile: './google-services.json'
     },
     web: {
       favicon: './assets/images/favicon.png'
