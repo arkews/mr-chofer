@@ -262,10 +262,14 @@ const RegisterVehicleScreen: FC<Props> = ({ navigation }) => {
               <View>
                 <Input
                   name="owner_id"
-                  label="N° documento del propietario"
+                  label="N° de cédula"
                   keyboardType="numeric"
                   disabled={isDisabled}
                 />
+
+                <Text className='text-xs text-gray-500 dark:text-gray-400'>
+                  Número de cédula registrada en la tarjeta de propiedad
+                </Text>
               </View>
 
               <View>
