@@ -20,6 +20,7 @@ import {
   useForm
 } from 'react-hook-form'
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import * as Sentry from 'sentry-expo'
 import { z } from 'zod'
 
@@ -135,115 +136,117 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
 
   return (
     <SafeAreaInsetsView>
-      <FormProvider {...form}>
-        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
-          <View>
-            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
-              <View className="mb-3">
-                <Text className="text-xl text-center dark:text-white">
-                  Cuentanos un poco sobre ti
-                </Text>
-                <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
-                  Solo necesitamos algunos datos para poder crear tu perfil
-                </Text>
-              </View>
-
-              <View>
-                <Input
-                  name="name"
-                  label="Nombre"
-                  disabled={isDisabled}
-                  enablesReturnKeyAutomatically
-                />
-              </View>
-
-              <View>
-                <Input
-                  name="city"
-                  label="Ciudad"
-                  disabled={isDisabled}
-                  enablesReturnKeyAutomatically
-                />
-              </View>
-
-              <View>
-                <Input
-                  name="phone"
-                  label="Teléfono"
-                  keyboardType="numeric"
-                  disabled={isDisabled}
-                  enablesReturnKeyAutomatically
-                />
-              </View>
-
-              <View>
-                <Input
-                  name="phoneConfirmation"
-                  label="Confirmar teléfono"
-                  keyboardType="numeric"
-                  disabled={isDisabled}
-                  enablesReturnKeyAutomatically
-                />
-              </View>
-
-              <Controller
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-3">
-                    <Text className="font-medium text-gray-700 dark:text-gray-300">
-                      Sexo
-                    </Text>
-                    <RadioGroup
-                      values={genders}
-                      selected={value}
-                      onSelect={onChange}
-                    />
-
-                    {errors.gender != null && (
-                      <FieldError message={errors.gender.message} />
-                    )}
-                  </View>
-                )}
-                name="gender"
-              />
-
-              <View>
-                <PhotoPicker onSelect={setPhoto} disabled={isDisabled} />
-                {photo !== null && (
-                  <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-                    Foto seleccionada {photo.name}
+      <KeyboardAwareScrollView>
+        <FormProvider {...form}>
+          <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
+            <View>
+              <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
+                <View className="mb-3">
+                  <Text className="text-xl text-center dark:text-white">
+                    Cuentanos un poco sobre ti
                   </Text>
-                )}
-              </View>
+                  <Text className="text-gray-500 text-sm mt-3 dark:text-gray-400">
+                    Solo necesitamos algunos datos para poder crear tu perfil
+                  </Text>
+                </View>
 
-              {error !== null && (
-                <Text className="text-red-500 text-xs">
-                  Ha ocurrido un error, verifique los datos e intente
-                  nuevamente.
-                </Text>
-              )}
+                <View>
+                  <Input
+                    name="name"
+                    label="Nombre"
+                    disabled={isDisabled}
+                    enablesReturnKeyAutomatically
+                  />
+                </View>
 
-              <View className="pt-5">
-                <Pressable
-                  onPress={handleSubmit(onSubmit)}
-                  disabled={isDisabled}
-                  className={cn(
-                    'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                    'active:bg-blue-800',
-                    isDisabled &&
-                      'bg-gray-300 text-gray-700 cursor-not-allowed',
-                    isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                <View>
+                  <Input
+                    name="city"
+                    label="Ciudad"
+                    disabled={isDisabled}
+                    enablesReturnKeyAutomatically
+                  />
+                </View>
+
+                <View>
+                  <Input
+                    name="phone"
+                    label="Teléfono"
+                    keyboardType="numeric"
+                    disabled={isDisabled}
+                    enablesReturnKeyAutomatically
+                  />
+                </View>
+
+                <View>
+                  <Input
+                    name="phoneConfirmation"
+                    label="Confirmar teléfono"
+                    keyboardType="numeric"
+                    disabled={isDisabled}
+                    enablesReturnKeyAutomatically
+                  />
+                </View>
+
+                <Controller
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-3">
+                      <Text className="font-medium text-gray-700 dark:text-gray-300">
+                        Sexo
+                      </Text>
+                      <RadioGroup
+                        values={genders}
+                        selected={value}
+                        onSelect={onChange}
+                      />
+
+                      {errors.gender != null && (
+                        <FieldError message={errors.gender.message} />
+                      )}
+                    </View>
                   )}
-                >
-                  <Text className="text-base font-medium text-center text-white">
-                    Enviar
+                  name="gender"
+                />
+
+                <View>
+                  <PhotoPicker onSelect={setPhoto} disabled={isDisabled} />
+                  {photo !== null && (
+                    <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                      Foto seleccionada {photo.name}
+                    </Text>
+                  )}
+                </View>
+
+                {error !== null && (
+                  <Text className="text-red-500 text-xs">
+                    Ha ocurrido un error, verifique los datos e intente
+                    nuevamente.
                   </Text>
-                </Pressable>
-              </View>
-            </ScrollView>
+                )}
+
+                <View className="pt-5">
+                  <Pressable
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isDisabled}
+                    className={cn(
+                      'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                      'active:bg-blue-800',
+                      isDisabled &&
+                        'bg-gray-300 text-gray-700 cursor-not-allowed',
+                      isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                    )}
+                  >
+                    <Text className="text-base font-medium text-center text-white">
+                      Enviar
+                    </Text>
+                  </Pressable>
+                </View>
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </FormProvider>
+        </FormProvider>
+      </KeyboardAwareScrollView>
     </SafeAreaInsetsView>
   )
 }

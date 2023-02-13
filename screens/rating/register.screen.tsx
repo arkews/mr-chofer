@@ -14,6 +14,7 @@ import {
   useForm
 } from 'react-hook-form'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import * as Sentry from 'sentry-expo'
 import { z } from 'zod'
 
@@ -94,92 +95,94 @@ const RegisterRatingScreen: FC<Props> = ({ navigation, route }) => {
 
   return (
     <SafeAreaInsetsView>
-      <FormProvider {...form}>
-        <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
-          <View>
-            <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
-              <View className="mb-3">
-                <Text className="text-2xl font-medium text-center text-gray-900 dark:text-gray-200">
-                  ¡Termino tu recorrido!
-                </Text>
+      <KeyboardAwareScrollView>
+        <FormProvider {...form}>
+          <View className="min-h-screen py-3 flex flex-col flex-1 flex-grow justify-center">
+            <View>
+              <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
+                <View className="mb-3">
+                  <Text className="text-2xl font-medium text-center text-gray-900 dark:text-gray-200">
+                    ¡Termino tu recorrido!
+                  </Text>
 
-                <Text className="text-gray-500 text-sm font-medium text-center mt-3 dark:text-gray-400">
-                  Califica tu experiencia con el{' '}
-                  {type === 'passenger' ? 'pasajero' : 'conductor'}.
-                </Text>
-              </View>
-
-              <View>
-                <Controller
-                  control={control}
-                  render={({ field: { onChange } }) => (
-                    <View>
-                      <Rating onChange={onChange} />
-                    </View>
-                  )}
-                  name="rating"
-                />
-              </View>
-
-              <View className="pt-3">
-                <Input
-                  name="comment"
-                  label="Comentarios"
-                  placeholderTextColor="#9CA3AF"
-                  multiline
-                  numberOfLines={3}
-                  disabled={isDisabled}
-                />
-              </View>
-
-              {error !== null && (
-                <Text className="text-red-500 text-xs">
-                  Ha ocurrido un error, verifique los datos e intente
-                  nuevamente.
-                </Text>
-              )}
-
-              <View>
-                <View className="py-3">
-                  <Pressable
-                    onPress={handleSubmit(onSubmit)}
-                    disabled={isDisabled}
-                    className={cn(
-                      'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
-                      'active:bg-blue-800',
-                      isDisabled &&
-                        'bg-gray-300 text-gray-700 cursor-not-allowed',
-                      isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
-                    )}
-                  >
-                    <Text className="text-base font-medium text-center text-white">
-                      Calificar
-                    </Text>
-                  </Pressable>
+                  <Text className="text-gray-500 text-sm font-medium text-center mt-3 dark:text-gray-400">
+                    Califica tu experiencia con el{' '}
+                    {type === 'passenger' ? 'pasajero' : 'conductor'}.
+                  </Text>
                 </View>
 
                 <View>
-                  <Pressable
-                    onPress={goBack}
-                    disabled={isDisabled}
-                    className={cn(
-                      'bg-white border border-zinc-300 rounded-lg px-5 py-2.5 dark:bg-zinc-800 dark:border-zinc-600',
-                      'active:bg-zinc-100 dark:active:bg-zinc-700',
-                      isDisabled &&
-                        'bg-gray-300 text-zinc-700 cursor-not-allowed',
-                      isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange } }) => (
+                      <View>
+                        <Rating onChange={onChange} />
+                      </View>
                     )}
-                  >
-                    <Text className="text-gray-900 font-medium text-sm dark:text-white text-center">
-                      En otro momento
-                    </Text>
-                  </Pressable>
+                    name="rating"
+                  />
                 </View>
-              </View>
-            </ScrollView>
+
+                <View className="pt-3">
+                  <Input
+                    name="comment"
+                    label="Comentarios"
+                    placeholderTextColor="#9CA3AF"
+                    multiline
+                    numberOfLines={3}
+                    disabled={isDisabled}
+                  />
+                </View>
+
+                {error !== null && (
+                  <Text className="text-red-500 text-xs">
+                    Ha ocurrido un error, verifique los datos e intente
+                    nuevamente.
+                  </Text>
+                )}
+
+                <View>
+                  <View className="py-3">
+                    <Pressable
+                      onPress={handleSubmit(onSubmit)}
+                      disabled={isDisabled}
+                      className={cn(
+                        'text-base px-6 py-3.5 bg-blue-700 rounded-lg border border-transparent',
+                        'active:bg-blue-800',
+                        isDisabled &&
+                          'bg-gray-300 text-gray-700 cursor-not-allowed',
+                        isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                      )}
+                    >
+                      <Text className="text-base font-medium text-center text-white">
+                        Calificar
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  <View>
+                    <Pressable
+                      onPress={goBack}
+                      disabled={isDisabled}
+                      className={cn(
+                        'bg-white border border-zinc-300 rounded-lg px-5 py-2.5 dark:bg-zinc-800 dark:border-zinc-600',
+                        'active:bg-zinc-100 dark:active:bg-zinc-700',
+                        isDisabled &&
+                          'bg-gray-300 text-zinc-700 cursor-not-allowed',
+                        isDisabled && 'dark:bg-gray-800 dark:text-gray-400'
+                      )}
+                    >
+                      <Text className="text-gray-900 font-medium text-sm dark:text-white text-center">
+                        En otro momento
+                      </Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </ScrollView>
+            </View>
           </View>
-        </View>
-      </FormProvider>
+        </FormProvider>
+      </KeyboardAwareScrollView>
     </SafeAreaInsetsView>
   )
 }

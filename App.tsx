@@ -43,13 +43,20 @@ const App: FC = () => {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
-            <ToastProvider offsetTop={50} renderType={{
-              ride_toast: (toast) => (
-                <RideToast ride={toast.data} onPress={toast.onHide}/>
-              )
-            }}>
-              <Navigation colorScheme={colorScheme}/>
-              <StatusBar/>
+            <ToastProvider
+              offsetTop={50}
+              renderType={{
+                ride_toast: (toast) => (
+                  <RideToast
+                    id={toast.id}
+                    ride={toast.data}
+                    onPress={toast.onHide}
+                  />
+                )
+              }}
+            >
+              <Navigation colorScheme={colorScheme} />
+              <StatusBar />
             </ToastProvider>
           </AuthProvider>
         </QueryClientProvider>
