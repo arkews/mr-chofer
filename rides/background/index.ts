@@ -28,7 +28,7 @@ TaskManager.defineTask(CHECK_RIDES, async () => {
         Vibration.vibrate(1500)
         const { sound } = await Audio.Sound.createAsync(
           // eslint-disable-next-line @typescript-eslint/no-var-requires
-          require('../../assets/sounds/ride-requested.mp3')
+          require('../../assets/sounds/ride-toast.mp3')
         )
         await sound.playAsync()
         await schedulePushNotification({
