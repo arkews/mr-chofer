@@ -1,3 +1,8 @@
+import useDriver, { DriverStatus } from '@base/hooks/drivers/use-driver'
+import {
+  checkStatusForCheckRides,
+  registerCheckRidesBackgroundTask
+} from '@base/rides/background'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import {
   NewRidesChannel,
@@ -14,16 +19,28 @@ import { Vibration } from 'react-native'
 
 const useRealtimeRequestedRides = () => {
   const { ride, isLoading } = useCurrentDriverRide()
+  const { driver, isLoading: isLoadingDriver } = useDriver()
   const queryClient = useQueryClient()
 
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading || isLoadingDriver) {
+      return
+    }
+
+    if (driver === undefined || driver === null) {
       return
     }
 
     if (ride !== undefined && ride !== null) {
       return
     }
+
+    if (driver.status !== DriverStatus.accepted) {
+      return
+    }
+
+    registerCheckRidesBackgroundTask().then(() => {})
+    checkStatusForCheckRides().then(() => {})
 
     const newRidesChannel = NewRidesChannel()
     const rideChangesChannel = RideChangesChannel()
@@ -38,7 +55,7 @@ const useRealtimeRequestedRides = () => {
           filter: `status=eq.${RideStatus.requested}`
         },
         () => {
-          Vibration.vibrate(1000)
+          Vibration.vibrate(1500)
           void queryClient.invalidateQueries(['requested-rides'])
         }
       )
