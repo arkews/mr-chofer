@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
   })
 })
 
-export const schedulePushNotification = async (content: NotificationContentInput, trigger: NotificationTriggerInput) => {
+export const schedulePushNotification = async (content: NotificationContentInput, trigger: NotificationTriggerInput = null) => {
   await Notifications.scheduleNotificationAsync({
     content,
     trigger
