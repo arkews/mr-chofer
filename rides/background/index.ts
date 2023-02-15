@@ -43,7 +43,7 @@ TaskManager.defineTask(CHECK_RIDES, async () => {
 
 export const registerCheckRidesBackgroundTask = async () => {
   await BackgroundFetch.registerTaskAsync(CHECK_RIDES, {
-    minimumInterval: 15,
+    minimumInterval: 1 * 60,
     stopOnTerminate: false,
     startOnBoot: true
   })
