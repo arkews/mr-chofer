@@ -9976,10 +9976,10 @@ sudo-prompt@^9.0.0:
   resolved "https://registry.yarnpkg.com/sudo-prompt/-/sudo-prompt-9.2.1.tgz#77efb84309c9ca489527a4e749f287e6bdd52afd"
   integrity sha512-Mu7R0g4ig9TUuGSxJavny5Rv0egCEtpZRNMrZaYS1vxkiIxGiGUwoezU3LazIQ+KE04hTrTfNPgxU5gzi7F5Pw==
 
-supabase@^1.38.1:
-  version "1.38.1"
-  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.38.1.tgz#2034590155d7e74d04e5d97fe5dc74358cff25af"
-  integrity sha512-BUlEw/yxbtBgrsdX0w7/8VIqOeJbFLVqNCfuHjZvTZx7fEbP/WI/qZjI1DeX6CAW6Qo9OHHauGMocOMKZoKreA==
+supabase@^1.38.2:
+  version "1.38.2"
+  resolved "https://registry.yarnpkg.com/supabase/-/supabase-1.38.2.tgz#3aa0b87091e4a47e520685dd6ee6d21a38e91daa"
+  integrity sha512-o+AdB3LD0lgBAaqL6zjcvYtbh+ITCT6Tqk3VJG1ds7SQirPWGbyb91bUKEckW9DmnEW/0J9O1ZBsEiyhGrxttQ==
   dependencies:
     bin-links "^4.0.1"
     node-fetch "^3.2.10"
