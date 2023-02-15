@@ -64,7 +64,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
       return
     }
 
-    const isEnableMalePassenger = config.value === 'true'
+    const isEnableMalePassenger = config.value === 'true' && ride.passengers?.gender === 'Male'
     if (isEnableMalePassenger) {
       setIsOpenMalePassengerActiveModal(true)
       return
