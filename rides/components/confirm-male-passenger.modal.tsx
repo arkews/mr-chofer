@@ -32,7 +32,7 @@ const ConfirmMalePassengerModal: FC<Props> = ({ open, onClose }) => {
           <View className="w-full p-4 bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-700">
             <View className="flex flex-col space-y-5">
               <View className="justify-center">
-                <Text className="text-xl text-center font-medium text-gray-900 dark:text-gray-200">
+                <Text className="text-xl font-medium text-gray-900 dark:text-gray-200">
                   Al aceptar declaras conocer la existencia del parrillero
                   hombre en Valledupar y exhoneras a MrChoffer de cualquier
                   responsabilidad legal.
