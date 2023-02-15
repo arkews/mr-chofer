@@ -31,7 +31,7 @@ const useNotificationInitialLoad = (
   }
 
   const { data, isLoading } = useQuery(
-    ['checkIfTokenExists', session?.user.id],
+    ['checkIfTokenExists', session?.user.id, userType],
     async () => await checkIfTokenExists(session?.user.id ?? ''),
     {
       enabled: session !== null && session !== undefined
