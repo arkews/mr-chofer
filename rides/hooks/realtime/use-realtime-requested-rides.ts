@@ -1,8 +1,4 @@
 import useDriver, { DriverStatus } from '@base/hooks/drivers/use-driver'
-import {
-  checkStatusForCheckRides,
-  registerCheckRidesBackgroundTask
-} from '@base/rides/background'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import {
   NewRidesChannel,
@@ -38,9 +34,6 @@ const useRealtimeRequestedRides = () => {
     if (driver.status !== DriverStatus.accepted) {
       return
     }
-
-    registerCheckRidesBackgroundTask().then(() => {})
-    checkStatusForCheckRides().then(() => {})
 
     const newRidesChannel = NewRidesChannel()
     const rideChangesChannel = RideChangesChannel()
