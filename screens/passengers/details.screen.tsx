@@ -1,3 +1,4 @@
+import useNotificationInitialLoad from '@base/notifications/hooks/use-notification-initial-load'
 import RegisterRideRequestForm from '@base/rides/components/register.form'
 import useCurrentPassengerRide from '@base/rides/hooks/use-current-passenger-ride'
 import { getAvatarUrl } from '@base/supabase/storage'
@@ -17,6 +18,8 @@ const StyledIcon = styled(MaterialIcons)
 const PassengerDetailsScreen: FC<Props> = ({ navigation, route }) => {
   const { passenger, isLoading, error } = usePassenger()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+
+  useNotificationInitialLoad('passenger', true)
 
   useEffect(() => {
     if (isLoading) {
