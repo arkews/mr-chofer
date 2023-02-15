@@ -1,4 +1,5 @@
 import useDriver, { DriverStatus } from '@base/hooks/drivers/use-driver'
+import { schedulePushNotification } from '@base/notifications'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import {
   NewRidesChannel,
@@ -50,6 +51,9 @@ const useRealtimeRequestedRides = () => {
         () => {
           Vibration.vibrate(1500)
           void queryClient.invalidateQueries(['requested-rides'])
+          void schedulePushNotification({
+            title: 'Hay una nueva solicitud de viaje'
+          })
         }
       )
       .subscribe()
@@ -88,7 +92,11 @@ const useRealtimeRequestedRides = () => {
           filter: `status=eq.${RideStatus.requested}`
         },
         () => {
+          Vibration.vibrate(1500)
           void queryClient.invalidateQueries(['requested-rides'])
+          void schedulePushNotification({
+            title: 'Hay una nueva solicitud de viaje'
+          })
         }
       )
       .subscribe()
