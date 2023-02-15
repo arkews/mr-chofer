@@ -35,7 +35,9 @@ serve(async (req) => {
       return deviceToken.token
     })
 
-    await fetch('https://exp.host/--/api/v2/push/send', {
+    console.info('Sending notification to', expoPushTokens)
+
+    const expoResponse = await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -45,6 +47,8 @@ serve(async (req) => {
         title: 'Hay una nueva solicitud de viaje'
       })
     })
+
+    console.info('Expo response', await expoResponse.json())
   }
 
   return new Response(JSON.stringify(data), {
