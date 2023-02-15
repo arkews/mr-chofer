@@ -1,7 +1,7 @@
 import { useAuth } from '@base/auth/context'
 import useNotifications, { UserNotification } from '@base/notifications'
 import { supabase } from '@base/supabase'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import * as Sentry from 'sentry-expo'
 
@@ -13,6 +13,13 @@ const useNotificationInitialLoad = (
 ) => {
   const { token } = useNotifications()
   const { session } = useAuth()
+  const queryClient = useQueryClient()
+
+  void queryClient.invalidateQueries([
+    'checkIfTokenExists',
+    session?.user.id,
+    userType
+  ])
 
   const checkIfTokenExists = async (userId: string) => {
     const { data, error } = await supabase
