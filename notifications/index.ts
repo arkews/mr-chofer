@@ -6,6 +6,12 @@ import { NotificationContentInput, NotificationTriggerInput } from 'expo-notific
 import { useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
 
+export type UserNotification = {
+  token: string
+  user_id: string
+  user_type: string
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -54,7 +60,7 @@ async function registerForPushNotificationsAsync () {
 }
 
 const useNotifications = () => {
-  const [, setExpoPushToken] = useState<string | undefined>('')
+  const [token, setExpoPushToken] = useState<string | undefined>('')
   const [, setNotification] = useState<Notifications.Notification>()
   const notificationListener = useRef<Subscription>()
   const responseListener = useRef<Subscription>()
@@ -75,6 +81,10 @@ const useNotifications = () => {
       if (responseListener.current !== undefined) Notifications.removeNotificationSubscription(responseListener.current)
     }
   }, [])
+
+  return {
+    token
+  }
 }
 
 export default useNotifications
