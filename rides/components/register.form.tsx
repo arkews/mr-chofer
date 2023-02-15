@@ -59,7 +59,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
   }, [gender])
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
-    const { error } = await supabase.from('rides').insert(data)
+    const { error } = await supabase.functions.invoke('new-ride-request', {
+      body: data
+    })
 
     if (error !== null) {
       const rawError = new Error(error.message)
