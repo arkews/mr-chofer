@@ -1,10 +1,9 @@
 import { signOut } from '@base/auth'
-import useNotificationInitialLoad from '@base/notifications/hooks/use-notification-initial-load'
 import useCurrentDriverRide from '@base/rides/hooks/use-current-driver-ride'
 import { getAvatarUrl } from '@base/supabase/storage'
 import RatingView from '@components/rating.view'
 import { MaterialIcons } from '@expo/vector-icons'
-import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
+import useDriver from '@hooks/drivers/use-driver'
 import useVehicle from '@hooks/vehicles/use-vehicle'
 import { RootStackScreenProps } from '@navigation/types'
 import { useMutation } from '@tanstack/react-query'
@@ -21,13 +20,6 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
   const { driver, isLoading, error } = useDriver()
   const { vehicle, isLoading: isLoadingVehicle } = useVehicle()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-
-  useNotificationInitialLoad(
-    'driver',
-    driver !== undefined &&
-      driver !== null &&
-      driver.status === DriverStatus.accepted
-  )
 
   useEffect(() => {
     if (isLoading) {
