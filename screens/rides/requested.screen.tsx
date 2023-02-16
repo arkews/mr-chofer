@@ -1,3 +1,4 @@
+import useNotificationInitialLoad from '@base/notifications/hooks/use-notification-initial-load'
 import RequestedRideCard from '@base/rides/components/requested'
 import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
 import useRealtimeCurrentDriverRide from '@base/rides/hooks/realtime/use-realtime-current-driver-ride'
@@ -26,6 +27,13 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
   const { rides, isLoading } = useRequestedRides()
   const { driver, isLoading: isLoadingDriver } = useDriver()
   const { vehicle, isLoading: isLoadingVehicle } = useVehicle()
+
+  useNotificationInitialLoad(
+    'driver',
+    driver !== undefined &&
+      driver !== null &&
+      driver.status === DriverStatus.accepted
+  )
 
   const checkVehicle = useCallback(() => {
     if (isLoadingVehicle) {
