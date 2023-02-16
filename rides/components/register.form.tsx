@@ -52,11 +52,18 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
   }, [passenger])
 
   const gender = watch('gender')
+  const { config: minimunFare } = useConfig(
+    gender === 'Male' ? 'MINIMUM_MALE_FARE' : 'MINIMUM_FEMALE_FARE'
+  )
   useEffect(() => {
+    if (minimunFare === undefined || minimunFare === null) {
+      return
+    }
+
     resetField('offered_price', {
-      defaultValue: gender === 'Male' ? 3000 : 2000
+      defaultValue: Number(minimunFare.value)
     })
-  }, [gender])
+  }, [gender, minimunFare])
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
     const { error } = await supabase.functions.invoke('new-ride-request', {
@@ -99,7 +106,9 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
 
   const isDisabled = isSubmitting || isLoading
 
-  const { config: isMalePassengerActiveConfig } = useConfig('IS_MALE_PASSENGER_ACTIVE')
+  const { config: isMalePassengerActiveConfig } = useConfig(
+    'IS_MALE_PASSENGER_ACTIVE'
+  )
 
   return (
     <FormProvider {...form}>
@@ -169,6 +178,18 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
               keyboardType="numeric"
               disabled={isDisabled}
             />
+
+            {minimunFare !== undefined &&
+              minimunFare !== null &&
+              Number(minimunFare.value) > 0 && (
+                <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  La tarifa mínima es de{' '}
+                  {Number(minimunFare.value).toLocaleString('es-ES', {
+                    style: 'currency',
+                    currency: 'COP'
+                  })}
+                </Text>
+            )}
           </View>
 
           <View>
