@@ -1,3 +1,4 @@
+import { supabase } from '@base/supabase'
 import { z } from 'zod'
 
 export const RegisterRideRequestSchema = z.object({
@@ -17,5 +18,27 @@ export const RegisterRideRequestSchema = z.object({
     .min(1, 'El género es requerido'),
   comments: z.string().optional().nullable()
 })
+  .refine(async data => {
+    const key = data.gender === 'Male' ? 'MINIMUM_MALE_FARE' : 'MINIMUM_FEMALE_FARE'
+    const { data: config, error } = await supabase.from('configuration')
+      .select('value')
+      .eq('key', key)
+      .single()
+
+    if (error !== null) {
+      return true
+    }
+
+    if (config === null) {
+      return true
+    }
+
+    const minimumFare = Number(config.value)
+
+    return data.offered_price >= minimumFare
+  }, {
+    message: 'El precio debe ser mayor o igual al mínimo permitido',
+    path: ['offered_price']
+  })
 
 export type RegisterRideRequest = z.infer<typeof RegisterRideRequestSchema>
