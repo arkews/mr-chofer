@@ -17,16 +17,13 @@ export type RequestMessage = {
 }
 
 export type RequestBody = {
-  any: Any
+  any: AnyRequest
 }
 
-export type Any =
-  | {
-    unregisteredPaymentRQ: UnregisteredPaymentRQ
-  }
-  | {
-    unregisteredPaymentRS: UnregisteredPaymentRS
-  }
+export type AnyRequest = {
+  unregisteredPaymentRQ: UnregisteredPaymentRQ
+}
+
 export type UnregisteredPaymentRQ = {
   phoneNumber: string
   code: string
@@ -57,8 +54,12 @@ export type ResponseMessage = {
   ResponseBody: ResponseBody
 }
 
+type AnyResponse = {
+  unregisteredPaymentRS: UnregisteredPaymentRS
+}
+
 export type ResponseBody = {
-  any: Any
+  any: AnyResponse
 }
 
 export type UnregisteredPaymentRS = {
@@ -88,6 +89,7 @@ export type Payment = {
   payment_method: string
   amount: number
   status?: string
+  transaction_id?: string
 
   created_at?: Date
   updated_at?: Date
@@ -115,14 +117,30 @@ serve(async (req) => {
   )
 
   if (!authTokenResponse.ok) {
-    return new Response(undefined, {
-      status: authTokenResponse.status
-    })
+    return new Response(
+      JSON.stringify({ error: authTokenResponse.statusText }),
+      {
+        status: authTokenResponse.status
+      }
+    )
   }
 
   const { access_token: accessToken } =
     (await authTokenResponse.json()) as AuthToken
   const body = (await req.json()) as NequiPayment
+
+  const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
+  const { data: messageID, error: meessageIdError } = await supabase
+    .from('configuration')
+    .select('value')
+    .eq('key', 'NEQUI_MESSAGE_ID')
+    .single()
+
+  if (meessageIdError !== null) {
+    return new Response(JSON.stringify({ error: meessageIdError }), {
+      status: 500
+    })
+  }
 
   const paymentResponse = await fetch(
     `${
@@ -141,7 +159,7 @@ serve(async (req) => {
           RequestHeader: {
             Channel: 'PNP04-C001',
             RequestDate: new Date(),
-            MessageID: '1234567890',
+            MessageID: messageID,
             ClientID: '12345',
             Destination: {
               ServiceName: 'PaymentsService',
@@ -165,7 +183,7 @@ serve(async (req) => {
   )
 
   if (!paymentResponse.ok) {
-    return new Response(undefined, {
+    return new Response(JSON.stringify({ error: paymentResponse.statusText }), {
       status: paymentResponse.status
     })
   }
@@ -173,17 +191,28 @@ serve(async (req) => {
   const paymentBody =
     (await paymentResponse.json()) as PushNotificationResponse
 
-  if (paymentBody.ResponseMessage.ResponseHeader.Status.StatusCode !== '') {
-    return new Response(undefined, {
-      status: 500
-    })
+  const isSuccessful =
+    paymentBody.ResponseMessage.ResponseHeader.Status.StatusCode === '0' &&
+    paymentBody.ResponseMessage.ResponseHeader.Status.StatusDesc === 'SUCCESS'
+
+  if (!isSuccessful) {
+    return new Response(
+      JSON.stringify({
+        error: paymentBody.ResponseMessage.ResponseHeader.Status.StatusDesc
+      }),
+      {
+        status: 500
+      }
+    )
   }
 
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY)
   const payment = {
     driver_id: body.driver_id,
     payment_method: 'nequi',
-    amount: Number(body.value)
+    amount: Number(body.value),
+    transaction_id:
+      paymentBody.ResponseMessage.ResponseBody.any.unregisteredPaymentRS
+        .transactionId
   } satisfies Payment
 
   const { error, data } = await supabase
@@ -192,10 +221,15 @@ serve(async (req) => {
     .select()
 
   if (error !== null) {
-    return new Response(JSON.stringify(error), {
+    return new Response(JSON.stringify({ error }), {
       status: 500
     })
   }
+
+  await supabase
+    .from('configuration')
+    .update({ value: (Number(messageID) + 1).toString() })
+    .eq('key', 'NEQUI_MESSAGE_ID')
 
   return new Response(JSON.stringify(data), {
     headers: { 'Content-Type': 'application/json' }
