@@ -142,6 +142,31 @@ serve(async (req) => {
     })
   }
 
+  const nequiPaymenBody = {
+    RequestMessage: {
+      RequestHeader: {
+        Channel: 'PNP04-C001',
+        RequestDate: new Date(),
+        MessageID: messageID.value,
+        ClientID: '12345',
+        Destination: {
+          ServiceName: 'PaymentsService',
+          ServiceOperation: 'unregisteredPayment',
+          ServiceRegion: 'C001',
+          ServiceVersion: '1.2.0'
+        }
+      },
+      RequestBody: {
+        any: {
+          unregisteredPaymentRQ: {
+            phoneNumber: body.phoneNumber,
+            value: body.value,
+            code: STORE_CODE
+          }
+        }
+      }
+    }
+  } satisfies PushNotificationRequest
   const paymentResponse = await fetch(
     `${
       API_URL as string
@@ -154,51 +179,31 @@ serve(async (req) => {
         Authorization: `Bearer ${accessToken}`,
         'x-api-key': API_KEY
       },
-      body: JSON.stringify({
-        RequestMessage: {
-          RequestHeader: {
-            Channel: 'PNP04-C001',
-            RequestDate: new Date(),
-            MessageID: messageID,
-            ClientID: '12345',
-            Destination: {
-              ServiceName: 'PaymentsService',
-              ServiceOperation: 'unregisteredPayment',
-              ServiceRegion: 'C001',
-              ServiceVersion: '1.2.0'
-            }
-          },
-          RequestBody: {
-            any: {
-              unregisteredPaymentRQ: {
-                phoneNumber: body.phoneNumber,
-                value: body.value,
-                code: STORE_CODE
-              }
-            }
-          }
-        }
-      } satisfies PushNotificationRequest)
+      body: JSON.stringify(nequiPaymenBody)
     }
   )
 
   if (!paymentResponse.ok) {
+    console.info('Nequi Payment response: ', paymentResponse)
+    console.info('Nequi Payment body: ', nequiPaymenBody)
+
     return new Response(JSON.stringify({ error: paymentResponse.statusText }), {
       status: paymentResponse.status
     })
   }
 
-  const paymentBody =
+  const paymentResponseBody =
     (await paymentResponse.json()) as PushNotificationResponse
 
   const isSuccessful =
-    paymentBody.ResponseMessage.ResponseHeader.Status.StatusCode === '0' &&
-    paymentBody.ResponseMessage.ResponseHeader.Status.StatusDesc === 'SUCCESS'
+    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusCode === '0' &&
+    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc === 'SUCCESS'
 
   if (!isSuccessful) {
+    console.info('Nequi paymentResponseBody: ', paymentResponseBody)
     return new Response(
       JSON.stringify({
-        error: paymentBody.ResponseMessage.ResponseHeader.Status.StatusDesc
+        error: paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc
       }),
       {
         status: 500
@@ -211,7 +216,7 @@ serve(async (req) => {
     payment_method: 'nequi',
     amount: Number(body.value),
     transaction_id:
-      paymentBody.ResponseMessage.ResponseBody.any.unregisteredPaymentRS
+      paymentResponseBody.ResponseMessage.ResponseBody.any.unregisteredPaymentRS
         .transactionId
   } satisfies Payment
 
@@ -228,7 +233,7 @@ serve(async (req) => {
 
   await supabase
     .from('configuration')
-    .update({ value: (Number(messageID) + 1).toString() })
+    .update({ value: (Number(messageID.value) + 1).toString() })
     .eq('key', 'NEQUI_MESSAGE_ID')
 
   return new Response(JSON.stringify(data), {
