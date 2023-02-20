@@ -1,5 +1,6 @@
 import { useAuth } from '@base/auth/context'
 import CustomDrawer from '@base/components/drawer'
+import MakeNequiPaymentScreen from '@base/screens/payments/nequi/make-payment.screen'
 import { darkTheme, lightTheme } from '@constants/theme'
 import { MaterialIcons } from '@expo/vector-icons'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -114,6 +115,13 @@ const RootNavigator: FC = () => {
             <Stack.Screen
               name="RegisterRating"
               component={RegisterRatingScreen}
+            />
+          </Stack.Group>
+
+          <Stack.Group screenOptions={{ presentation: 'modal' }}>
+            <Stack.Screen
+              name="MakeNequiPayment"
+              component={MakeNequiPaymentScreen}
             />
           </Stack.Group>
         </>
