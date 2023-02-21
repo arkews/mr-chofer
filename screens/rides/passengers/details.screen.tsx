@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { RootStackScreenProps } from '@navigation/types'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
+import { useKeepAwake } from 'expo-keep-awake'
 import { styled } from 'nativewind'
 import { FC, useEffect, useState } from 'react'
 import { Linking, Pressable, Text, View } from 'react-native'
@@ -24,6 +25,8 @@ const StyledIcon = styled(MaterialIcons)
 type Props = RootStackScreenProps<'PassengerRideDetails'>
 
 const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
+  useKeepAwake()
+
   const { ride, isLoading } = useCurrentPassengerRide()
 
   useRealtimeCurrentPassengerRide()
