@@ -15,6 +15,7 @@ import { DrawerActions, useFocusEffect } from '@react-navigation/native'
 import { REALTIME_LISTEN_TYPES } from '@supabase/realtime-js/src/RealtimeChannel'
 import { useMutation } from '@tanstack/react-query'
 import cn from 'classnames'
+import { useKeepAwake } from 'expo-keep-awake'
 import { styled } from 'nativewind'
 import { FC, useCallback, useEffect } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
@@ -24,6 +25,8 @@ const StyledIcon = styled(MaterialIcons)
 type Props = RootStackScreenProps<'RequestedRides'>
 
 const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
+  useKeepAwake()
+
   const { rides, isLoading } = useRequestedRides()
   const { driver, isLoading: isLoadingDriver } = useDriver()
   const { vehicle, isLoading: isLoadingVehicle } = useVehicle()
