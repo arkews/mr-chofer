@@ -4,7 +4,7 @@ export default {
   expo: {
     name: 'MrChoffer',
     slug: 'mr-chofer',
-    version: '1.1.0',
+    version: '1.1.2',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     scheme: 'myapp',

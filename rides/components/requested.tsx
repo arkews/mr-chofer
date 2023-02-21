@@ -5,11 +5,55 @@ import { getAvatarUrl } from '@base/supabase/storage'
 import { genders } from '@constants/genders'
 import { MaterialIcons } from '@expo/vector-icons'
 import { styled } from 'nativewind'
-import { FC, useEffect, useState } from 'react'
+import { FC, useEffect, useReducer, useState } from 'react'
 import { Image, Modal, Pressable, Text, View } from 'react-native'
 import ConfirmMalePassengerModal from './confirm-male-passenger.modal'
 
 const StyledIcon = styled(MaterialIcons)
+
+enum RequestedRideCardActionKind {
+  Idle = 'idle',
+  Accept = 'accept',
+  MakeOffer = 'make_offer',
+
+  OpenMakeOfferModal = 'open_make_offer_modal',
+  OpenMaleModal = 'open_male_modal',
+}
+
+type RequestedRideCardActionPayload = {
+  [RequestedRideCardActionKind.Idle]: undefined
+  [RequestedRideCardActionKind.Accept]: undefined
+  [RequestedRideCardActionKind.MakeOffer]: {
+    offer: number
+  }
+  [RequestedRideCardActionKind.OpenMakeOfferModal]: undefined
+  [RequestedRideCardActionKind.OpenMaleModal]: undefined
+}
+
+type RequestedRideCardAction = {
+  kind: RequestedRideCardActionKind
+  payload: RequestedRideCardActionPayload[RequestedRideCardActionKind]
+}
+
+type RequestedRideCardState = {
+  finalPrice: number
+  isAccepting: boolean
+  makeOffer: boolean
+
+  openMaleModal: boolean
+
+  onAccept: (rideId: number, price?: number) => void
+}
+
+const initialState: RequestedRideCardState = {
+  finalPrice: 0,
+  isAccepting: false,
+  makeOffer: false,
+
+  openMaleModal: false,
+
+  onAccept: () => {}
+}
 
 type Props = {
   ride: Ride
@@ -18,10 +62,62 @@ type Props = {
 }
 
 const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
+  const { config } = useConfig('IS_MALE_PASSENGER_ACTIVE')
+
+  const [state, dispatch] = useReducer(
+    (state: RequestedRideCardState, action: RequestedRideCardAction) => {
+      switch (action.kind) {
+        case RequestedRideCardActionKind.Idle:
+          return {
+            ...state,
+            isAccepting: false,
+            makeOffer: false,
+            openMaleModal: false
+          }
+        case RequestedRideCardActionKind.Accept: {
+          onAccept(ride.id, state.finalPrice)
+
+          return {
+            ...state,
+            isAccepting: true,
+            makeOffer: false,
+            openMaleModal: false
+          }
+        }
+        case RequestedRideCardActionKind.MakeOffer:
+          return {
+            ...state,
+            isAccepting: false,
+            makeOffer: false,
+            openMaleModal: false,
+            finalPrice: action.payload?.offer ?? state.finalPrice
+          }
+        case RequestedRideCardActionKind.OpenMakeOfferModal:
+          return {
+            ...state,
+            isAccepting: false,
+            makeOffer: true,
+            openMaleModal: false
+          }
+        case RequestedRideCardActionKind.OpenMaleModal:
+          return {
+            ...state,
+            isAccepting: false,
+            makeOffer: false,
+            openMaleModal: true
+          }
+        default:
+          return state
+      }
+    },
+    {
+      ...initialState,
+      finalPrice: ride.offered_price,
+      onAccept
+    }
+  )
+
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
-  const [isAccepting, setIsAccepting] = useState(false)
-  const [makeOffer, setMakeOffer] = useState(false)
-  const [finalPrice, setFinalPrice] = useState(ride.offered_price)
 
   useEffect(() => {
     if (
@@ -34,68 +130,55 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
     }
   }, [ride])
 
-  const performAccept = () => {
-    onAccept(ride.id, finalPrice)
-
-    setIsAccepting(true)
-    setMakeOffer(false)
-
-    // After 20s set is accepting false
-    setTimeout(() => {
-      setIsAccepting(false)
-    }, 20000)
-  }
-
-  const { config } = useConfig('IS_MALE_PASSENGER_ACTIVE')
-  const [isOpenMalePassengerActiveModal, setIsOpenMalePassengerActiveModal] =
-    useState(false)
-  const handleClosePassengerActiveModal = () => {
-    setIsOpenMalePassengerActiveModal(false)
-
-    performAccept()
-  }
-
-  const handleAcceptRequest = () => {
-    if (config === undefined) {
+  const handleAccept = () => {
+    if (config === undefined || config === null) {
       return
     }
 
-    if (config === null) {
-      return
-    }
-
-    const isEnableMalePassenger = config.value === 'true' && ride.passengers?.gender === 'Male'
+    const isEnableMalePassenger =
+      config.value === 'true' && ride.gender === 'Male'
     if (isEnableMalePassenger) {
-      setIsOpenMalePassengerActiveModal(true)
+      dispatch({
+        kind: RequestedRideCardActionKind.OpenMaleModal,
+        payload: undefined
+      })
       return
     }
 
-    performAccept()
+    dispatch({
+      kind: RequestedRideCardActionKind.Accept,
+      payload: undefined
+    })
   }
 
-  const handleAccept = (): void => {
-    handleAcceptRequest()
-  }
+  // set isAccepting to false when 5 seconds has passed
+  useEffect(() => {
+    if (state.isAccepting) {
+      const timer = setTimeout(() => {
+        dispatch({
+          kind: RequestedRideCardActionKind.Idle,
+          payload: undefined
+        })
+      }, 10000)
 
-  const handleOpenMakeOffer = (): void => {
-    setMakeOffer(true)
-  }
-
-  const handleCloseMakeOffer = (offer?: number): void => {
-    if (offer !== undefined) {
-      setFinalPrice(offer)
+      return () => {
+        clearTimeout(timer)
+      }
     }
-
-    handleAcceptRequest()
-  }
+  }, [state.isAccepting])
 
   return (
     <>
       <View className="px-1 py-2 pb-1 mt-2 w-full bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800">
         <View>
           <ConfirmMalePassengerModal
-            open={isOpenMalePassengerActiveModal}
-            onClose={handleClosePassengerActiveModal}
+            open={state.openMaleModal}
+            onClose={() => {
+              dispatch({
+                kind: RequestedRideCardActionKind.Accept,
+                payload: undefined
+              })
+            }}
           />
         </View>
         <View>
@@ -163,7 +246,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           )}
 
           <View className="mt-1.5">
-            {isAccepting
+            {state.isAccepting
               ? (
               <View className="mt-3">
                 <Text className="text-xs text-center text-green-700 dark:text-green-400">
@@ -175,7 +258,16 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
               <View className="flex flex-row justify-around space-x-2">
                 <View className="basis-1/2">
                   <Pressable
-                    onPress={handleAccept}
+                    onPress={() => {
+                      dispatch({
+                        kind: RequestedRideCardActionKind.MakeOffer,
+                        payload: {
+                          offer: ride.offered_price
+                        }
+                      })
+
+                      handleAccept()
+                    }}
                     className="px-3 py-2 text-center text-white bg-green-700 rounded-md border border-transparent active:bg-green-800"
                   >
                     <Text className="text-xs text-white text-center font-medium">
@@ -186,7 +278,12 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
 
                 <View className="basis-1/2">
                   <Pressable
-                    onPress={handleOpenMakeOffer}
+                    onPress={() => {
+                      dispatch({
+                        kind: RequestedRideCardActionKind.OpenMakeOfferModal,
+                        payload: undefined
+                      })
+                    }}
                     className="px-3 py-2 text-center border border-sky-700 rounded-md active:border-sky-800 dark:border-sky-300 dark:active:border-sky-200"
                   >
                     <Text className="text-xs text-sky-700 text-center font-medium dark:text-sky-300">
@@ -200,9 +297,19 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
         </View>
       </View>
 
-      <Modal animationType="slide" transparent visible={makeOffer}>
+      <Modal animationType="slide" transparent visible={state.makeOffer}>
         <View className="absolute bottom-0 w-full">
-          <OfferForm onClose={handleCloseMakeOffer} />
+          <OfferForm
+            onClose={(offer?: number) => {
+              dispatch({
+                kind: RequestedRideCardActionKind.MakeOffer,
+                payload: {
+                  offer: offer ?? state.finalPrice
+                }
+              })
+              handleAccept()
+            }}
+          />
         </View>
       </Modal>
     </>

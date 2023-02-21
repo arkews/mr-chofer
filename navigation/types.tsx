@@ -31,6 +31,8 @@ export type RootStackParamList = {
   }
 
   MainDrawer: undefined
+
+  MakeNequiPayment: undefined
 }
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
