@@ -12,7 +12,7 @@ const DriverArriveNotificationModal: FC<Props> = ({ open, onClose }) => {
   const playSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('../../assets/sounds/driver-arrives.mp3')
+      require('../../assets/sounds/driver-arrives.wav')
     )
     await sound.playAsync()
   }

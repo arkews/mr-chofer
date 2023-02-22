@@ -83,7 +83,7 @@ const RideToast: FC<Props> = ({ id, ride, onPress }) => {
   const playSound = async () => {
     const { sound } = await Audio.Sound.createAsync(
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('../../assets/sounds/ride-toast.mp3')
+      require('../../assets/sounds/ride-toast.wav')
     )
     await sound.playAsync()
   }
