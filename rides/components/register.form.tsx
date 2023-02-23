@@ -22,6 +22,7 @@ import {
 } from 'react-hook-form'
 import { Pressable, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
+import DestinationModal from './destination.modal'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -64,6 +65,23 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
       defaultValue: Number(minimunFare.value)
     })
   }, [gender, minimunFare])
+
+  const [isDestinationModalOpen, setIsDestinationModalOpen] = useState(false)
+  const openDestinationModal = () => {
+    setIsDestinationModalOpen(true)
+  }
+  const closeDestinationModal = () => {
+    setIsDestinationModalOpen(false)
+  }
+
+  const handleCloseDestinationModal = (destination: string) => {
+    closeDestinationModal()
+    if (destination === '' || destination.trim() === '') {
+      return
+    }
+
+    setValue('destination', destination)
+  }
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
     const { error } = await supabase.functions.invoke('new-ride-request', {
@@ -135,12 +153,32 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           </View>
 
           <View>
-            <Input
-              name="destination"
-              placeholder="Destino"
-              placeholderTextColor="#9CA3AF"
-              disabled={isDisabled}
+            <DestinationModal
+              open={isDestinationModalOpen}
+              onClose={handleCloseDestinationModal}
             />
+            <Pressable
+              onPress={openDestinationModal}
+              disabled={isDisabled}
+              className={cn(
+                'border-[1px] px-4 py-3 mt-1 rounded-lg bg-neutral-100 border-neutral-400 dark:bg-neutral-900 dark:border-neutral-700',
+                isDisabled &&
+                  'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800'
+              )}
+            >
+              <Text
+                className={cn(
+                  'text-lg text-gray-400 dark:text-gray-400',
+                  isDisabled &&
+                    'text-neutral-400 cursor-not-allowed dark:text-neutral-500'
+                )}
+              >
+                {watch('destination') !== undefined &&
+                watch('destination') !== ''
+                  ? watch('destination')
+                  : 'Destino'}
+              </Text>
+            </Pressable>
           </View>
 
           <Controller
