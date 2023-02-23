@@ -98,6 +98,13 @@ const MakeNequiPaymentScreen: FC<Props> = ({ navigation }) => {
                 <Text className="text-2xl font-medium text-center dark:text-white">
                   Realizar pago Nequi
                 </Text>
+
+                <Text className="text-base mt-2 text-red-500 dark:text-red-400">
+                  Aviso importante: La funcionalidad de pagos sigue en
+                  desarrollo, por el momento ningun pago se realiza de forma
+                  real. Si desea realizar un pago real, por favor contacte a
+                  soporte. Gracias.
+                </Text>
               </View>
 
               <View>
