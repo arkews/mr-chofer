@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import { styled } from 'nativewind'
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { Linking, Modal, Pressable, Text, View } from 'react-native'
 
 const StyledIcon = styled(MaterialIcons)
@@ -16,6 +16,16 @@ const CallDriverModal: FC<Props> = ({ open, phone, onClose }) => {
   const performPhoneCall = async () => {
     await Linking.openURL(`tel:${phone}`)
   }
+
+  useEffect(() => {
+    const closeInterval = setTimeout(() => {
+      onClose()
+    }, 60000) // 1 minute
+
+    return () => {
+      clearTimeout(closeInterval)
+    }
+  }, [])
 
   return (
     <Modal
