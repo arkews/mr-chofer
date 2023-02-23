@@ -1,4 +1,5 @@
 import { schedulePushNotification } from '@base/notifications'
+import CallDriverModal from '@base/rides/components/call-driver.modal'
 import DriverArriveNotificationModal from '@base/rides/components/driver-arrive-notification.modal'
 import PassengerNewFare from '@base/rides/components/passenger-new-fare'
 import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
@@ -136,6 +137,14 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
     setIsDriverArriveNotificationModalOpen(false)
   }
 
+  const [isCallDriverModalOpen, setIsCallDriverModalOpen] = useState(false)
+  const openCallDriverModal = () => {
+    setIsCallDriverModalOpen(true)
+  }
+  const closeCallDriverModal = () => {
+    setIsCallDriverModalOpen(false)
+  }
+
   useEffect(() => {
     if (ride === undefined) {
       return
@@ -150,6 +159,10 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
         null
       ).then(() => {})
       openDriverArriveNotificationModal()
+    }
+
+    if (ride.status === RideStatus.accepted) {
+      openCallDriverModal()
     }
   }, [ride])
 
@@ -196,6 +209,13 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
           open={isDriverArriveNotificationModalOpen}
           onClose={closeDriverArriveNotificationModal}
         />
+      </View>
+
+      <View>
+        <CallDriverModal
+          open={isCallDriverModalOpen}
+          phone={ride?.drivers?.phone ?? ''}
+          onClose={closeCallDriverModal}/>
       </View>
 
       {ride?.status === RideStatus.requested && <PassengerNewFare />}
