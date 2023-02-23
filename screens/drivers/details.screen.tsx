@@ -60,6 +60,10 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('RegisterVehicle')
   }
 
+  const goToRechargeBalance = (): void => {
+    navigation.navigate('MakeNequiPayment')
+  }
+
   const isLoadingData = isLoading || isLoadingRide
 
   useEffect(() => {
@@ -191,6 +195,22 @@ const DriverDetailsScreen: FC<Props> = ({ navigation }) => {
                       </Text>
                     </>
                 )}
+              </View>
+
+              <View className="mt-5">
+                <Pressable
+                  onPress={goToRechargeBalance}
+                  className={cn(
+                    'text-base px-6 py-3.5 bg-green-100 rounded-lg border border-transparent',
+                    'active:bg-green-200',
+                    isLoadingSignOut && 'bg-green-200 cursor-not-allowed',
+                    isLoadingSignOut && 'dark:bg-green-200 dark:text-gray-400'
+                  )}
+                >
+                  <Text className="text-base font-medium text-center text-green-900">
+                    Recargar cuenta
+                  </Text>
+                </Pressable>
               </View>
             </View>
           </View>

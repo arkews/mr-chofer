@@ -17,9 +17,7 @@ export default {
     updates: {
       fallbackToCacheTimeout: 0
     },
-    assetBundlePatterns: [
-      '**/*'
-    ],
+    assetBundlePatterns: ['**/*'],
     ios: {
       supportsTablet: true,
       runtimeVersion: {
@@ -56,7 +54,13 @@ export default {
     },
     owner: 'cantte',
     plugins: [
-      'sentry-expo'
+      'sentry-expo',
+      [
+        'expo-notifications',
+        {
+          sounds: ['./assets/sounds/notification.wav']
+        }
+      ]
     ],
     hooks: {
       postPublish: [
