@@ -183,6 +183,11 @@ serve(async (req) => {
     }
   )
 
+  await supabase
+    .from('configuration')
+    .update({ value: (Number(messageID.value) + 1).toString() })
+    .eq('key', 'NEQUI_MESSAGE_ID')
+
   if (!paymentResponse.ok) {
     console.info('Nequi Payment response: ', paymentResponse)
     console.info('Nequi Payment body: ', nequiPaymenBody)
@@ -196,14 +201,17 @@ serve(async (req) => {
     (await paymentResponse.json()) as PushNotificationResponse
 
   const isSuccessful =
-    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusCode === '0' &&
-    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc === 'SUCCESS'
+    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusCode ===
+      '0' &&
+    paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc ===
+      'SUCCESS'
 
   if (!isSuccessful) {
     console.info('Nequi paymentResponseBody: ', paymentResponseBody)
     return new Response(
       JSON.stringify({
-        error: paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc
+        error:
+          paymentResponseBody.ResponseMessage.ResponseHeader.Status.StatusDesc
       }),
       {
         status: 500
@@ -230,11 +238,6 @@ serve(async (req) => {
       status: 500
     })
   }
-
-  await supabase
-    .from('configuration')
-    .update({ value: (Number(messageID.value) + 1).toString() })
-    .eq('key', 'NEQUI_MESSAGE_ID')
 
   return new Response(JSON.stringify(data), {
     headers: { 'Content-Type': 'application/json' }
