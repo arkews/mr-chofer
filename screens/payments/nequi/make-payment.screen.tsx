@@ -61,7 +61,7 @@ const MakeNequiPaymentScreen: FC<Props> = ({ navigation }) => {
   } = form
 
   const makeNequiPayment = async (data: NequiPayment) => {
-    const { error } = await supabase.functions.invoke('make_nequi_payment', {
+    const { error } = await supabase.functions.invoke('make-nequi-payment', {
       body: data
     })
 
@@ -95,7 +95,7 @@ const MakeNequiPaymentScreen: FC<Props> = ({ navigation }) => {
             <View></View>
             <ScrollView className="flex flex-grow w-full px-3 mx-auto space-y-3">
               <View className="mb-3">
-                <Text className="text-xl text-center dark:text-white">
+                <Text className="text-2xl font-medium text-center dark:text-white">
                   Realizar pago Nequi
                 </Text>
               </View>
