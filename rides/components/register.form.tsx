@@ -91,9 +91,7 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
       return
     }
 
-    resetField('affiliate_id', {
-      defaultValue: affiliateId
-    })
+    setValue('affiliate_id', affiliateId)
   }
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
