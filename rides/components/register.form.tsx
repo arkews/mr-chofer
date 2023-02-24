@@ -83,13 +83,17 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
       return
     }
 
-    setValue('destination', destination)
+    resetField('destination', {
+      defaultValue: destination
+    })
 
     if (affiliateId === undefined) {
       return
     }
 
-    setValue('affiliate_id', affiliateId)
+    resetField('affiliate_id', {
+      defaultValue: affiliateId
+    })
   }
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
