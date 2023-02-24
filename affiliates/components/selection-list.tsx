@@ -14,11 +14,11 @@ const AffiliateSelectionList: FC<Props> = ({ onSelect }) => {
     <View className="flex flex-col space-y-2">
       <View>
         <Text className="text-base font-medium text-gray-900 dark:text-gray-200">
-          Estos son los afiliados que tenemos para ti
+          Aprovecha nuestras alianzas
         </Text>
       </View>
 
-      <View>
+      <View className="flex flex-col space-y-2">
         {isLoading && (
           <View className="flex flex-col items-center justify-center">
             <Text className="font-medium text-gray-900 dark:text-gray-200">
@@ -45,12 +45,13 @@ const AffiliateSelectionList: FC<Props> = ({ onSelect }) => {
                 </View>
 
                 <View className="flex flex-row items-center justify-between">
-                  <Text className="text-md text-gray-600 dark:text-gray-400">
+                  <Text className="text-md text-green-600 dark:text-green-400">
                     Descuento:{' '}
                     {Intl.NumberFormat('es', {
-                      style: 'percent',
-                      maximumFractionDigits: 2
-                    }).format(affiliate.discount_percentage)}
+                      style: 'currency',
+                      currency: 'COP',
+                      maximumSignificantDigits: 1
+                    }).format(affiliate.discount_value)}
                   </Text>
                 </View>
               </View>

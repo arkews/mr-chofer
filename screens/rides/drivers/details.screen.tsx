@@ -182,24 +182,26 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
             </View>
           </View>
 
-          <View className="flex flex-col space-y-3">
-            <View className="flex flex-row justify-between px-2 py-2">
+          <View className="flex flex-col space-y-2">
+            <View className="flex flex-row justify-between px-2 py-1">
               <Text className="text-gray-700 dark:text-gray-400">Origen</Text>
               <Text className="dark:text-white font-bold">
                 {ride.pickup_location}
               </Text>
             </View>
 
-            <View className="flex flex-row justify-between px-2 py-2">
+            <View className="flex flex-row justify-between px-2 py-1">
               <Text className="text-gray-700 dark:text-gray-400">Destino</Text>
               <Text className="dark:text-white font-bold">
                 {ride.destination}
               </Text>
             </View>
 
-            <View className="flex flex-row justify-between px-2 py-2">
+            <View className="flex flex-row justify-between px-2 py-1">
               <Text className="text-gray-700 dark:text-gray-400">
-                Precio final
+                {ride.affiliate_id !== undefined
+                  ? 'Precio ofrecido'
+                  : 'Precio final'}
               </Text>
               <Text className="font-bold text-green-700 dark:text-green-400">
                 {Intl.NumberFormat('es', {
@@ -209,10 +211,38 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
+            {ride.affiliates !== undefined && (
+              <>
+                <View className="flex flex-row justify-between px-2 py-1">
+                  <Text className="text-gray-700 dark:text-gray-400">
+                    Descuento de aliado
+                  </Text>
+                  <Text className="font-bold text-red-700 dark:text-red-400">
+                    {Intl.NumberFormat('es', {
+                      style: 'currency',
+                      currency: 'COP'
+                    }).format(-ride.affiliates.discount_value)}
+                  </Text>
+                </View>
+
+                <View className="flex flex-row justify-between px-2 py-1">
+                  <Text className="text-gray-700 dark:text-gray-400">
+                    Precio final
+                  </Text>
+                  <Text className="font-bold text-green-700 dark:text-green-400">
+                    {Intl.NumberFormat('es', {
+                      style: 'currency',
+                      currency: 'COP'
+                    }).format(ride.offered_price - ride.affiliates.discount_value)}
+                  </Text>
+                </View>
+              </>
+            )}
+
             {ride.comments !== undefined &&
               ride.comments !== null &&
               ride.comments.length > 0 && (
-                <View className="flex flex-row px-2 space-x-2">
+                <View className="flex flex-row px-2 space-x-2 pt-2">
                   <StyledIcon
                     name="comment"
                     size={24}
@@ -227,8 +257,8 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
             {ride.passengers !== undefined && ride.passengers !== null && (
               <View className="pt-2">
                 <View>
-                  <Text className="text-center font-bold dark:text-white mb-3">
-                    Información del pasajero
+                  <Text className="text-base text-center font-bold dark:text-white mb-3">
+                    Pasajero
                   </Text>
                 </View>
                 <View className="flex flex-row justify-between px-2 py-2">

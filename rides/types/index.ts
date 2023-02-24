@@ -1,3 +1,4 @@
+import { Affiliate } from '@base/affiliates/types'
 import { RegisterRideRequest } from '@base/rides/schema'
 
 export enum RideStatus {
@@ -45,4 +46,8 @@ export type Ride = RegisterRideRequest & {
 
   passengers?: RidePassenger
   drivers?: RideDriver
+
+  affiliate_id?: string
+
+  affiliates?: Affiliate
 }

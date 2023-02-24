@@ -1,7 +1,7 @@
-import { supabase } from '@base/supabase'
-import { useQuery } from '@tanstack/react-query'
 import { Ride } from '@base/rides/types'
+import { supabase } from '@base/supabase'
 import useDriver, { DriverStatus } from '@hooks/drivers/use-driver'
+import { useQuery } from '@tanstack/react-query'
 
 type UseRide = {
   ride?: Ride
@@ -15,7 +15,7 @@ const useCurrentDriverRide = (): UseRide => {
   const fetchRide = async (): Promise<Ride> => {
     const { data, error } = await supabase
       .from('rides')
-      .select('*, passengers:passenger_id(name,phone,gender,photo_url)')
+      .select('*, passengers:passenger_id(name,phone,gender,photo_url), affiliates:affiliate_id(*)')
       .eq('driver_id', driver?.id)
       .in('status', ['requested', 'accepted', 'waiting', 'in_progress'])
       .limit(1)

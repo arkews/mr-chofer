@@ -7,12 +7,12 @@ import { Modal, ScrollView, Text, View } from 'react-native'
 type Props = {
   open: boolean
 
-  onClose: (destination: string) => void
+  onClose: (destination: string, affiliateId?: string) => void
 }
 
 const DestinationModal: FC<Props> = ({ open, onClose }) => {
   const handleSelect = (affiliate: Affiliate) => {
-    onClose(affiliate.address)
+    onClose(affiliate.address, affiliate.id)
   }
 
   return (

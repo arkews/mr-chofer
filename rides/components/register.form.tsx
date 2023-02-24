@@ -74,13 +74,20 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     setIsDestinationModalOpen(false)
   }
 
-  const handleCloseDestinationModal = (destination: string) => {
+  const handleCloseDestinationModal = (
+    destination: string,
+    affiliateId?: string
+  ) => {
     closeDestinationModal()
     if (destination === '' || destination.trim() === '') {
       return
     }
 
-    setValue('destination', destination)
+    resetField('destination', {
+      defaultValue: destination
+    })
+
+    setValue('affiliate_id', affiliateId)
   }
 
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {

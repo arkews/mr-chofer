@@ -200,20 +200,37 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
 
             <View className="w-4/5">
               <View className="flex flex-col">
-                {ride.passengers !== undefined && (
-                  <Text className="text-xs font-medium leading-none text-gray-500 dark:text-gray-400">
-                    {ride.passengers?.name}
-                  </Text>
-                )}
+                <View className="flex flex-row justify-between">
+                  {ride.passengers !== undefined && (
+                    <Text className="text-xs font-medium leading-none text-gray-500 dark:text-gray-400">
+                      {ride.passengers?.name}
+                    </Text>
+                  )}
 
-                <View className="flex flex-col justify-between my-1">
+                  {ride.affiliate_id !== null && (
+                    <StyledIcon
+                      name="star"
+                      size={17}
+                      className="text-yellow-400 dark:text-yellow-300 mr-3"
+                    />
+                  )}
+                </View>
+
+                <View className="flex flex-col justify-between">
                   <Text className="text-base text-pink-800 font-medium dark:text-pink-300">
                     Origen: {ride.pickup_location}
                   </Text>
 
-                  <Text className="text-base text-gray-900 dark:text-gray-100 font-medium">
-                    Destino: {ride.destination}
-                  </Text>
+                  <View className="flex flex-row align-middle items-center">
+                    <Text className="text-base text-gray-900 dark:text-gray-100 font-medium">
+                      Destino: {ride.destination}{' '}
+                    </Text>
+                    {ride.affiliate_id !== null && (
+                      <Text className="text-xs text-gray-500 dark:text-gray-400">
+                        (Aliado)
+                      </Text>
+                    )}
+                  </View>
 
                   <Text className="text-gray-600 dark:text-gray-400 mt-1">
                     Genero:{' '}
@@ -221,8 +238,8 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                   </Text>
                 </View>
 
-                <View className="mt-1">
-                  <Text className="text-md font-medium text-green-700 dark:text-green-400">
+                <View className="mt-0.5">
+                  <Text className="text-base font-medium text-green-700 dark:text-green-400">
                     {Intl.NumberFormat('es', {
                       style: 'currency',
                       currency: 'COP'
@@ -234,7 +251,7 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
           </View>
 
           {ride.comments !== undefined && ride.comments !== null && (
-            <View className="flex flex-row px-2 space-x-2">
+            <View className="flex flex-row px-2 space-x-2 mt-1">
               <StyledIcon
                 name="comment"
                 className="text-sm text-gray-700 dark:text-gray-400"
