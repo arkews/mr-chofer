@@ -14,7 +14,7 @@ const AffiliateSelectionList: FC<Props> = ({ onSelect }) => {
     <View className="flex flex-col space-y-2">
       <View>
         <Text className="text-base font-medium text-gray-900 dark:text-gray-200">
-          Estos son los afiliados que tenemos para ti
+          Aprovecha nuestras alianzas
         </Text>
       </View>
 

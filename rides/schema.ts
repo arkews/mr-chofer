@@ -16,7 +16,8 @@ export const RegisterRideRequestSchema = z.object({
   payment_method: z.enum(['cash']),
   gender: z.string({ required_error: 'El género es requerido' })
     .min(1, 'El género es requerido'),
-  comments: z.string().optional().nullable()
+  comments: z.string().optional().nullable(),
+  affiliate_id: z.string().optional().nullable()
 })
   .refine(async data => {
     const key = data.gender === 'Male' ? 'MINIMUM_MALE_FARE' : 'MINIMUM_FEMALE_FARE'
