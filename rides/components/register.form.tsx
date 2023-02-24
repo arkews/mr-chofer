@@ -87,10 +87,6 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
       defaultValue: destination
     })
 
-    if (affiliateId === undefined) {
-      return
-    }
-
     setValue('affiliate_id', affiliateId)
   }
 
