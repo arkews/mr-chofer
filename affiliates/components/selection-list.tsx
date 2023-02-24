@@ -18,7 +18,7 @@ const AffiliateSelectionList: FC<Props> = ({ onSelect }) => {
         </Text>
       </View>
 
-      <View>
+      <View className="flex flex-col space-y-2">
         {isLoading && (
           <View className="flex flex-col items-center justify-center">
             <Text className="font-medium text-gray-900 dark:text-gray-200">
