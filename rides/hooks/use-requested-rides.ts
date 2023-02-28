@@ -40,10 +40,11 @@ const useRequestedRides = (): UseRequestedRides => {
     !isDriverEmpty &&
     isValidConfig &&
     (config.value === 'true' ? driver.balance >= 0 : true)
+  const isDriverActive = !isDriverEmpty && driver.active
 
   const { data, isLoading, error } = useQuery(['requested-rides'], fetchRides, {
     retry: false,
-    enabled: isDriverVerified && !isVehicleEmpty && isDriveHasEnoughBalance
+    enabled: isDriverVerified && !isVehicleEmpty && isDriveHasEnoughBalance && isDriverActive
   })
 
   return {

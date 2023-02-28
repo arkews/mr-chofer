@@ -1,3 +1,4 @@
+import { useAuth } from '@base/auth/context'
 import useNotificationInitialLoad from '@base/notifications/hooks/use-notification-initial-load'
 import RequestedRideCard from '@base/rides/components/requested'
 import useRealtimeActiveDrivers from '@base/rides/hooks/realtime/use-realtime-active-drivers'
@@ -13,12 +14,13 @@ import useVehicle from '@hooks/vehicles/use-vehicle'
 import { RootStackScreenProps } from '@navigation/types'
 import { DrawerActions, useFocusEffect } from '@react-navigation/native'
 import { REALTIME_LISTEN_TYPES } from '@supabase/realtime-js/src/RealtimeChannel'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import cn from 'classnames'
 import { useKeepAwake } from 'expo-keep-awake'
 import { styled } from 'nativewind'
 import { FC, useCallback, useEffect } from 'react'
 import { Pressable, ScrollView, Text, View } from 'react-native'
+import * as Sentry from 'sentry-expo'
 
 const StyledIcon = styled(MaterialIcons)
 
@@ -130,6 +132,33 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     navigation.navigate('PassengerDetails')
   }
 
+  const toggleDriverStatus = async () => {
+    if (driver === undefined || driver === null) {
+      return
+    }
+
+    const { error } = await supabase
+      .from('drivers')
+      .update({ active: !driver.active })
+      .eq('id', driver.id)
+
+    if (error !== null) {
+      const rawError = new Error(error.message)
+      Sentry.Native.captureException(rawError)
+    }
+  }
+
+  const queryClient = useQueryClient()
+  const { session } = useAuth()
+  const {
+    mutate: performToggleDriverStatus,
+    isLoading: isPerformToggleDriverStatus
+  } = useMutation(toggleDriverStatus, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['driver', session?.user?.id])
+    }
+  })
+
   useEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -154,20 +183,30 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         </Pressable>
       ),
       headerTitle: () => (
-        <Text
+        <Pressable
+          onPress={() => {
+            performToggleDriverStatus()
+          }}
+          disabled={isPerformToggleDriverStatus}
           className={cn(
-            'text-base text-center justify-center font-medium text-gray-500 dark:text-gray-400',
-            driver?.balance !== undefined &&
-              driver?.balance < 0 &&
-              'text-red-700 dark:text-red-600'
+            'flex flex-row justify-center items-center space-x-1 px-3 py-1 border',
+            driver?.active ?? false
+              ? 'border-green-700 bg-green-100 rounded-md dark:border-green-500 active:border-green-900 dark:active:border-green-700'
+              : 'border-red-700 bg-red-100 rounded-md dark:border-red-500 active:border-red-900 dark:active:border-red-700'
           )}
         >
-          Saldo{' '}
-          {Intl.NumberFormat('es', {
-            style: 'currency',
-            currency: 'COP'
-          }).format(driver?.balance ?? 0)}
-        </Text>
+          <StyledIcon
+            name="repeat"
+            className="text-xs font-medium text-green-900 dark:text-green-400"
+          />
+          <Text
+            className={cn(
+              'text-xs text-green-900 dark:text-green-400 font-medium'
+            )}
+          >
+            Estado: {driver?.active ?? false ? 'Activo' : 'Inactivo'}
+          </Text>
+        </Pressable>
       ),
       header: (props) => {
         const HeaderRight = props.options.headerRight as FC
@@ -188,7 +227,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         )
       }
     })
-  }, [navigation, driver?.balance])
+  }, [navigation, driver?.active])
 
   const goToAttachDriverDocuments = () => {
     navigation.navigate('AttachDriverDocuments')
