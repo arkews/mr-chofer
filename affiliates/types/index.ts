@@ -3,4 +3,5 @@ export type Affiliate = {
   name: string
   address: string
   discount_value: number
+  avatar_url: string
 }

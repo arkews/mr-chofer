@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-import { supabase } from '@base/supabase'
 import { useAuth } from '@base/auth/context'
+import { supabase } from '@base/supabase'
+import { useQuery } from '@tanstack/react-query'
 
 export enum DriverStatus {
   pending = 'pending',
@@ -25,6 +25,8 @@ type Driver = {
 
   contract_url: string | null
   notary_power_url: string | null
+
+  active: boolean
 }
 
 type UseDriver = {

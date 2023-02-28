@@ -24,6 +24,9 @@ export default {
         policy: 'appVersion'
       }
     },
+    notification: {
+      androidMode: 'collapse'
+    },
     android: {
       runtimeVersion: '1.0.0',
       adaptiveIcon: {
