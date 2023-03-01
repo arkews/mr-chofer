@@ -298,7 +298,7 @@ const PassengerRideDetailsScreen: FC<Props> = ({ navigation }) => {
                 </Text>
               </View>
 
-              {ride.affiliates !== undefined && (
+              {ride.affiliates !== undefined && ride.affiliates !== null && (
                 <>
                   <View className="flex flex-row justify-between px-2 py-1">
                     <Text className="text-gray-700 dark:text-gray-400">
