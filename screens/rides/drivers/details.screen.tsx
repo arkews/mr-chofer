@@ -211,7 +211,7 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
               </Text>
             </View>
 
-            {ride.affiliates !== undefined && (
+            {ride.affiliates !== undefined && ride.affiliates !== null && (
               <>
                 <View className="flex flex-row justify-between px-2 py-1">
                   <Text className="text-gray-700 dark:text-gray-400">
@@ -233,7 +233,9 @@ const DriverRideDetailsScreen: FC<Props> = ({ navigation }) => {
                     {Intl.NumberFormat('es', {
                       style: 'currency',
                       currency: 'COP'
-                    }).format(ride.offered_price - ride.affiliates.discount_value)}
+                    }).format(
+                      ride.offered_price - ride.affiliates.discount_value
+                    )}
                   </Text>
                 </View>
               </>
