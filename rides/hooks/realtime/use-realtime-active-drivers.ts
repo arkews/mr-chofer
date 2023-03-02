@@ -1,7 +1,5 @@
-import { DriverStatus } from '@base/hooks/drivers/use-driver'
+import useDriver from '@base/hooks/drivers/use-driver'
 import { ActiveDriversChannel } from '@base/rides/realtime/channels'
-import { RideStatus } from '@base/rides/types'
-import { supabase } from '@base/supabase'
 import { useEffect, useState } from 'react'
 
 type UseRealtimeActiveDrivers = {
@@ -14,45 +12,31 @@ const useRealtimeActiveDrivers = (
   subscriber: RealtimeSubsciber
 ): UseRealtimeActiveDrivers => {
   const [activeDrivers, setActiveDrivers] = useState(0)
-
-  const fetchActiveDrivers = async () => {
-    const { count: activeRides, error } = await supabase
-      .from('rides')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', RideStatus.accepted)
-      .eq('status', RideStatus.in_progress)
-
-    if (error !== null) {
-      console.error(error)
-    }
-
-    const { count: activeDrivers, error: DriverError } = await supabase
-      .from('drivers')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', DriverStatus.accepted)
-
-    if (DriverError !== null) {
-      console.error(DriverError)
-    }
-
-    if (activeDrivers === null || activeRides === null) {
-      return
-    }
-
-    setActiveDrivers(activeDrivers - activeRides)
-  }
+  const { driver } = useDriver()
 
   useEffect(() => {
     let channel = ActiveDriversChannel()
 
     if (subscriber === 'passenger') {
-      void fetchActiveDrivers()
+      channel = channel
+        .on('presence', { event: 'join' }, () => {
+          setActiveDrivers((prev) => prev + 1)
+        })
+        .on('presence', { event: 'leave' }, () => {
+          setActiveDrivers((prev) => prev - 1)
+        })
+        .subscribe()
     }
 
     if (subscriber === 'driver') {
       channel = channel.subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({})
+          if (driver?.active ?? false) {
+            await channel.track({})
+            return
+          }
+
+          await channel.untrack({})
         }
       })
     }
@@ -60,7 +44,7 @@ const useRealtimeActiveDrivers = (
     return () => {
       void channel.unsubscribe()
     }
-  }, [subscriber])
+  }, [subscriber, driver])
 
   return {
     count: activeDrivers

@@ -191,17 +191,23 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
           className={cn(
             'flex flex-row justify-center items-center space-x-1 px-3 py-1 border',
             driver?.active ?? false
-              ? 'border-green-700 bg-green-100 rounded-md dark:border-green-500 active:border-green-900 dark:active:border-green-700'
-              : 'border-red-700 bg-red-100 rounded-md dark:border-red-500 active:border-red-900 dark:active:border-red-700'
+              ? 'border-green-700 bg-green-100 dark:bg-green-300 rounded-md dark:border-green-500 active:border-green-900 dark:active:border-green-700'
+              : 'border-red-700 bg-red-100 dark:bg-red-300 rounded-md dark:border-red-500 active:border-red-900 dark:active:border-red-700'
           )}
         >
           <StyledIcon
             name="repeat"
-            className="text-xs font-medium text-green-900 dark:text-green-400"
+            className={cn(
+              driver?.active ?? false
+                ? 'text-green-900 dark:text-green-700'
+                : 'text-red-900 dark:text-red-700'
+            )}
           />
           <Text
             className={cn(
-              'text-xs text-green-900 dark:text-green-400 font-medium'
+              driver?.active ?? false
+                ? 'text-xs text-green-900 dark:text-green-700 font-medium'
+                : 'text-xs text-red-900 dark:text-red-700 font-medium'
             )}
           >
             Estado: {driver?.active ?? false ? 'Activo' : 'Inactivo'}
@@ -249,7 +255,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
     <>
       <View className="flex h-full pb-10">
         {isAcceptingRequest && (
-          <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+          <View className="flex flex-grow w-full px-4 justify-center mx-auto">
             <Text className="text-2xl font-bold text-center my-auto dark:text-white">
               Procesando solicitud...
             </Text>
@@ -257,7 +263,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         )}
 
         {isLoadingVehicle && (
-          <View className="flex flex-grow w-full px-5 justify-center mx-auto">
+          <View className="flex flex-grow w-full px-4 justify-center mx-auto">
             <Text className="text-2xl font-bold text-center my-auto dark:text-white">
               Verificando información...
             </Text>
@@ -265,7 +271,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
         )}
 
         {!isDriverVerified && (
-          <View className="flex flex-col space-y-3 flex-grow w-full px-5 justify-center mx-auto">
+          <View className="flex flex-col space-y-3 flex-grow w-full px-3 justify-center mx-auto">
             <View>
               <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
                 Estamos procesando tu solicitud
@@ -311,7 +317,7 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
           !isLoadingVehicle &&
           isDriverVerified &&
           isDriveHasEnoughBalance && (
-            <View className="flex py-2 px-3 space-y-5">
+            <View className="flex py-2 px-2 space-y-5">
               <View className="block">
                 <Text className="text-2xl font-bold text-center dark:text-white">
                   Solicitudes de viaje
