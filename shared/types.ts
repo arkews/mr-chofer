@@ -11,3 +11,8 @@ export type Document = {
 }
 
 export type PaymentMethod = 'cash' | 'nequi'
+
+export type PaymentOption = {
+  name: string
+  value: string
+}

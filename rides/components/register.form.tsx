@@ -1,3 +1,5 @@
+import FieldError from '@base/components/form/feedback/field/field.error'
+import { paymentOptions } from '@base/constants/payment-options'
 import ConfirmVehicleContractModal from '@base/rides/components/confirm-vehicle-contract.modal'
 import {
   RegisterRideRequest,
@@ -23,6 +25,7 @@ import {
 import { Pressable, Text, View } from 'react-native'
 import * as Sentry from 'sentry-expo'
 import DestinationModal from './destination.modal'
+import OfferedPriceModal from './offered-price.modal'
 
 type Props = RootStackScreenProps<'PassengerDetails'>
 
@@ -90,6 +93,31 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
     setValue('affiliate_id', affiliateId)
   }
 
+  const [isOfferedPriceModalOpen, setIsOfferedPriceModalOpen] = useState(false)
+  const openOfferedPriceModal = () => {
+    setIsOfferedPriceModalOpen(true)
+  }
+  const closeOfferedPriceModal = () => {
+    setIsOfferedPriceModalOpen(false)
+  }
+
+  const handleCloseOfferedPriceModal = (
+    offeredPrice: number,
+    paymentMethod: string
+  ) => {
+    closeOfferedPriceModal()
+    if (offeredPrice === 0) {
+      return
+    }
+
+    resetField('offered_price', {
+      defaultValue: offeredPrice
+    })
+    resetField('payment_method', {
+      defaultValue: paymentMethod
+    })
+  }
+
   const sendRideRequest = async (data: RegisterRideRequest): Promise<void> => {
     const { error } = await supabase.functions.invoke('new-ride-request', {
       body: data
@@ -134,6 +162,10 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
   const { config: isMalePassengerActiveConfig } = useConfig(
     'IS_MALE_PASSENGER_ACTIVE'
   )
+
+  const paymentLabel = paymentOptions.find(
+    (option) => option.value === watch('payment_method')
+  )?.name
 
   return (
     <FormProvider {...form}>
@@ -186,6 +218,10 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
                   : 'Destino'}
               </Text>
             </Pressable>
+
+            {errors.destination !== undefined && (
+              <FieldError message={errors.destination.message as string} />
+            )}
           </View>
 
           <Controller
@@ -216,13 +252,39 @@ const RegisterRideRequestForm: FC<Props> = ({ navigation }) => {
           />
 
           <View>
-            <Input
-              name="offered_price"
-              placeholder="Precio ofrecido"
-              placeholderTextColor="#9CA3AF"
-              keyboardType="numeric"
-              disabled={isDisabled}
+            <OfferedPriceModal
+              open={isOfferedPriceModalOpen}
+              onClose={handleCloseOfferedPriceModal}
             />
+            <Pressable
+              onPress={openOfferedPriceModal}
+              disabled={isDisabled}
+              className={cn(
+                'border-[1px] px-4 py-3 mt-1 rounded-lg bg-neutral-100 border-neutral-400 dark:bg-neutral-900 dark:border-neutral-700',
+                isDisabled &&
+                  'bg-neutral-200 text-neutral-400 cursor-not-allowed dark:bg-neutral-800'
+              )}
+            >
+              <Text
+                className={cn(
+                  'text-lg text-gray-400 dark:text-gray-400',
+                  isDisabled &&
+                    'text-neutral-400 cursor-not-allowed dark:text-neutral-500'
+                )}
+              >
+                {watch('offered_price') !== undefined &&
+                watch('offered_price') !== 0
+                  ? `${Intl.NumberFormat('es-ES', {
+                      style: 'currency',
+                      currency: 'COP'
+                    }).format(watch('offered_price'))}, ${paymentLabel ?? ''}`
+                  : 'Precio ofrecido'}
+              </Text>
+            </Pressable>
+
+            {errors.offered_price !== undefined && (
+              <FieldError message={errors.offered_price.message as string} />
+            )}
 
             {minimunFare !== undefined &&
               minimunFare !== null &&
