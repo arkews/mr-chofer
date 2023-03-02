@@ -81,7 +81,17 @@ const OfferedPriceModal: FC<Props> = ({ open, onClose }) => {
                         'border-blue-500'
                     )}
                   >
-                    <StyledIcon name="attach-money" size={20} color="#9CA3AF" />
+                    {option.icon !== undefined
+                      ? (
+                          option.icon
+                        )
+                      : (
+                      <StyledIcon
+                        name="attach-money"
+                        size={20}
+                        color="#9CA3AF"
+                      />
+                        )}
                     <Text className="text-base font-bold text-gray-700 dark:text-gray-300">
                       {option.name}
                     </Text>
@@ -89,7 +99,7 @@ const OfferedPriceModal: FC<Props> = ({ open, onClose }) => {
                 ))}
               </View>
 
-              <View className='flex flex-row justify-end pt-2'>
+              <View className="flex flex-row justify-end pt-2">
                 <Pressable
                   onPress={() => {
                     onClose(
@@ -99,7 +109,7 @@ const OfferedPriceModal: FC<Props> = ({ open, onClose }) => {
                   }}
                   className="flex justify-end items-end px-2 w-full rounded-lg basis-1/2"
                 >
-                  <Text className="text-base font-medium text-blue-500">
+                  <Text className="text-base font-medium text-blue-500 dark:text-blue-300">
                     Enviar oferta
                   </Text>
                 </Pressable>

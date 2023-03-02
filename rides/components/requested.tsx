@@ -1,3 +1,4 @@
+import { paymentOptions } from '@base/constants/payment-options'
 import OfferForm from '@base/rides/components/offer.form'
 import { Ride } from '@base/rides/types'
 import { useConfig } from '@base/shared/configuration'
@@ -167,6 +168,10 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
     }
   }, [state.isAccepting])
 
+  const paymentOption = paymentOptions.find(
+    (option) => option.value === ride.payment_method
+  )
+
   return (
     <>
       <View className="px-1 py-2 pb-1 mt-2 w-full bg-white rounded-lg border border-neutral-300 dark:border-neutral-600 dark:bg-neutral-800">
@@ -239,12 +244,31 @@ const RequestedRideCard: FC<Props> = ({ ride, onAccept }) => {
                 </View>
 
                 <View className="mt-0.5">
-                  <Text className="text-base font-medium text-green-700 dark:text-green-400">
-                    {Intl.NumberFormat('es', {
-                      style: 'currency',
-                      currency: 'COP'
-                    }).format(ride.offered_price)}
-                  </Text>
+                  <View className="flex flex-row space-x-3 items-center">
+                    <Text className="text-base font-medium text-green-700 dark:text-green-400">
+                      {Intl.NumberFormat('es', {
+                        style: 'currency',
+                        currency: 'COP'
+                      }).format(ride.offered_price)}
+                    </Text>
+
+                    <View className="flex flex-row items-center space-x-1">
+                      {paymentOption?.icon !== undefined
+                        ? (
+                            paymentOption.icon
+                          )
+                        : (
+                        <StyledIcon
+                          name="attach-money"
+                          size={17}
+                          color="#9CA3AF"
+                        />
+                          )}
+                      <Text className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                        {paymentOption?.name}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             </View>
