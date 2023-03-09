@@ -14,6 +14,7 @@ import Constants from 'expo-constants'
 import { FC } from 'react'
 import * as Sentry from 'sentry-expo'
 import { AuthProvider } from './auth/context'
+import useVersionCheck from './hooks/use-version-check'
 import useCachedResources from './hooks/useCachedResources'
 import useColorScheme from './hooks/useColorScheme'
 import Navigation from './navigation'
@@ -35,6 +36,7 @@ const App: FC = () => {
   const colorScheme = useColorScheme()
 
   useNotifications()
+  useVersionCheck()
 
   if (!isLoadingComplete) {
     return null
