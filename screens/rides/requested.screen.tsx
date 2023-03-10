@@ -274,7 +274,8 @@ const RequestedRidesScreen: FC<Props> = ({ navigation }) => {
           <View className="flex flex-col space-y-3 flex-grow w-full px-3 justify-center mx-auto">
             <View>
               <Text className="text-2xl font-bold text-center my-auto text-gray-900 dark:text-gray-100">
-                Estamos procesando tu solicitud
+                Estamos procesando su solicitud, por favor espere la
+                confirmación en un plazo máximo de 2 días hábiles.
               </Text>
             </View>
 
