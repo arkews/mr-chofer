@@ -34,7 +34,7 @@ const RegisterPassengerSchema = z
       .min(1, 'Ciudad requerida'),
     phone: z
       .string({ required_error: 'Número de teléfono requerido' })
-      .min(1, 'Número de teléfono requerido')
+      .min(10, 'El número de teléfono debe tener 10 dígitos')
       .refine(async (phone) => {
         const { data: passenger, error: passengerError } = await supabase
           .from('passengers')
@@ -53,7 +53,7 @@ const RegisterPassengerSchema = z
       }, 'El número de teléfono ya está registrado'),
     phoneConfirmation: z
       .string({ required_error: 'Debe confirmar el número de teléfono' })
-      .min(1, 'Debe confirmar el número de teléfono'),
+      .min(10, 'El número de teléfono debe tener 10 dígitos'),
     gender: z
       .string({ required_error: 'Debe seleccionar un sexo' })
       .min(1, 'Debe seleccionar un sexo'),
@@ -210,7 +210,11 @@ const RegisterPassengerScreen: FC<Props> = ({ navigation }) => {
                 />
 
                 <View>
-                  <PhotoPicker onSelect={setPhoto} disabled={isDisabled} />
+                  <PhotoPicker
+                    label="Seleccionar foto de perfil"
+                    onSelect={setPhoto}
+                    disabled={isDisabled}
+                  />
                   {photo !== null && (
                     <Text className="text-xs text-gray-500 mt-1 dark:text-gray-400">
                       Foto seleccionada {photo.name}
