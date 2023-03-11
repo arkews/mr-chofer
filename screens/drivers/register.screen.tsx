@@ -44,7 +44,7 @@ const RegisterDriverSchema = z.object({
     .min(1, 'Ciudad requerida'),
   phone: z
     .string({ required_error: 'Número de teléfono requerido' })
-    .min(1, 'Número de teléfono requerido'),
+    .min(10, 'El número de teléfono debe tener 10 dígitos'),
   gender: z
     .string({ required_error: 'Debe seleccionar un sexo' })
     .min(1, 'Debe seleccionar un sexo'),
@@ -234,6 +234,10 @@ const RegisterDriverScreen: FC<Props> = ({ navigation }) => {
                     disabled={isDisabled}
                     onSelect={onSelectProfilePhoto}
                   />
+
+                  <Text className="text-gray-600 text-xs font-medium mt-0.5 dark:text-gray-500">
+                    Nota: Recuerde que deber ser una foto de su rostro
+                  </Text>
 
                   {watch('photo_url') !== undefined && (
                     <Text className="text-green-600 text-xs font-medium mt-0.5 dark:text-green-500">
